@@ -69,14 +69,14 @@ export class AppComponent implements OnInit, AfterViewChecked {
                     } as ChatHistoryMessage);
                 },
                 error: (error) => {
-                    if(error?.error?.message){
+                    if (error?.error?.message) {
                         this.appendMessageToHistory({
                             messageType: ChatHistoryMessageType.BotMessage,
                             message: error.error.message,
                             id: this.chatHistoryId++,
                             isWarning: true,
                         } as ChatHistoryMessage);
-                    }else{
+                    } else {
                         this.appendMessageToHistory({
                             messageType: ChatHistoryMessageType.BotMessage,
                             message: "Има проблем във връзката със сървъра...",
@@ -90,7 +90,7 @@ export class AppComponent implements OnInit, AfterViewChecked {
         this.userChatInput = '';
     }
 
-    private appendMessageToHistory(historyMessage: ChatHistoryMessage): void{
+    private appendMessageToHistory(historyMessage: ChatHistoryMessage): void {
         this.chatHistoryStack.push(historyMessage);
     }
 
