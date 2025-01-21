@@ -1,0 +1,98 @@
+.main-container {
+    display: flex;
+    flex-flow: column;
+    align-items: center;
+    height: 100vh;
+    overflow: hidden;
+}
+
+.chat-container {
+    display: flex;
+    flex-flow: column;
+    min-width: 36rem; //make this 38 so it fits in the fmi main page
+    max-width: 38rem;
+    height: 100vh;
+
+    .chat-user-input {
+        flex-grow: 1;
+        padding: 1rem;
+        border-radius: 1rem;
+        border: 1px solid #ccc;
+        font-size: 14px;
+        resize: none;
+        outline: none;
+        margin-right: 1rem;
+        box-shadow: 5px 5px 10px 0px gray;
+    }
+
+    .send-button {
+        border-radius: 1rem;
+        border: 1px solid #ccc;
+        box-shadow: 5px 5px 10px 0px gray;
+        background-color: #219ebc;
+        width: 6rem;
+        color: white;
+        font-size: large;
+        cursor: pointer;
+
+        &:hover {
+            background-color: #138194;
+        }
+    }
+
+    .input-container {
+        display: flex;
+        margin-bottom: 1rem;
+        margin-top: 1rem;
+    }
+
+    .chat-user-input:focus {
+        border-color: #023047;
+    }
+}
+
+.main-chat-history {
+    overflow-y: auto;
+    padding: 0 1rem 0 0;
+
+    &::-webkit-scrollbar {
+        width: 12px; /* Width of the scrollbar */
+    }
+
+    &::-webkit-scrollbar-thumb {
+        background-color: #023047; /* Color of the scroll thumb */
+        border-radius: 10px; /* Roundness of the scroll thumb */
+        border: 3px solid #8ecae6; /* Space around the scroll thumb */
+    }
+
+    &::-webkit-scrollbar-track {
+        background: #add4e7; /* Color of the scrollbar track */
+    }
+
+    .chat-message {
+        color: white;
+
+        p, h3 {
+            padding: 0.1rem;
+            margin: 0.1rem;
+        }
+
+        padding: 1rem;
+        margin-top: 1rem;
+        margin-bottom: 1rem;
+        border-radius: 1rem;
+        box-shadow: 5px 5px 10px 0px gray;
+    }
+
+    .user-message {
+        background-color: #ffb703;
+        max-width: fit-content;
+        display: flex;
+        margin-left: auto;
+    }
+
+    .bot-message {
+        background-color: #023047;
+        max-width: fit-content;
+    }
+}
