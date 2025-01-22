@@ -1,4 +1,5 @@
 package com.chat_mat_rest_service.config;
+
 import com.chat_mat_rest_service.auth.JwtUtil;
 import com.chat_mat_rest_service.filters.JwtAuthenticationFilter;
 import org.springframework.context.annotation.Bean;
@@ -15,10 +16,18 @@ import org.springframework.security.web.authentication.UsernamePasswordAuthentic
 @Configuration
 public class SecurityConfig {
     private final JwtUtil jwtUtil;
+    private final CustomAuthenticationEntryPoint authenticationEntryPoint;
+    private final CustomAccessDeniedHandler accessDeniedHandler;
 
-    public SecurityConfig(JwtUtil jwtUtil){
+    public SecurityConfig(JwtUtil jwtUtil,
+                          CustomAuthenticationEntryPoint authenticationEntryPoint,
+                          CustomAccessDeniedHandler accessDeniedHandler
+    ) {
         this.jwtUtil = jwtUtil;
+        this.authenticationEntryPoint = authenticationEntryPoint;
+        this.accessDeniedHandler = accessDeniedHandler;
     }
+
     @Bean
     public PasswordEncoder passwordEncoder() {
         return new BCryptPasswordEncoder();
@@ -32,7 +41,11 @@ public class SecurityConfig {
                         .requestMatchers("/api/auth/**").permitAll()
                         .anyRequest().authenticated()
                 )
-                .addFilterBefore(new JwtAuthenticationFilter(jwtUtil), UsernamePasswordAuthenticationFilter.class);
+                .addFilterBefore(new JwtAuthenticationFilter(jwtUtil), UsernamePasswordAuthenticationFilter.class)
+                .exceptionHandling(exception -> exception
+                        .authenticationEntryPoint(authenticationEntryPoint) // Handle 401 errors
+                        .accessDeniedHandler(accessDeniedHandler)           // Handle 403 errors
+                );
 
         return http.build();
     }
