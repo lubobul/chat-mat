@@ -32,7 +32,7 @@ public class AuthController {
 
     @PostMapping("/register")
     public ResponseEntity<String> register(@RequestBody RegisterRequest request) {
-        userAuthService.register(request.getUsername(), request.getEmail(), request.getPassword());
+        userAuthService.register(request);
         return ResponseEntity.ok("User registered successfully");
     }
 
@@ -48,3 +48,4 @@ public class AuthController {
         return ResponseEntity.ok(token);
     }
 }
+
