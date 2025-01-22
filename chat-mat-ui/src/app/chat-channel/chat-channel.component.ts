@@ -5,8 +5,8 @@ import {ChatHistoryMessage, ChatHistoryMessageType} from '../models/chat.models'
 
 
 @Component({
-    selector: 'char-main-page',
-    imports: [RouterOutlet, FormsModule],
+    selector: 'char-channel',
+    imports: [FormsModule],
     templateUrl: './chat-channel.component.html',
     standalone: true,
     styleUrl: './chat-channel.component.scss',
