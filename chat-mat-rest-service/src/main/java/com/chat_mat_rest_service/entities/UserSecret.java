@@ -2,39 +2,32 @@ package com.chat_mat_rest_service.entities;
 
 import jakarta.persistence.*;
 import lombok.*;
-import java.sql.Timestamp;
-
 import org.hibernate.annotations.Filter;
 import org.hibernate.annotations.FilterDef;
 import org.hibernate.annotations.ParamDef;
 
 @Entity
-@Table(name = "users")
+@Table(name = "user_secrets")
 @Filter(
         name = "nonDeletedEntityFilter",
         condition = "deleted = :isDeleted"
 )
+@Data
 @NoArgsConstructor
 @AllArgsConstructor
-@Data
-public class User {
+public class UserSecret {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
+    @OneToOne
+    @JoinColumn(name = "user_id", nullable = false)
+    private User user;
+
     @Column(nullable = false)
-    private String username;
-
-    @Column(nullable = false, unique = true)
-    private String email;
-
-    @Column(name = "created_at", updatable = false, insertable = false)
-    private Timestamp createdAt;
+    private String password;
 
     @Column(nullable = false)
     private Boolean deleted = false;
-
-    @Column(columnDefinition = "TEXT")
-    private String avatar; // Base64 encoded image
 }
