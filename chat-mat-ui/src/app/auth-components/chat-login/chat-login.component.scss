@@ -1,0 +1,15 @@
+.login-container {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    height: 100vh;
+    .login-card{
+        max-width: 30rem;
+    }
+}
+
+.error-message {
+    color: var(--clr-color-danger-600);
+    margin: 10px 0;
+    text-align: center;
+}
