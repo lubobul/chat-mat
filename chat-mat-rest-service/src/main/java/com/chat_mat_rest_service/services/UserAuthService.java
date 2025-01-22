@@ -1,9 +1,9 @@
 package com.chat_mat_rest_service.services;
 
-import com.chat_mat_rest_service.dtos.LoginRequest;
-import com.chat_mat_rest_service.dtos.RegisterRequest;
-import org.springframework.http.HttpStatus;
-import org.springframework.http.ResponseEntity;
+import com.chat_mat_rest_service.auth.JwtUtil;
+import com.chat_mat_rest_service.dtos.auth.JwtResponse;
+import com.chat_mat_rest_service.dtos.auth.LoginRequest;
+import com.chat_mat_rest_service.dtos.auth.RegisterRequest;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import com.chat_mat_rest_service.entities.User;
 import com.chat_mat_rest_service.entities.UserSecret;
@@ -18,11 +18,19 @@ public class UserAuthService {
     private final UserRepository userRepository;
     private final UserSecretRepository userSecretRepository;
     private final PasswordEncoder passwordEncoder;
+    private final JwtUtil jwtUtil;
 
-    public UserAuthService(UserRepository userRepository, UserSecretRepository userSecretRepository, PasswordEncoder passwordEncoder) {
+
+    public UserAuthService(
+            UserRepository userRepository,
+            UserSecretRepository userSecretRepository,
+            PasswordEncoder passwordEncoder,
+            JwtUtil jwtUtil
+    ) {
         this.userRepository = userRepository;
         this.userSecretRepository = userSecretRepository;
         this.passwordEncoder = passwordEncoder;
+        this.jwtUtil = jwtUtil;
     }
 
     public void register(RegisterRequest request) {
@@ -49,27 +57,28 @@ public class UserAuthService {
         userSecretRepository.save(userSecret);
     }
 
-    public Optional<User> login(LoginRequest request){
+    public JwtResponse login(LoginRequest request) {
         validateLoginRequest(request);
 
         Optional<User> user = userRepository.findByEmail(request.getEmail());
 
-        if(user.isEmpty()){
+        if (user.isEmpty()) {
             throw new IllegalArgumentException("Email or password are wrong.");
         }
 
         Optional<UserSecret> userSecret = userSecretRepository.findByUserId(user.get().getId());
 
-        if(userSecret.isEmpty()){
+        if (userSecret.isEmpty()) {
             throw new IllegalArgumentException("Email or password are wrong.");
         }
 
         if (passwordEncoder.matches(request.getPassword(), userSecret.get().getPassword())) {
-            return user;
+            return new JwtResponse(jwtUtil.generateToken(user.get().getEmail()));
         }
 
         throw new IllegalArgumentException("Email or password are wrong.");
     }
+
     public Optional<UserSecret> findUserSecretByUserId(Long userId) {
         return userSecretRepository.findByUserId(userId);
     }

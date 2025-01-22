@@ -1,51 +1,33 @@
 package com.chat_mat_rest_service.controllers;
-
-import com.chat_mat_rest_service.auth.JwtUtil;
-import com.chat_mat_rest_service.dtos.LoginRequest;
-import com.chat_mat_rest_service.dtos.RegisterRequest;
-import com.chat_mat_rest_service.entities.User;
+import com.chat_mat_rest_service.dtos.auth.JwtResponse;
+import com.chat_mat_rest_service.dtos.auth.LoginRequest;
+import com.chat_mat_rest_service.dtos.auth.RegisterRequest;
+import com.chat_mat_rest_service.dtos.rest.RestMessageResponse;
 import com.chat_mat_rest_service.services.UserAuthService;
-
-import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
-import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.web.bind.annotation.*;
-
-import java.util.Optional;
 
 @RestController
 @RequestMapping("/api/auth")
 public class AuthController {
     private final UserAuthService userAuthService;
-    private final JwtUtil jwtUtil;
-    private final PasswordEncoder passwordEncoder;
 
     public AuthController(
-            UserAuthService userAuthService,
-            JwtUtil jwtUtil,
-            PasswordEncoder passwordEncoder
+            UserAuthService userAuthService
     ) {
         this.userAuthService = userAuthService;
-        this.jwtUtil = jwtUtil;
-        this.passwordEncoder = passwordEncoder;
     }
 
     @PostMapping("/register")
-    public ResponseEntity<String> register(@RequestBody RegisterRequest request) {
+    public ResponseEntity<RestMessageResponse> register(@RequestBody RegisterRequest request) {
         userAuthService.register(request);
-        return ResponseEntity.ok("User registered successfully");
+        return ResponseEntity.ok(new RestMessageResponse("User registered successfully"));
     }
 
     @PostMapping("/login")
-    public ResponseEntity<String> login(@RequestBody LoginRequest request) {
-        Optional<User> user = userAuthService.login(request);
-
-        if (user.isEmpty()) {
-            return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body("Invalid credentials");
-        }
-
-        String token = jwtUtil.generateToken(user.get().getEmail());
-        return ResponseEntity.ok(token);
+    public ResponseEntity<JwtResponse> login(@RequestBody LoginRequest request) {
+        JwtResponse jwt = userAuthService.login(request);
+        return ResponseEntity.ok(jwt);
     }
 }
 
