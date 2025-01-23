@@ -2,7 +2,7 @@ import { Component } from '@angular/core';
 import {FormBuilder, FormGroup, ReactiveFormsModule, Validators} from '@angular/forms';
 import {AuthService} from '../../services/auth.service';
 import {Router, RouterLink} from '@angular/router';
-import {ClarityModule, ClrInputModule, ClrPasswordModule} from '@clr/angular';
+import {ClarityModule} from '@clr/angular';
 import {resolveErrorMessage} from '../../common/utils/util-functions';
 
 @Component({

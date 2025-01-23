@@ -1,1 +1,64 @@
-<p>chat-register-user works!</p>
+<div class="login-container">
+    <div class="card login-card">
+        <div class="card-header">
+            <h3 class="title">Register user in Chat-Mat</h3>
+        </div>
+        <div class="card-block">
+            <form [formGroup]="registerForm" (ngSubmit)="onSubmit()">
+                <clr-input-container>
+                    <label>Username</label>
+                    <input clrInput type="name" formControlName="username" placeholder="Enter your username"/>
+                    <clr-control-error *clrIfError="'required'">
+                        Username field is required.
+                    </clr-control-error>
+                    <clr-control-helper>
+                        With this name you will be seen by others.
+                    </clr-control-helper>
+                </clr-input-container>
+
+                <clr-input-container>
+                    <label>Email</label>
+                    <input clrInput type="email" formControlName="email" placeholder="Enter your email"/>
+                    <clr-control-error *clrIfError="'email'">
+                        Please enter a valid email.
+                    </clr-control-error>
+                    <clr-control-error *clrIfError="'required'">
+                        Email field is required.
+                    </clr-control-error>
+                </clr-input-container>
+
+                <clr-password-container>
+                    <label>Password</label>
+                    <input clrPassword type="password" formControlName="password" placeholder="Enter your password"/>
+                    <clr-control-error *clrIfError="'required'">
+                        Password field is required.
+                    </clr-control-error>
+                    <clr-control-helper>
+                        Password rules - Min 6 characters, at least 1 numeric and at least one alphabetic character.
+                    </clr-control-helper>
+                </clr-password-container>
+
+                <clr-password-container>
+                    <label>Repeat your password</label>
+                    <input clrPassword type="password" formControlName="repeatPassword" placeholder="Enter your password"/>
+                    <clr-control-error *clrIfError="'required'">
+                        Repeating password field is required.
+                    </clr-control-error>
+                    <clr-control-error *clrIfError="'passwordDoesntMatch'">
+                        Your password doesn't match.
+                    </clr-control-error>
+                </clr-password-container>
+
+                @if (errorMessage) {
+                    <clr-alert [clrAlertType]="'danger'" [clrAlertSizeSmall]="true">
+                        <clr-alert-item>
+                            <span class="alert-text">{{ errorMessage }}</span>
+                        </clr-alert-item>
+                    </clr-alert>
+                }
+
+                <button type="submit" [disabled]="registerForm.invalid" class="btn btn-primary btn-form-action">Register</button>
+            </form>
+        </div>
+    </div>
+</div>
