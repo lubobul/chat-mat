@@ -7,11 +7,11 @@ import {ChatHistoryMessage, ChatHistoryMessageType} from '../models/chat.models'
 @Component({
     selector: 'char-channel',
     imports: [FormsModule],
-    templateUrl: './chat-channel.component.html',
+    templateUrl: './chat-correspondence.component.html',
     standalone: true,
-    styleUrl: './chat-channel.component.scss',
+    styleUrl: './chat-correspondence.component.scss',
 })
-export class ChatChannelComponent implements OnInit, AfterViewChecked {
+export class ChatCorrespondenceComponent implements OnInit, AfterViewChecked {
     @ViewChild('scrollContainer') private scrollContainer!: ElementRef;
 
     private chatHistoryId = 0;

@@ -1,0 +1,23 @@
+.message-nav{
+    overflow-y: auto;
+    overflow-x: hidden;
+    min-width: 13rem;
+    height: 100vh;
+    .button-new-chat{
+        margin-left: 0.6rem;
+    }
+    clr-vertical-nav{
+        height: 100%;
+    }
+}
+
+.friends-nav{
+    overflow-y: auto;
+    overflow-x: hidden;
+    min-width: 13rem;
+    height: 100vh;
+    clr-vertical-nav{
+        margin-left: auto;
+        height: 100%;
+    }
+}

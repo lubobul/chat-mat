@@ -2,11 +2,10 @@ package com.chat_mat_rest_service.entities;
 
 import jakarta.persistence.*;
 import lombok.*;
-import java.sql.Timestamp;
-
 import org.hibernate.annotations.Filter;
-import org.hibernate.annotations.FilterDef;
-import org.hibernate.annotations.ParamDef;
+
+import java.sql.Timestamp;
+import java.util.Set;
 
 @Entity
 @Table(name = "users")
@@ -14,9 +13,9 @@ import org.hibernate.annotations.ParamDef;
         name = "nonDeletedEntityFilter",
         condition = "deleted = :isDeleted"
 )
+@Data
 @NoArgsConstructor
 @AllArgsConstructor
-@Data
 public class User {
 
     @Id
@@ -37,4 +36,18 @@ public class User {
 
     @Column(columnDefinition = "TEXT")
     private String avatar; // Base64 encoded image
+
+    @ManyToMany
+    @JoinTable(
+            name = "friends",
+            joinColumns = @JoinColumn(name = "user_id"),
+            inverseJoinColumns = @JoinColumn(name = "friend_id")
+    )
+    private Set<User> friends;
+
+    @OneToMany(mappedBy = "owner", cascade = CascadeType.ALL, orphanRemoval = true)
+    private Set<Chat> ownedChats;
+
+    @ManyToMany(mappedBy = "participants")
+    private Set<Chat> chats;
 }

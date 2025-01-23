@@ -1,6 +1,6 @@
 import { Routes } from '@angular/router';
 import {ChatHomeComponent} from './chat-home/chat-home.component';
-import {ChatChannelComponent} from './chat-channel/chat-channel.component';
+import {ChatCorrespondenceComponent} from './chat-channel/chat-correspondence.component';
 import {ChatLoginComponent} from './auth-components/chat-login/chat-login.component';
 import {ChatRegisterUserComponent} from './auth-components/chat-register-user/chat-register-user.component';
 
@@ -30,7 +30,7 @@ export const routes: Routes = [
                         pathMatch: "full",
                     },
                     {
-                        component: ChatChannelComponent,
+                        component: ChatCorrespondenceComponent,
                         path: CHAT_ROUTE_PATHS.CHAT_CHANEL
                     }
                 ]
