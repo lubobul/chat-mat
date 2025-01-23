@@ -1,10 +1,20 @@
 <div class="login-container">
+    <h1 class="welcome-message">
+        <span class="highlight">Welcome Back to Chat-Mat!</span> Please login to your account.
+    </h1>
     <div class="card login-card">
         <div class="card-header">
             <h3 class="title">Login into Chat-Mat</h3>
         </div>
         <div class="card-block">
             <form [formGroup]="loginForm" (ngSubmit)="onSubmit()">
+                @if(errorMessage){
+                    <clr-alert class="danger-alert" [clrAlertType]="'danger'" [clrAlertSizeSmall]="true" [(clrAlertClosed)]="alertClosed">
+                        <clr-alert-item>
+                            <span class="alert-text">{{errorMessage}}</span>
+                        </clr-alert-item>
+                    </clr-alert>
+                }
                 <clr-input-container>
                     <label>Email</label>
                     <input clrInput type="email" formControlName="email" placeholder="Enter your email" />
@@ -26,14 +36,6 @@
                         Password rules - Min 6 characters, at least 1 numeric and at least one alphabetic character.
                     </clr-control-helper>
                 </clr-password-container>
-
-                @if(errorMessage){
-                    <clr-alert [clrAlertType]="'danger'" [clrAlertSizeSmall]="true">
-                        <clr-alert-item>
-                            <span class="alert-text">{{errorMessage}}</span>
-                        </clr-alert-item>
-                    </clr-alert>
-                }
 
                 <button type="submit" [disabled]="loginForm.invalid" class="btn btn-primary btn-form-action">Login</button>
             </form>

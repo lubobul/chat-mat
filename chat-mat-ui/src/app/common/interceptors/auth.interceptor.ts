@@ -5,19 +5,10 @@ import {Router} from '@angular/router';
 import {catchError, throwError} from 'rxjs';
 
 export const authInterceptor: HttpInterceptorFn = (req, next) => {
-    const authService = inject(AuthService);
-    const token = authService.getToken();
-
-    if (token) {
-        const clonedRequest = req.clone({
-            setHeaders: {
-                Authorization: `Bearer ${token}`,
-            },
-        });
-        return next(clonedRequest);
-    }
-
-    return next(req);
+    const modifiedReq = req.clone({
+        withCredentials: true, // Include cookies with every request
+    });
+    return next(modifiedReq);
 };
 
 export const loginRedirectInterceptor: HttpInterceptorFn = (req, next) => {
@@ -28,7 +19,6 @@ export const loginRedirectInterceptor: HttpInterceptorFn = (req, next) => {
         catchError((error: HttpErrorResponse) => {
             if (error.status === 401) {
                 // Clear JWT and redirect to login on authentication failure
-                authService.clearToken();
                 router.navigate(['/login']);
             } else if (error.status === 403) {
                 // Optional: Show a forbidden message or handle gracefully

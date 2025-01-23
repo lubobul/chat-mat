@@ -21,11 +21,7 @@ export class AuthService {
     }
 
     public login(request: LoginRequest): Observable<JwtResponse> {
-        return this.authApiService.login(request).pipe(
-            tap((jwtResponse) => {
-                this.storeToken(jwtResponse)
-            })
-        )
+        return this.authApiService.login(request);
     }
 
     public getToken(): string | null {
@@ -39,12 +35,5 @@ export class AuthService {
         return token !== null && !this.jwtHelper.isTokenExpired(token);
     }
 
-    private storeToken(jwtResponse: JwtResponse): void {
-        localStorage.setItem(this.TOKEN_KEY, jwtResponse.token);
-    }
-
-    public clearToken(): void {
-        localStorage.removeItem(this.TOKEN_KEY);
-    }
 
 }

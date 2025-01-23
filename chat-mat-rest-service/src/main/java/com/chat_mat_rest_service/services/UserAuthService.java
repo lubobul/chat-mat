@@ -37,11 +37,11 @@ public class UserAuthService {
         validateRegisterRequest(request);
 
         if (userRepository.existsByEmail(request.getEmail())) {
-            throw new IllegalArgumentException("Email already exists");
+            throw new IllegalArgumentException("The email you entered already exists.");
         }
 
         if (userRepository.existsByUsername(request.getUsername())) {
-            throw new IllegalArgumentException("User already exists");
+            throw new IllegalArgumentException("The username you entered already exists.");
         }
 
         // Create and save the User entity with the avatar
@@ -63,20 +63,20 @@ public class UserAuthService {
         Optional<User> user = userRepository.findByEmail(request.getEmail());
 
         if (user.isEmpty()) {
-            throw new IllegalArgumentException("Email or password are wrong.");
+            throw new IllegalArgumentException("The email or password you entered is incorrect.");
         }
 
         Optional<UserSecret> userSecret = userSecretRepository.findByUserId(user.get().getId());
 
         if (userSecret.isEmpty()) {
-            throw new IllegalArgumentException("Email or password are wrong.");
+            throw new IllegalArgumentException("The email or password you entered is incorrect.");
         }
 
         if (passwordEncoder.matches(request.getPassword(), userSecret.get().getPassword())) {
             return new JwtResponse(jwtUtil.generateToken(user.get().getEmail()));
         }
 
-        throw new IllegalArgumentException("Email or password are wrong.");
+        throw new IllegalArgumentException("The email or password you entered is incorrect.");
     }
 
     public Optional<UserSecret> findUserSecretByUserId(Long userId) {

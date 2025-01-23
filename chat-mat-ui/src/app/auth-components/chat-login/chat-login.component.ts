@@ -19,6 +19,7 @@ import {resolveErrorMessage} from '../../common/utils/util-functions';
 export class ChatLoginComponent {
     loginForm: FormGroup;
     errorMessage: string | null = null;
+    alertClosed = true;
 
     constructor(
         private fb: FormBuilder,
@@ -43,6 +44,7 @@ export class ChatLoginComponent {
                 this.router.navigate(['/home']); // Navigate to the home page after login
             },
             error: (error) => {
+                this.alertClosed = false;
                 this.errorMessage = resolveErrorMessage(error);
                 console.error(error);
             },

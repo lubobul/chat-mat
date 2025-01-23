@@ -10,6 +10,7 @@ import org.springframework.security.config.annotation.web.builders.HttpSecurity;
 import org.springframework.security.config.annotation.web.configurers.AbstractHttpConfigurer;
 import org.springframework.security.config.annotation.web.configurers.HeadersConfigurer;
 import org.springframework.security.web.SecurityFilterChain;
+import org.springframework.web.cors.CorsConfiguration;
 
 @Profile("dev")
 @Configuration(proxyBeanMethods = false)
@@ -21,6 +22,12 @@ public class DevProfileSecurityConfiguration {
         http.securityMatcher(PathRequest.toH2Console());
         http.csrf(AbstractHttpConfigurer::disable);
         http.headers((headers) -> headers.frameOptions(HeadersConfigurer.FrameOptionsConfig::sameOrigin));
+
+        http.cors(cors -> cors.configurationSource(request -> {
+            CorsConfiguration config = new CorsConfiguration();
+            config.setAllowCredentials(true); // Enable cookies
+            return config;
+        }));
         return http.build();
     }
 

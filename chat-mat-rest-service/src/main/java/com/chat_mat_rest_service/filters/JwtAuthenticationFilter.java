@@ -3,6 +3,7 @@ package com.chat_mat_rest_service.filters;
 import com.chat_mat_rest_service.auth.JwtAuthenticationToken;
 import com.chat_mat_rest_service.auth.JwtUserDetails;
 import com.chat_mat_rest_service.auth.JwtUtil;
+import com.chat_mat_rest_service.common.HttpConstants;
 import jakarta.servlet.FilterChain;
 import jakarta.servlet.ServletException;
 import jakarta.servlet.http.HttpServletRequest;
@@ -25,18 +26,33 @@ public class JwtAuthenticationFilter extends OncePerRequestFilter {
     @Override
     protected void doFilterInternal(HttpServletRequest request, HttpServletResponse response, FilterChain filterChain)
             throws ServletException, IOException {
-        String authorizationHeader = request.getHeader("Authorization");
+        String cookieHeader = request.getHeader("Cookie");
 
-        if (authorizationHeader != null && authorizationHeader.startsWith("Bearer ")) {
-            String token = authorizationHeader.substring(7);
+        if (cookieHeader != null) {
+            // Split cookies into individual key-value pairs
+            String[] cookies = cookieHeader.split(";");
 
-            if (jwtUtil.validateToken(token)) {
-                String email = jwtUtil.extractEmail(token);
+            for (String cookie : cookies) {
+                String[] cookiePair = cookie.trim().split("=", 2);
+                String cookieName = cookiePair[0];
+                String cookieValue = cookiePair.length > 1 ? cookiePair[1] : "";
 
-                // Create an Authentication object and set it in the SecurityContext
-                JwtUserDetails userDetails = new JwtUserDetails(email);
-                JwtAuthenticationToken authentication = new JwtAuthenticationToken(userDetails);
-                SecurityContextHolder.getContext().setAuthentication(authentication);
+                // Check if the JWT_TOKEN cookie exists
+                if (HttpConstants.JWT_TOKEN.equals(cookieName)) {
+                    String token = cookieValue;
+
+                    // Validate and process the token
+                    if (jwtUtil.validateToken(token)) {
+                        String email = jwtUtil.extractEmail(token);
+
+                        // Create an Authentication object and set it in the SecurityContext
+                        JwtUserDetails userDetails = new JwtUserDetails(email);
+                        JwtAuthenticationToken authentication = new JwtAuthenticationToken(userDetails);
+                        SecurityContextHolder.getContext().setAuthentication(authentication);
+                    }
+
+                    break; // No need to process further cookies
+                }
             }
         }
 

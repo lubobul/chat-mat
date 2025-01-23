@@ -3,7 +3,6 @@ import {ChatHomeComponent} from './chat-home/chat-home.component';
 import {ChatChannelComponent} from './chat-channel/chat-channel.component';
 import {ChatLoginComponent} from './auth-components/chat-login/chat-login.component';
 import {ChatRegisterUserComponent} from './auth-components/chat-register-user/chat-register-user.component';
-import {AuthGuard} from './common/guards/auth.guard';
 
 export const CHAT_ROUTE_PATHS = {
     HOME: "home",
@@ -24,7 +23,6 @@ export const routes: Routes = [
             {
                 path: CHAT_ROUTE_PATHS.HOME,
                 component: ChatHomeComponent,
-                canActivate: [AuthGuard],
                 children: [
                     {
                         path: "",

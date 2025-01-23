@@ -30,6 +30,7 @@ import {FormValidators} from '../../common/utils/form-validators';
 export class ChatRegisterUserComponent {
     registerForm: FormGroup;
     errorMessage: string | null = null;
+    alertClosed = true;
 
     constructor(
         private fb: FormBuilder,
@@ -62,6 +63,7 @@ export class ChatRegisterUserComponent {
             },
             error: (error) => {
                 this.errorMessage = resolveErrorMessage(error);
+                this.alertClosed = false;
                 console.error(error);
             },
         });
