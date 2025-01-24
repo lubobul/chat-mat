@@ -7,7 +7,8 @@
             </a>
         </div>
         <div class="settings">
-            <a [routerLink]="CHAT_ROUTE_PATHS.PROFILE_SETTINGS" [routerLinkActive]="['active']" class="nav-link nav-icon">
+            <a [routerLink]="CHAT_ROUTE_PATHS.PROFILE_SETTINGS" [routerLinkActive]="['active']"
+               class="nav-link nav-icon">
                 <cds-icon shape="user"></cds-icon>
             </a>
         </div>
@@ -33,7 +34,8 @@
                             Direct messages
                             <clr-vertical-nav-group-children>
                                 <a clrVerticalNavLink routerLink="./normal/pidgey" routerLinkActive="active">Pidgey</a>
-                                <a clrVerticalNavLink routerLink="./normal/snorlax" routerLinkActive="active">Snorlax</a>
+                                <a clrVerticalNavLink routerLink="./normal/snorlax"
+                                   routerLinkActive="active">Snorlax</a>
                             </clr-vertical-nav-group-children>
                         </clr-vertical-nav-group>
                         <clr-vertical-nav-group routerLinkActive="active">
@@ -41,17 +43,18 @@
                             Channels
                             <clr-vertical-nav-group-children>
                                 <a clrVerticalNavLink routerLink="./fire/charmander" routerLinkActive="active">Charmander</a>
-                                <a clrVerticalNavLink routerLink="./fire/charizard" routerLinkActive="active">Charizard</a>
+                                <a clrVerticalNavLink routerLink="./fire/charizard"
+                                   routerLinkActive="active">Charizard</a>
                             </clr-vertical-nav-group-children>
                         </clr-vertical-nav-group>
                     </clr-vertical-nav>
                 </nav>
 
                 <div class="correspondence-container clr-col-6">
-                    @if(errorMessage){
+                    @if (errorMessage) {
                         <clr-alert class="danger-alert" [clrAlertType]="'danger'" [(clrAlertClosed)]="alertClosed">
                             <clr-alert-item>
-                                <span class="alert-text">{{errorMessage}}</span>
+                                <span class="alert-text">{{ errorMessage }}</span>
                             </clr-alert-item>
                         </clr-alert>
                     }
@@ -73,9 +76,10 @@
                                     />
                                 </form>
                             </clr-vertical-nav-group-children>
-                            @for(user of friends; track user.id){
+                            @for (user of friends; track user.id) {
                                 <clr-vertical-nav-group-children>
-                                    <span (click)="viewUser(user)" class="user-nav-button" clrVerticalNavLink>{{ user.username }}</span>
+                                    <span (click)="viewUser(user)" class="user-nav-button"
+                                          clrVerticalNavLink>{{ user.username }}</span>
                                 </clr-vertical-nav-group-children>
                             }
                         </clr-vertical-nav-group>
@@ -85,20 +89,23 @@
                 <clr-modal [(clrModalOpen)]="openViewUserModal">
                     <h3 class="modal-title">User Info</h3>
                     <div class="modal-body">
-            <span class="clr-row">
-                <label class="clr-col-3">Username:</label>
-                <p class="clr-col-9 no-margin">{{selectedUser.username}}</p>
-                <br><br>
-                <label class="clr-col-3">Email:</label>
-                <p class="clr-col-9 no-margin">{{selectedUser.email}}</p>
-                <br><br>
-                <label class="clr-col-3">Active since:</label>
-                <p class="clr-col-9 no-margin">{{selectedUser.createdAt | date}}</p>
-            </span>
+                        <span class="clr-row">
+                            <label class="clr-col-3">Username:</label>
+                            <p class="clr-col-9 no-margin">{{ selectedUser.username }}</p>
+                            <br><br>
+                            <label class="clr-col-3">Email:</label>
+                            <p class="clr-col-9 no-margin">{{ selectedUser.email }}</p>
+                            <br><br>
+                            <label class="clr-col-3">Active since:</label>
+                            <p class="clr-col-9 no-margin">{{ selectedUser.createdAt | date }}</p>
+                        </span>
                     </div>
                     <div class="modal-footer">
-                        <button type="button" class="btn btn-outline" (click)="openViewUserModal = false">Cancel</button>
-                        <button type="button" class="btn btn-danger-outline" (click)="unfriend()">Unfriend</button>
+                        <button type="button" class="btn btn-danger-outline unfriend-button" (click)="unfriend()">Unfriend</button>
+                        <button type="button" class="btn btn-outline" (click)="openViewUserModal = false">Cancel
+                        </button>
+                        <button type="button" class="btn btn-primary" (click)="openViewUserModal = false">Message
+                        </button>
                     </div>
                 </clr-modal>
 

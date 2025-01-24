@@ -10,10 +10,11 @@ import com.chat_mat_rest_service.repositories.FriendRepository;
 import com.chat_mat_rest_service.repositories.UserRepository;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
-import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
+
+import static com.chat_mat_rest_service.common.SecurityContextHelper.getAuthenticatedUserId;
 
 @Service
 public class FriendService {
@@ -90,17 +91,12 @@ public class FriendService {
         friendRepository.removeFriend(userId, friendId);
     }
 
-    public List<UserDto> verifyFriends(List<Long> friendIds){
+    public List<UserDto> verifyFriends(List<Long> friendIds) {
         Long userId = getAuthenticatedUserId();
         return this.friendRepository
                 .findByUserIdAndFriendIds(userId, friendIds)
                 .stream()
                 .map(friend -> userMapper.toDto(friend.getFriend()))
                 .toList();
-    }
-
-    private Long getAuthenticatedUserId() {
-        JwtUserDetails userDetails = (JwtUserDetails) SecurityContextHolder.getContext().getAuthentication().getPrincipal();
-        return userDetails.getUserId();
     }
 }

@@ -28,8 +28,8 @@ export class ChatUsersComponent implements OnInit{
     } as unknown as PaginatedResponse<User>;
 
     private restQuery: QueryRequest = {
-        page: 0,
-        pageSize: 32,
+        page: 1,
+        pageSize: 5,
     };
     constructor(private usersService: UsersService, private friendsService: FriendsService) {
     }
@@ -44,8 +44,8 @@ export class ChatUsersComponent implements OnInit{
             mergeMap((state) => {
                 this.loading = true;
                 this.restQuery = {
-                    page: 0,
-                    pageSize: 32,
+                    pageSize: state?.page?.size || 5,
+                    page: state.page?.current || 1,
                     sort: state.sort ? {
                         sortField: state.sort.by as string,
                         sortType: state.sort.reverse ? QueryRequestSortType.DESC : QueryRequestSortType.ASC

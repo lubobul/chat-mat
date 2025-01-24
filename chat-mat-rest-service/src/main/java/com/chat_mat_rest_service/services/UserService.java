@@ -1,6 +1,4 @@
 package com.chat_mat_rest_service.services;
-
-import com.chat_mat_rest_service.auth.JwtUserDetails;
 import com.chat_mat_rest_service.dtos.entities.UserDto;
 import com.chat_mat_rest_service.dtos.mappers.UserMapper;
 import com.chat_mat_rest_service.entities.Friend;
@@ -9,12 +7,13 @@ import com.chat_mat_rest_service.repositories.UserRepository;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageImpl;
 import org.springframework.data.domain.Pageable;
-import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
 import java.util.Set;
 import java.util.stream.Collectors;
+
+import static com.chat_mat_rest_service.common.SecurityContextHelper.getAuthenticatedUserId;
 
 @Service
 public class UserService {
@@ -122,10 +121,4 @@ public class UserService {
             return this.getUsersWithoutFriendsInfo(filter, pageable, excludeSelf);
         }
     }
-
-    private Long getAuthenticatedUserId() {
-        JwtUserDetails userDetails = (JwtUserDetails) SecurityContextHolder.getContext().getAuthentication().getPrincipal();
-        return userDetails.getUserId();
-    }
-
 }

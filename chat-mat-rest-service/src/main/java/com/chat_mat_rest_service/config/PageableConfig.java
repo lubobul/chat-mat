@@ -14,7 +14,10 @@ public class PageableConfig implements WebMvcConfigurer {
     public void addArgumentResolvers(List<HandlerMethodArgumentResolver> resolvers) {
         resolvers.add(new PageableHandlerMethodArgumentResolver() {
             {
-                setFallbackPageable(PageRequest.of(0, 10)); // Default to page=0, size=10
+                PageableHandlerMethodArgumentResolver pageableResolver = new PageableHandlerMethodArgumentResolver();
+                pageableResolver.setOneIndexedParameters(true); // Start page numbering from 1
+                resolvers.add(pageableResolver);
+                setFallbackPageable(PageRequest.of(1, 10)); // Default to page=0, size=10
             }
         });
     }
