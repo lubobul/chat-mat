@@ -7,6 +7,7 @@ import {DatePipe} from '@angular/common';
 import {debounceTime, mergeMap, Subject} from 'rxjs';
 import {QueryRequest, QueryRequestSortType} from '../common/rest/types/query-request';
 import {buildRestGridFilter, resolveErrorMessage} from '../common/utils/util-functions';
+import {FriendsService} from '../services/friends.service';
 
 @Component({
     selector: 'app-chat-users',
@@ -30,7 +31,7 @@ export class ChatUsersComponent implements OnInit{
         page: 0,
         pageSize: 32,
     };
-    constructor(private usersService: UsersService,) {
+    constructor(private usersService: UsersService, private friendsService: FriendsService) {
     }
 
     ngOnInit(): void {
@@ -47,7 +48,7 @@ export class ChatUsersComponent implements OnInit{
                     pageSize: 32,
                     sort: state.sort ? {
                         sortField: state.sort.by as string,
-                        sortType: state.sort.reverse ? QueryRequestSortType.DESC : QueryRequestSortType.DESC
+                        sortType: state.sort.reverse ? QueryRequestSortType.DESC : QueryRequestSortType.ASC
                     } : undefined,
                     filter: buildRestGridFilter(state.filters)
                 }
@@ -75,6 +76,26 @@ export class ChatUsersComponent implements OnInit{
     }
 
     public addFriend(user: User): void{
+        this.friendsService.addFriend(user).subscribe({
+            next: () => {
+                this.refresh();
+            },
+            error: (error) => {
+                this.errorMessage = resolveErrorMessage(error);
+                this.alertClosed = false;
+            }
+        });
+    }
 
+    public unfriend(user: User): void{
+        this.friendsService.removeFriend(user).subscribe({
+            next: () => {
+                this.refresh();
+            },
+            error: (error) => {
+                this.errorMessage = resolveErrorMessage(error);
+                this.alertClosed = false;
+            }
+        });
     }
 }

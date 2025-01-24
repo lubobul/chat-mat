@@ -3,7 +3,6 @@ import { Observable } from 'rxjs';
 import {QueryRequest} from '../common/rest/types/query-request';
 import {PaginatedResponse} from '../common/rest/types/paginated-response';
 import {User} from '../common/rest/types/user';
-import {buildQueryParams} from '../common/utils/util-functions';
 import {FriendsApiService} from '../common/rest/api-services/friends-api.service';
 
 @Injectable({
@@ -14,5 +13,13 @@ export class FriendsService {
 
     getFriends(queryRequest: QueryRequest): Observable<PaginatedResponse<User>> {
         return this.friendsApiService.getFriends(queryRequest);
+    }
+
+    addFriend(user: User): Observable<void>{
+        return this.friendsApiService.addFriend(user);
+    }
+
+    removeFriend(user: User): Observable<void>{
+        return this.friendsApiService.removeFriend(user);
     }
 }

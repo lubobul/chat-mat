@@ -1,13 +1,10 @@
 package com.chat_mat_rest_service.controllers;
 import com.chat_mat_rest_service.dtos.entities.UserDto;
-import com.chat_mat_rest_service.entities.User;
 import com.chat_mat_rest_service.services.UserService;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
-
-import java.util.List;
 
 @RestController
 @RequestMapping("/api/users")
@@ -24,9 +21,10 @@ public class UsersController {
     public ResponseEntity<Page<UserDto>> getUsers(
             @RequestParam(value = "filter", required = false) String filter,
             @RequestParam(value = "excludeSelf", required = false) boolean excludeSelf,
+            @RequestParam(value = "withFriendsInfo", required = false) boolean withFriendsInfo,
             Pageable pageable
     ) {
-        Page<UserDto> users = userService.getUsers(filter, pageable, excludeSelf);
+        Page<UserDto> users = userService.getUsers(filter, pageable, excludeSelf, withFriendsInfo);
         return ResponseEntity.ok(users);
     }
 }

@@ -15,4 +15,5 @@ public class UserDto {
     private String email;
     private String avatar; // Base64 encoded image
     private Timestamp createdAt;
+    private boolean isFriendOfYours;
 }

@@ -10,6 +10,8 @@ import org.springframework.data.jpa.repository.Modifying;
 import org.springframework.data.jpa.repository.Query;
 import org.springframework.data.repository.query.Param;
 
+import java.util.List;
+
 public interface FriendRepository extends JpaRepository<Friend, FriendId> {
 
     // Find friends of a user with optional pagination
@@ -22,4 +24,21 @@ public interface FriendRepository extends JpaRepository<Friend, FriendId> {
     @Transactional
     @Query(value = "INSERT INTO friends (user_id, friend_id) VALUES (:userId, :friendId)", nativeQuery = true)
     void addFriend(@Param("userId") Long userId, @Param("friendId") Long friendId);
+
+    @Query("""
+                SELECT f
+                FROM Friend f
+                WHERE f.user.id = :userId
+                  AND f.friend.id IN :friendIds
+            """)
+    List<Friend> findByUserIdAndFriendIds(
+            @Param("userId") Long userId,
+            @Param("friendIds") List<Long> friendIds
+    );
+
+    @Modifying
+    @Transactional
+    @Query(value = "DELETE FROM friends WHERE user_id = :userId AND friend_id = :friendId", nativeQuery = true)
+    void removeFriend(@Param("userId") Long userId, @Param("friendId") Long friendId);
+
 }

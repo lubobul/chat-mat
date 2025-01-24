@@ -91,11 +91,14 @@
                 <br><br>
                 <label class="clr-col-3">Email:</label>
                 <p class="clr-col-9 no-margin">{{selectedUser.email}}</p>
+                <br><br>
+                <label class="clr-col-3">Active since:</label>
+                <p class="clr-col-9 no-margin">{{selectedUser.createdAt | date}}</p>
             </span>
                     </div>
                     <div class="modal-footer">
                         <button type="button" class="btn btn-outline" (click)="openViewUserModal = false">Cancel</button>
-                        <button type="button" class="btn btn-primary" (click)="openViewUserModal = false">Add friend</button>
+                        <button type="button" class="btn btn-danger-outline" (click)="unfriend()">Unfriend</button>
                     </div>
                 </clr-modal>
 

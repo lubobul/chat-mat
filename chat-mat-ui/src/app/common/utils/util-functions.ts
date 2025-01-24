@@ -4,7 +4,7 @@ export function resolveErrorMessage(error: any): string{
     return error?.error?.error || error?.message || error?.error?.message || error;
 }
 
-export function buildQueryParams(queryRequest: QueryRequest): QueryParams{
+export function buildQueryParams(queryRequest: QueryRequest): QueryParams | any{
     const params: QueryParams = {
         page: queryRequest.page,
         size: queryRequest.pageSize,

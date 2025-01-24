@@ -19,4 +19,12 @@ export class FriendsApiService {
         const params = buildQueryParams(queryRequest) as any;
         return this.http.get<PaginatedResponse<User>>(this.apiUrl, { params });
     }
+
+    addFriend(user: User): Observable<void>{
+        return this.http.post<void>(`${this.apiUrl}/${user.id}`, null);
+    }
+
+    removeFriend(user: User): Observable<void>{
+        return this.http.delete<void>(`${this.apiUrl}/${user.id}`);
+    }
 }

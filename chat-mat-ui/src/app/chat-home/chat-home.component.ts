@@ -18,6 +18,7 @@ import {debounceTime, distinctUntilChanged, filter, switchMap} from 'rxjs';
 import {resolveErrorMessage} from '../common/utils/util-functions';
 import {FriendsService} from '../services/friends.service';
 import {CHAT_ROUTE_PATHS} from '../app.routes';
+import {DatePipe} from '@angular/common';
 
 @Component({
     selector: 'app-chat-home',
@@ -28,7 +29,8 @@ import {CHAT_ROUTE_PATHS} from '../app.routes';
         RouterLinkActive,
         CdsIconModule,
         ClarityModule,
-        ReactiveFormsModule
+        ReactiveFormsModule,
+        DatePipe
     ],
     templateUrl: './chat-home.component.html',
     standalone: true,
@@ -48,15 +50,7 @@ export class ChatHomeComponent implements OnInit {
     }
 
     ngOnInit(): void {
-
-
-        this.friendsService.getFriends({
-            page: 0,
-            pageSize: 32,
-        }).subscribe((response) => {
-            this.friends = response.content;
-
-        });
+        this.refresh();
         this.subscribeToFriendsSearch();
     }
 
@@ -88,9 +82,27 @@ export class ChatHomeComponent implements OnInit {
         this.openViewUserModal = true;
     }
 
-    public viewFriend(user: User): void{
-        this.selectedUser = user;
-        this.openViewUserModal = true;
+    public unfriend(): void{
+        this.friendsService.removeFriend(this.selectedUser).subscribe({
+            next: () => {
+                this.openViewUserModal = false;
+                this.refresh();
+            },
+            error: (error) => {
+                this.errorMessage = resolveErrorMessage(error);
+                this.alertClosed = false;
+                this.openViewUserModal = false;
+            }
+        });
+    }
+
+    private refresh(): void{
+        this.friendsService.getFriends({
+            page: 0,
+            pageSize: 32,
+        }).subscribe((response) => {
+            this.friends = response.content;
+        });
     }
 
     protected readonly CHAT_ROUTE_PATHS = CHAT_ROUTE_PATHS;
