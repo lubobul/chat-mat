@@ -17,6 +17,7 @@ export class UsersService {
 
 
     getUsers(queryRequest: QueryRequest): Observable<PaginatedResponse<User>> {
+        queryRequest.excludeSelf = true;
         return this.usersApiService.getUsers(queryRequest);
     }
 }

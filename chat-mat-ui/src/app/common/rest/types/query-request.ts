@@ -3,6 +3,7 @@ export interface QueryRequest{
     pageSize: number;
     filter?: string;
     sort?: QueryRequestSort;
+    excludeSelf?: boolean;
 }
 
 export interface QueryRequestSort{
@@ -20,4 +21,5 @@ export interface QueryParams{
     size: number;
     filter?: string;
     sort?: string;
+    excludeSelf?: boolean;
 }

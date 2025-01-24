@@ -13,10 +13,10 @@ import org.springframework.data.repository.query.Param;
 public interface FriendRepository extends JpaRepository<Friend, FriendId> {
 
     // Find friends of a user with optional pagination
-    Page<Friend> findByUser_Id(Long userId, Pageable pageable);
+    Page<Friend> findByUserId(Long userId, Pageable pageable);
 
     // Filter friends by username
-    Page<Friend> findByUser_IdAndFriend_UsernameContainingIgnoreCase(Long userId, String username, Pageable pageable);
+    Page<Friend> findByUserIdAndFriendUsernameContainingIgnoreCase(Long userId, String username, Pageable pageable);
 
     @Modifying
     @Transactional

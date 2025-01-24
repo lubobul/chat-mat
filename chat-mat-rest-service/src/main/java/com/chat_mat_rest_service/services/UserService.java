@@ -23,7 +23,9 @@ public class UserService {
         this.userMapper = userMapper;
     }
 
-    public Page<UserDto> getUsers(String filter, Pageable pageable) {
+    public Page<UserDto> getUsers(String filter, Pageable pageable, boolean excludeSelf) {
+        Long authenticatedUserId = excludeSelf ? getAuthenticatedUserId() : null;
+
         if (filter != null) {
             // Split filter into individual conditions
             String[] conditions = filter.split(",");
@@ -38,22 +40,54 @@ public class UserService {
                 }
             }
 
-            // Apply filtering logic
+            // Apply filtering logic with exclusion
             if (username != null && email != null) {
-                return userRepository
-                        .findByUsernameContainingIgnoreCaseAndEmailContainingIgnoreCase(username, email, pageable)
-                        .map(userMapper::toDto);
+                if (authenticatedUserId != null) {
+                    return userRepository
+                            .findByUsernameContainingIgnoreCaseAndEmailContainingIgnoreCaseAndIdNot(username, email, authenticatedUserId, pageable)
+                            .map(userMapper::toDto);
+                } else {
+                    return userRepository
+                            .findByUsernameContainingIgnoreCaseAndEmailContainingIgnoreCase(username, email, pageable)
+                            .map(userMapper::toDto);
+                }
+
             } else if (username != null) {
-                return userRepository.findByUsernameContainingIgnoreCase(username, pageable)
-                        .map(userMapper::toDto);
+                if (authenticatedUserId != null) {
+                    return userRepository
+                            .findByUsernameContainingIgnoreCaseAndIdNot(username, authenticatedUserId, pageable)
+                            .map(userMapper::toDto);
+                } else {
+                    return userRepository
+                            .findByUsernameContainingIgnoreCase(username, pageable)
+                            .map(userMapper::toDto);
+                }
             } else if (email != null) {
-                return userRepository.findByEmailContainingIgnoreCase(email, pageable)
-                        .map(userMapper::toDto);
+                if (authenticatedUserId != null) {
+                    return userRepository
+                            .findByEmailContainingIgnoreCaseAndIdNot(email, authenticatedUserId, pageable)
+                            .map(userMapper::toDto);
+                } else {
+                    return userRepository
+                            .findByEmailContainingIgnoreCase(email, pageable)
+                            .map(userMapper::toDto);
+                }
+
             }
         }
 
-        // Default to returning all users
+        // Default to returning all users, excluding the authenticated user if needed
+        if (authenticatedUserId != null) {
+            return userRepository.findByIdNot(authenticatedUserId, pageable).map(userMapper::toDto);
+        }
+
         return userRepository.findAll(pageable).map(userMapper::toDto);
+    }
+
+
+    private Long getAuthenticatedUserId() {
+        JwtUserDetails userDetails = (JwtUserDetails) SecurityContextHolder.getContext().getAuthentication().getPrincipal();
+        return userDetails.getUserId();
     }
 
 }

@@ -1,77 +1,90 @@
-<div class="chat-container clr-row">
-    <nav class="message-nav clr-col-3">
-        <clr-vertical-nav [clrVerticalNavCollapsible]="false">
-            <button class="btn btn-primary button-new-chat">New chat</button>
-            <clr-vertical-nav-group routerLinkActive="active">
-                <cds-icon shape="chat-bubble" clrVerticalNavIcon></cds-icon>
-                Direct messages
-                <clr-vertical-nav-group-children>
-                    <a clrVerticalNavLink routerLink="./normal/pidgey" routerLinkActive="active">Pidgey</a>
-                    <a clrVerticalNavLink routerLink="./normal/snorlax" routerLinkActive="active">Snorlax</a>
-                </clr-vertical-nav-group-children>
-            </clr-vertical-nav-group>
-            <clr-vertical-nav-group routerLinkActive="active">
-                <cds-icon shape="talk-bubbles" clrVerticalNavIcon></cds-icon>
-                Channels
-                <clr-vertical-nav-group-children>
-                    <a clrVerticalNavLink routerLink="./fire/charmander" routerLinkActive="active">Charmander</a>
-                    <a clrVerticalNavLink routerLink="./fire/charizard" routerLinkActive="active">Charizard</a>
-                </clr-vertical-nav-group-children>
-            </clr-vertical-nav-group>
-        </clr-vertical-nav>
+<div class="main-container">
+    <header class="header-6">
+        <div class="branding">
+            <a [routerLink]="''" [routerLinkActive]="['active']">
+                <cds-icon shape="announcement"></cds-icon>
+                <span class="title">Chat-Mat</span>
+            </a>
+        </div>
+        <div class="settings">
+            <a [routerLink]="CHAT_ROUTE_PATHS.PROFILE_SETTINGS" [routerLinkActive]="['active']" class="nav-link nav-icon">
+                <cds-icon shape="user"></cds-icon>
+            </a>
+        </div>
+    </header>
+    <nav class="subnav">
+        <ul class="nav">
+            <li class="nav-item">
+                <a class="nav-link" [routerLinkActive]="['active']" [routerLink]="CHAT_ROUTE_PATHS.CHAT_CHANEL">Chat</a>
+            </li>
+            <li class="nav-item">
+                <a class="nav-link" [routerLinkActive]="['active']" [routerLink]="CHAT_ROUTE_PATHS.CHAT_USERS">Users</a>
+            </li>
+        </ul>
     </nav>
+    <div class="content-container">
+        <div class="content-area">
+            <div class="chat-container clr-row">
+                <nav class="message-nav clr-col-3">
+                    <clr-vertical-nav [clrVerticalNavCollapsible]="false">
+                        <button class="btn btn-primary button-new-chat">New chat</button>
+                        <clr-vertical-nav-group routerLinkActive="active">
+                            <cds-icon shape="chat-bubble" clrVerticalNavIcon></cds-icon>
+                            Direct messages
+                            <clr-vertical-nav-group-children>
+                                <a clrVerticalNavLink routerLink="./normal/pidgey" routerLinkActive="active">Pidgey</a>
+                                <a clrVerticalNavLink routerLink="./normal/snorlax" routerLinkActive="active">Snorlax</a>
+                            </clr-vertical-nav-group-children>
+                        </clr-vertical-nav-group>
+                        <clr-vertical-nav-group routerLinkActive="active">
+                            <cds-icon shape="talk-bubbles" clrVerticalNavIcon></cds-icon>
+                            Channels
+                            <clr-vertical-nav-group-children>
+                                <a clrVerticalNavLink routerLink="./fire/charmander" routerLinkActive="active">Charmander</a>
+                                <a clrVerticalNavLink routerLink="./fire/charizard" routerLinkActive="active">Charizard</a>
+                            </clr-vertical-nav-group-children>
+                        </clr-vertical-nav-group>
+                    </clr-vertical-nav>
+                </nav>
 
-    <div class="correspondence-container clr-col-6">
-        @if(errorMessage){
-            <clr-alert class="danger-alert" [clrAlertType]="'danger'" [(clrAlertClosed)]="alertClosed">
-                <clr-alert-item>
-                    <span class="alert-text">{{errorMessage}}</span>
-                </clr-alert-item>
-            </clr-alert>
-        }
-        <router-outlet></router-outlet>
-    </div>
+                <div class="correspondence-container clr-col-6">
+                    @if(errorMessage){
+                        <clr-alert class="danger-alert" [clrAlertType]="'danger'" [(clrAlertClosed)]="alertClosed">
+                            <clr-alert-item>
+                                <span class="alert-text">{{errorMessage}}</span>
+                            </clr-alert-item>
+                        </clr-alert>
+                    }
+                    <router-outlet></router-outlet>
+                </div>
 
-    <div class="friends-nav clr-col-3">
-        <clr-vertical-nav [clrVerticalNavCollapsible]="false">
-            <clr-vertical-nav-group>
-                <cds-icon shape="users" clrVerticalNavIcon></cds-icon>
-                Users
-                <clr-vertical-nav-group-children>
-                    <form class="clr-form">
-                        <input
-                            type="text"
-                            id="userSearch"
-                            placeholder="Search for users..."
-                            class="clr-input"
-                            [formControl]="userSearchControl"
-                        />
-                    </form>
-                </clr-vertical-nav-group-children>
-                @for(user of users; track user.id){
-                    <clr-vertical-nav-group-children>
-                        <span (click)="viewUser(user)" class="user-nav-button" clrVerticalNavLink>{{ user.username }}</span>
-                    </clr-vertical-nav-group-children>
-                }
-            </clr-vertical-nav-group>
-            <clr-vertical-nav-group>
-                <cds-icon shape="assign-user" clrVerticalNavIcon></cds-icon>
-                Friends
-                <clr-vertical-nav-group-children>
-                    <form class="clr-form">
-                        <input type="text" id="friendsSearch" placeholder="Search for friends..." class="clr-input" />
-                    </form>
-                </clr-vertical-nav-group-children>
-                <clr-vertical-nav-group-children>
-                    <span clrVerticalNavLink>Mey</span>
-                </clr-vertical-nav-group-children>
-            </clr-vertical-nav-group>
-        </clr-vertical-nav>
-    </div>
+                <div class="friends-nav clr-col-3">
+                    <clr-vertical-nav [clrVerticalNavCollapsible]="false">
+                        <clr-vertical-nav-group>
+                            <cds-icon shape="assign-user" clrVerticalNavIcon></cds-icon>
+                            Friends
+                            <clr-vertical-nav-group-children>
+                                <form class="clr-form">
+                                    <input type="text"
+                                           id="friendsSearch"
+                                           placeholder="Search for friends..."
+                                           class="clr-input"
+                                           [formControl]="friendSearchControl"
+                                    />
+                                </form>
+                            </clr-vertical-nav-group-children>
+                            @for(user of friends; track user.id){
+                                <clr-vertical-nav-group-children>
+                                    <span (click)="viewUser(user)" class="user-nav-button" clrVerticalNavLink>{{ user.username }}</span>
+                                </clr-vertical-nav-group-children>
+                            }
+                        </clr-vertical-nav-group>
+                    </clr-vertical-nav>
+                </div>
 
-    <clr-modal [(clrModalOpen)]="openViewUserModal">
-        <h3 class="modal-title">User Info</h3>
-        <div class="modal-body">
+                <clr-modal [(clrModalOpen)]="openViewUserModal">
+                    <h3 class="modal-title">User Info</h3>
+                    <div class="modal-body">
             <span class="clr-row">
                 <label class="clr-col-3">Username:</label>
                 <p class="clr-col-9 no-margin">{{selectedUser.username}}</p>
@@ -79,12 +92,15 @@
                 <label class="clr-col-3">Email:</label>
                 <p class="clr-col-9 no-margin">{{selectedUser.email}}</p>
             </span>
-        </div>
-        <div class="modal-footer">
-            <button type="button" class="btn btn-outline" (click)="openViewUserModal = false">Cancel</button>
-            <button type="button" class="btn btn-primary" (click)="openViewUserModal = false">Add friend</button>
-        </div>
-    </clr-modal>
+                    </div>
+                    <div class="modal-footer">
+                        <button type="button" class="btn btn-outline" (click)="openViewUserModal = false">Cancel</button>
+                        <button type="button" class="btn btn-primary" (click)="openViewUserModal = false">Add friend</button>
+                    </div>
+                </clr-modal>
 
+            </div>
+        </div>
+    </div>
 </div>
 

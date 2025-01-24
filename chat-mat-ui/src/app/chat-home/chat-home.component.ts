@@ -16,6 +16,8 @@ import {QueryRequest, QueryRequestSortType} from '../common/rest/types/query-req
 import {User} from '../common/rest/types/user';
 import {debounceTime, distinctUntilChanged, filter, switchMap} from 'rxjs';
 import {resolveErrorMessage} from '../common/utils/util-functions';
+import {FriendsService} from '../services/friends.service';
+import {CHAT_ROUTE_PATHS} from '../app.routes';
 
 @Component({
     selector: 'app-chat-home',
@@ -33,35 +35,38 @@ import {resolveErrorMessage} from '../common/utils/util-functions';
     styleUrl: './chat-home.component.scss'
 })
 export class ChatHomeComponent implements OnInit {
-    userSearchControl = new FormControl('');
-    users: User[] = [];
+    friendSearchControl = new FormControl('');
+    friends: User[] = [];
     errorMessage = "";
     alertClosed = true;
     openViewUserModal = false;
     selectedUser: User = {} as User;
 
-    constructor(private usersService: UsersService) {
+    constructor(
+        private friendsService: FriendsService,
+    ) {
     }
 
     ngOnInit(): void {
-        this.usersService.getUsers({
+
+
+        this.friendsService.getFriends({
             page: 0,
             pageSize: 32,
         }).subscribe((response) => {
-            this.users = response.content;
+            this.friends = response.content;
 
         });
-
-        this.subscribeToUsersSearch();
+        this.subscribeToFriendsSearch();
     }
 
-    public subscribeToUsersSearch(): void{
-        this.userSearchControl.valueChanges
+    public subscribeToFriendsSearch(): void{
+        this.friendSearchControl.valueChanges
             .pipe(
                 filter((query): query is string => query !== null),
                 debounceTime(500),
                 distinctUntilChanged(),
-                switchMap((query: string) => this.usersService.getUsers({
+                switchMap((query: string) => this.friendsService.getFriends({
                     page: 0,
                     pageSize: 32,
                     filter: query.trim() ? `username==${query.trim()}` : undefined
@@ -69,7 +74,7 @@ export class ChatHomeComponent implements OnInit {
             )
             .subscribe({
                 next: (response) => {
-                    this.users = response.content; // Update the filtered users
+                    this.friends = response.content; // Update the filtered users
                 },
                 error: (error) => {
                     this.errorMessage = resolveErrorMessage(error);
@@ -82,4 +87,11 @@ export class ChatHomeComponent implements OnInit {
         this.selectedUser = user;
         this.openViewUserModal = true;
     }
+
+    public viewFriend(user: User): void{
+        this.selectedUser = user;
+        this.openViewUserModal = true;
+    }
+
+    protected readonly CHAT_ROUTE_PATHS = CHAT_ROUTE_PATHS;
 }

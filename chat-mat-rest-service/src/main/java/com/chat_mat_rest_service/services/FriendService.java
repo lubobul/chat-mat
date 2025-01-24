@@ -3,20 +3,14 @@ package com.chat_mat_rest_service.services;
 import com.chat_mat_rest_service.auth.JwtUserDetails;
 import com.chat_mat_rest_service.dtos.entities.UserDto;
 import com.chat_mat_rest_service.dtos.mappers.UserMapper;
-import com.chat_mat_rest_service.dtos.rest.RestResponsePage;
 import com.chat_mat_rest_service.entities.Friend;
 import com.chat_mat_rest_service.entities.User;
 import com.chat_mat_rest_service.repositories.FriendRepository;
 import com.chat_mat_rest_service.repositories.UserRepository;
 import org.springframework.data.domain.Page;
-import org.springframework.data.domain.PageImpl;
 import org.springframework.data.domain.Pageable;
-import org.springframework.data.web.PagedModel;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.stereotype.Service;
-
-import java.util.List;
-import java.util.stream.Collectors;
 
 @Service
 public class FriendService {
@@ -48,9 +42,9 @@ public class FriendService {
                 }
             }
 
-            friendsPage = friendRepository.findByUser_IdAndFriend_UsernameContainingIgnoreCase(userId, username, pageable);
+            friendsPage = friendRepository.findByUserIdAndFriendUsernameContainingIgnoreCase(userId, username, pageable);
         } else {
-            friendsPage = friendRepository.findByUser_Id(userId, pageable);
+            friendsPage = friendRepository.findByUserId(userId, pageable);
         }
 
 

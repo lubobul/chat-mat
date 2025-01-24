@@ -23,9 +23,10 @@ public class UsersController {
     @GetMapping
     public ResponseEntity<Page<UserDto>> getUsers(
             @RequestParam(value = "filter", required = false) String filter,
+            @RequestParam(value = "excludeSelf", required = false) boolean excludeSelf,
             Pageable pageable
     ) {
-        Page<UserDto> users = userService.getUsers(filter, pageable);
+        Page<UserDto> users = userService.getUsers(filter, pageable, excludeSelf);
         return ResponseEntity.ok(users);
     }
 }
