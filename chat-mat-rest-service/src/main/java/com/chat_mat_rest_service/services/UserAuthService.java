@@ -73,7 +73,7 @@ public class UserAuthService {
         }
 
         if (passwordEncoder.matches(request.getPassword(), userSecret.get().getPassword())) {
-            return new JwtResponse(jwtUtil.generateToken(user.get().getEmail()));
+            return new JwtResponse(jwtUtil.generateToken(user.get()));
         }
 
         throw new IllegalArgumentException("The email or password you entered is incorrect.");

@@ -5,7 +5,7 @@ import lombok.*;
 import org.hibernate.annotations.Filter;
 
 import java.sql.Timestamp;
-import java.util.Set;
+import java.util.List;
 
 @Entity
 @Table(name = "users")
@@ -37,17 +37,17 @@ public class User {
     @Column(columnDefinition = "TEXT")
     private String avatar; // Base64 encoded image
 
-    @ManyToMany
+    @ManyToMany(fetch = FetchType.LAZY)
     @JoinTable(
             name = "friends",
             joinColumns = @JoinColumn(name = "user_id"),
             inverseJoinColumns = @JoinColumn(name = "friend_id")
     )
-    private Set<User> friends;
+    private List<User> friends;
 
     @OneToMany(mappedBy = "owner", cascade = CascadeType.ALL, orphanRemoval = true)
-    private Set<Chat> ownedChats;
+    private List<Chat> ownedChats;
 
     @ManyToMany(mappedBy = "participants")
-    private Set<Chat> chats;
+    private List<Chat> chats;
 }

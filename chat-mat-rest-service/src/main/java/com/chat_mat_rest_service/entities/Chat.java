@@ -4,7 +4,7 @@ import jakarta.persistence.*;
 import lombok.*;
 
 import java.sql.Timestamp;
-import java.util.Set;
+import java.util.List;
 
 @Entity
 @Table(name = "chats")
@@ -39,8 +39,8 @@ public class Chat {
             joinColumns = @JoinColumn(name = "chat_id"),
             inverseJoinColumns = @JoinColumn(name = "user_id")
     )
-    private Set<User> participants;
+    private List<User> participants;
 
     @OneToMany(mappedBy = "chat", cascade = CascadeType.ALL, orphanRemoval = true)
-    private Set<ChatMessage> messages;
+    private List<ChatMessage> messages;
 }

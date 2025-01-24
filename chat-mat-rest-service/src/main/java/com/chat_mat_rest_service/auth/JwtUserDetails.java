@@ -1,5 +1,6 @@
 package com.chat_mat_rest_service.auth;
 
+import lombok.Getter;
 import org.springframework.security.core.GrantedAuthority;
 import org.springframework.security.core.userdetails.UserDetails;
 
@@ -7,9 +8,12 @@ import java.util.Collection;
 
 public class JwtUserDetails implements UserDetails {
     private final String email;
+    @Getter
+    private final Long userId;
 
-    public JwtUserDetails(String email) {
+    public JwtUserDetails(String email, Long userId) {
         this.email = email;
+        this.userId = userId;
     }
 
     @Override

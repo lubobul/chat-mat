@@ -39,14 +39,16 @@ public class JwtAuthenticationFilter extends OncePerRequestFilter {
 
                 // Check if the JWT_TOKEN cookie exists
                 if (HttpConstants.JWT_TOKEN.equals(cookieName)) {
-                    String token = cookieValue;
+                    String jwtToken = cookieValue;
 
                     // Validate and process the token
-                    if (jwtUtil.validateToken(token)) {
-                        String email = jwtUtil.extractEmail(token);
+                    if (jwtUtil.validateToken(jwtToken)) {
+                        String email = jwtUtil.extractEmail(jwtToken);
+                        Long userId = jwtUtil.extractClaim(jwtToken, "userId", Long.class); // Extract userId
+
 
                         // Create an Authentication object and set it in the SecurityContext
-                        JwtUserDetails userDetails = new JwtUserDetails(email);
+                        JwtUserDetails userDetails = new JwtUserDetails(email, userId);
                         JwtAuthenticationToken authentication = new JwtAuthenticationToken(userDetails);
                         SecurityContextHolder.getContext().setAuthentication(authentication);
                     }

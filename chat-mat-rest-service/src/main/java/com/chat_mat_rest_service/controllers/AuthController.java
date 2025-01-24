@@ -28,11 +28,11 @@ public class AuthController {
     }
 
     @PostMapping("/login")
-    public ResponseEntity<RestMessageResponse> login(@RequestBody LoginRequest request, HttpServletResponse response) {
-        String jwtToken = userAuthService.login(request).getToken(); // Obtain the JWT token
+    public ResponseEntity<JwtResponse> login(@RequestBody LoginRequest request, HttpServletResponse response) {
+        JwtResponse jwtToken = userAuthService.login(request); // Obtain the JWT token
 
         // Set the JWT token as an HTTP-only secure cookie
-        ResponseCookie jwtCookie = ResponseCookie.from(HttpConstants.JWT_TOKEN, jwtToken)
+        ResponseCookie jwtCookie = ResponseCookie.from(HttpConstants.JWT_TOKEN, jwtToken.getToken())
                 .httpOnly(true) // Prevent access from JavaScript
                 .secure(true) // Use HTTPS
                 .sameSite("Strict") // SameSite policy for CSRF protection
@@ -41,7 +41,7 @@ public class AuthController {
                 .build();
 
         response.addHeader("Set-Cookie", jwtCookie.toString());
-        return ResponseEntity.ok(new RestMessageResponse("Logged in successfully"));
+        return ResponseEntity.ok(jwtToken);
     }
 
     @PostMapping("/logout")

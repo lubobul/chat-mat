@@ -22,6 +22,13 @@
     </nav>
 
     <div class="correspondence-container clr-col-6">
+        @if(errorMessage){
+            <clr-alert class="danger-alert" [clrAlertType]="'danger'" [(clrAlertClosed)]="alertClosed">
+                <clr-alert-item>
+                    <span class="alert-text">{{errorMessage}}</span>
+                </clr-alert-item>
+            </clr-alert>
+        }
         <router-outlet></router-outlet>
     </div>
 
@@ -32,19 +39,27 @@
                 Users
                 <clr-vertical-nav-group-children>
                     <form class="clr-form">
-                        <input type="text" id="friendsSearch" placeholder="Search for users..." class="clr-input" />
+                        <input
+                            type="text"
+                            id="userSearch"
+                            placeholder="Search for users..."
+                            class="clr-input"
+                            [formControl]="userSearchControl"
+                        />
                     </form>
                 </clr-vertical-nav-group-children>
-                <clr-vertical-nav-group-children>
-                    <span clrVerticalNavLink>Hey</span>
-                </clr-vertical-nav-group-children>
+                @for(user of users; track user.id){
+                    <clr-vertical-nav-group-children>
+                        <span (click)="viewUser(user)" class="user-nav-button" clrVerticalNavLink>{{ user.username }}</span>
+                    </clr-vertical-nav-group-children>
+                }
             </clr-vertical-nav-group>
             <clr-vertical-nav-group>
                 <cds-icon shape="assign-user" clrVerticalNavIcon></cds-icon>
                 Friends
                 <clr-vertical-nav-group-children>
                     <form class="clr-form">
-                        <input type="text" id="basic" placeholder="Search for friends..." class="clr-input" />
+                        <input type="text" id="friendsSearch" placeholder="Search for friends..." class="clr-input" />
                     </form>
                 </clr-vertical-nav-group-children>
                 <clr-vertical-nav-group-children>
@@ -53,6 +68,23 @@
             </clr-vertical-nav-group>
         </clr-vertical-nav>
     </div>
+
+    <clr-modal [(clrModalOpen)]="openViewUserModal">
+        <h3 class="modal-title">User Info</h3>
+        <div class="modal-body">
+            <span class="clr-row">
+                <label class="clr-col-3">Username:</label>
+                <p class="clr-col-9 no-margin">{{selectedUser.username}}</p>
+                <br><br>
+                <label class="clr-col-3">Email:</label>
+                <p class="clr-col-9 no-margin">{{selectedUser.email}}</p>
+            </span>
+        </div>
+        <div class="modal-footer">
+            <button type="button" class="btn btn-outline" (click)="openViewUserModal = false">Cancel</button>
+            <button type="button" class="btn btn-primary" (click)="openViewUserModal = false">Add friend</button>
+        </div>
+    </clr-modal>
 
 </div>
 
