@@ -1,24 +1,19 @@
 import {Component, OnInit} from '@angular/core';
-import {RouterLink, RouterLinkActive, RouterOutlet} from '@angular/router';
+import {ActivatedRoute, Router, RouterLink, RouterLinkActive, RouterOutlet} from '@angular/router';
 import {
     ClarityModule,
-    ClrAlertModule,
-    ClrCommonFormsModule, ClrIconModule,
-    ClrInputModule,
-    ClrPasswordModule,
     ClrVerticalNavModule
 } from '@clr/angular';
-import {FormControl, FormsModule, ReactiveFormsModule} from '@angular/forms';
-import {CdsIcon} from '@cds/core/icon';
+import {FormControl, ReactiveFormsModule} from '@angular/forms';
 import {CdsIconModule} from '@cds/angular';
-import {UsersService} from '../services/users.service';
-import {QueryRequest, QueryRequestSortType} from '../common/rest/types/query-request';
-import {User} from '../common/rest/types/user';
+import {User} from '../common/rest/types/responses/user';
 import {debounceTime, distinctUntilChanged, filter, switchMap} from 'rxjs';
 import {resolveErrorMessage} from '../common/utils/util-functions';
 import {FriendsService} from '../services/friends.service';
 import {CHAT_ROUTE_PATHS} from '../app.routes';
 import {DatePipe} from '@angular/common';
+import {ChatService} from '../services/chat.service';
+import {CreateChatRequest} from '../common/rest/types/requests/chat-request';
 
 @Component({
     selector: 'app-chat-home',
@@ -42,10 +37,14 @@ export class ChatHomeComponent implements OnInit {
     errorMessage = "";
     alertClosed = true;
     openViewUserModal = false;
-    selectedUser: User = {} as User;
+    selectedFriend: User = {} as User;
+    friendActionLoading = false;
 
     constructor(
         private friendsService: FriendsService,
+        private chatService: ChatService,
+        private router: Router,
+        private activatedRoute: ActivatedRoute,
     ) {
     }
 
@@ -61,7 +60,7 @@ export class ChatHomeComponent implements OnInit {
                 debounceTime(500),
                 distinctUntilChanged(),
                 switchMap((query: string) => this.friendsService.getFriends({
-                    page: 0,
+                    page: 1,
                     pageSize: 32,
                     filter: query.trim() ? `username==${query.trim()}` : undefined
                 }))
@@ -78,17 +77,42 @@ export class ChatHomeComponent implements OnInit {
     }
 
     public viewUser(user: User): void{
-        this.selectedUser = user;
+        this.selectedFriend = user;
         this.openViewUserModal = true;
     }
 
     public unfriend(): void{
-        this.friendsService.removeFriend(this.selectedUser).subscribe({
+        this.friendActionLoading = true;
+        this.friendsService.removeFriend(this.selectedFriend).subscribe({
             next: () => {
+                this.friendActionLoading = false;
                 this.openViewUserModal = false;
                 this.refresh();
             },
             error: (error) => {
+                this.friendActionLoading = false;
+                this.errorMessage = resolveErrorMessage(error);
+                this.alertClosed = false;
+                this.openViewUserModal = false;
+            }
+        });
+    }
+
+    public messageFriend(): void{
+        this.friendActionLoading = true;
+        this.chatService.createChat({
+            title: `Chat with ${this.selectedFriend.username}`,
+            isChannel: false,
+            participantIds: [this.selectedFriend.id]
+        } as CreateChatRequest).subscribe({
+            next: (chat) => {
+                this.friendActionLoading = false;
+                this.openViewUserModal = false;
+                this.refresh();
+                this.router.navigate([`${CHAT_ROUTE_PATHS.HOME}/${CHAT_ROUTE_PATHS.CHAT}/${chat.id}`]);
+            },
+            error: (error) => {
+                this.friendActionLoading = false;
                 this.errorMessage = resolveErrorMessage(error);
                 this.alertClosed = false;
                 this.openViewUserModal = false;
@@ -98,7 +122,7 @@ export class ChatHomeComponent implements OnInit {
 
     private refresh(): void{
         this.friendsService.getFriends({
-            page: 0,
+            page: 1,
             pageSize: 32,
         }).subscribe((response) => {
             this.friends = response.content;

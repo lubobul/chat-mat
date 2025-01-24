@@ -1,6 +1,6 @@
 package com.chat_mat_rest_service.dtos.mappers;
 
-import com.chat_mat_rest_service.dtos.entities.UserDto;
+import com.chat_mat_rest_service.dtos.responses.UserDto;
 import com.chat_mat_rest_service.entities.User;
 import org.mapstruct.Mapper;
 import org.mapstruct.Mapping;

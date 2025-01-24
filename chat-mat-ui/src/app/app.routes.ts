@@ -5,10 +5,13 @@ import {ChatLoginComponent} from './auth-components/chat-login/chat-login.compon
 import {ChatRegisterUserComponent} from './auth-components/chat-register-user/chat-register-user.component';
 import {ChatUsersComponent} from './chat-users/chat-users.component';
 import {ProfileSettingsComponent} from './profile-settings/profile-settings.component';
+import {ChatWelcomeScreenComponent} from './chat-welcome-screen/chat-welcome-screen.component';
 
 export const CHAT_ROUTE_PATHS = {
     HOME: "home",
-    CHAT_CHANEL: "chat",
+    CHAT: "chat",
+    CHAT_ID: "chat_id",
+    CHAT_CORRESPONDENCE: "correspondence",
     CHAT_USERS: "users",
     LOGIN: "login",
     REGISTER: "register",
@@ -30,12 +33,26 @@ export const routes: Routes = [
                 children: [
                     {
                         path: "",
-                        redirectTo: CHAT_ROUTE_PATHS.CHAT_CHANEL,
+                        redirectTo: CHAT_ROUTE_PATHS.CHAT,
                         pathMatch: "full",
                     },
                     {
-                        component: ChatCorrespondenceComponent,
-                        path: CHAT_ROUTE_PATHS.CHAT_CHANEL
+                        component: ChatWelcomeScreenComponent,
+                        path: CHAT_ROUTE_PATHS.CHAT
+                    },
+                    {
+                        path: `${CHAT_ROUTE_PATHS.CHAT}/:${CHAT_ROUTE_PATHS.CHAT_ID}`,
+                        children: [
+                            {
+                                path: "",
+                                redirectTo: CHAT_ROUTE_PATHS.CHAT_CORRESPONDENCE,
+                                pathMatch: "full",
+                            },
+                            {
+                                path: CHAT_ROUTE_PATHS.CHAT_CORRESPONDENCE,
+                                component: ChatCorrespondenceComponent,
+                            },
+                        ]
                     },
                     {
                         component: ChatUsersComponent,

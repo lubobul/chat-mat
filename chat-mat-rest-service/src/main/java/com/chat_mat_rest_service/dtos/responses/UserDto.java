@@ -1,4 +1,4 @@
-package com.chat_mat_rest_service.dtos.entities;
+package com.chat_mat_rest_service.dtos.responses;
 
 import lombok.AllArgsConstructor;
 import lombok.Data;

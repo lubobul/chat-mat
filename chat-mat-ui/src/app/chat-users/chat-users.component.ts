@@ -1,11 +1,11 @@
 import {Component, OnInit} from '@angular/core';
 import {UsersService} from '../services/users.service';
-import {PaginatedResponse} from '../common/rest/types/paginated-response';
-import {User} from '../common/rest/types/user';
+import {PaginatedResponse} from '../common/rest/types/responses/paginated-response';
+import {User} from '../common/rest/types/responses/user';
 import {ClarityModule, ClrDatagridStateInterface} from '@clr/angular';
 import {DatePipe} from '@angular/common';
 import {debounceTime, mergeMap, Subject} from 'rxjs';
-import {QueryRequest, QueryRequestSortType} from '../common/rest/types/query-request';
+import {QueryRequest, QueryRequestSortType} from '../common/rest/types/requests/query-request';
 import {buildRestGridFilter, resolveErrorMessage} from '../common/utils/util-functions';
 import {FriendsService} from '../services/friends.service';
 

@@ -1,3 +1,5 @@
+import {User} from './responses/user';
+
 export interface RegisterRequest {
     username: string;
     email: string;
@@ -10,6 +12,7 @@ export interface LoginRequest {
 }
 
 export interface JwtResponse {
+    user: User;
     token: string;
 }
 

@@ -15,9 +15,9 @@
     </header>
     <nav class="subnav">
         <ul class="nav">
-            <li class="nav-item">
-                <a class="nav-link" [routerLinkActive]="['active']" [routerLink]="CHAT_ROUTE_PATHS.CHAT_CHANEL">Chat</a>
-            </li>
+<!--            <li class="nav-item">-->
+<!--                <a class="nav-link" [routerLinkActive]="['active']" [routerLink]="CHAT_ROUTE_PATHS.CHAT">Chat</a>-->
+<!--            </li>-->
             <li class="nav-item">
                 <a class="nav-link" [routerLinkActive]="['active']" [routerLink]="CHAT_ROUTE_PATHS.CHAT_USERS">Users</a>
             </li>
@@ -91,20 +91,23 @@
                     <div class="modal-body">
                         <span class="clr-row">
                             <label class="clr-col-3">Username:</label>
-                            <p class="clr-col-9 no-margin">{{ selectedUser.username }}</p>
+                            <p class="clr-col-9 no-margin">{{ selectedFriend.username }}</p>
                             <br><br>
                             <label class="clr-col-3">Email:</label>
-                            <p class="clr-col-9 no-margin">{{ selectedUser.email }}</p>
+                            <p class="clr-col-9 no-margin">{{ selectedFriend.email }}</p>
                             <br><br>
                             <label class="clr-col-3">Active since:</label>
-                            <p class="clr-col-9 no-margin">{{ selectedUser.createdAt | date }}</p>
+                            <p class="clr-col-9 no-margin">{{ selectedFriend.createdAt | date }}</p>
                         </span>
+                        @if(friendActionLoading){
+                            <clr-spinner>Loading...</clr-spinner>
+                        }
                     </div>
                     <div class="modal-footer">
-                        <button type="button" class="btn btn-danger-outline unfriend-button" (click)="unfriend()">Unfriend</button>
+                        <button [disabled]="friendActionLoading" type="button" class="btn btn-danger-outline unfriend-button" (click)="unfriend()">Unfriend</button>
                         <button type="button" class="btn btn-outline" (click)="openViewUserModal = false">Cancel
                         </button>
-                        <button type="button" class="btn btn-primary" (click)="openViewUserModal = false">Message
+                        <button [disabled]="friendActionLoading" type="button" class="btn btn-primary" (click)="messageFriend()">Message
                         </button>
                     </div>
                 </clr-modal>

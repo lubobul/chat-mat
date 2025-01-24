@@ -2,17 +2,16 @@ import {Injectable} from '@angular/core';
 import {AuthApiService} from '../common/rest/api-services/auth-api.service';
 import {JwtResponse, LoginRequest, RegisterRequest, RestMessageResponse} from '../common/rest/types/auth-types';
 import {Observable, tap} from 'rxjs';
-import {JwtHelperService} from '@auth0/angular-jwt';
+import {User} from '../common/rest/types/responses/user';
 
 @Injectable({
     providedIn: 'root',
 })
 export class AuthService {
-    private readonly TOKEN_KEY = 'jwt';
+    private readonly USER_IDENTITY_KEY = 'USER_IDENTITY';
 
     constructor(
         private authApiService: AuthApiService,
-        private jwtHelper: JwtHelperService
     ) {
     }
 
@@ -21,19 +20,18 @@ export class AuthService {
     }
 
     public login(request: LoginRequest): Observable<JwtResponse> {
-        return this.authApiService.login(request);
+        return this.authApiService.login(request).pipe(
+            tap((response) => {
+                this.storeUserIdentity(response);
+            })
+        )
     }
 
-    public getToken(): string | null {
-        return localStorage.getItem(this.TOKEN_KEY);
+    private storeUserIdentity(userIdentity: JwtResponse): void{
+        localStorage.setItem(this.USER_IDENTITY_KEY, JSON.stringify(userIdentity));
     }
 
-    public isAuthenticated(): boolean {
-        const token = this.getToken();
-
-        // Check if the token exists and is not expired
-        return token !== null && !this.jwtHelper.isTokenExpired(token);
+    public getUserIdentity(): User{
+        return (JSON.parse(localStorage.getItem(this.USER_IDENTITY_KEY) as string) as JwtResponse).user;
     }
-
-
 }

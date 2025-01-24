@@ -1,9 +1,9 @@
 import {Injectable} from '@angular/core';
 import {UsersApiService} from '../common/rest/api-services/users-api.service';
-import {QueryRequest} from '../common/rest/types/query-request';
+import {QueryRequest} from '../common/rest/types/requests/query-request';
 import {Observable} from 'rxjs';
-import {PaginatedResponse} from '../common/rest/types/paginated-response';
-import {User} from '../common/rest/types/user';
+import {PaginatedResponse} from '../common/rest/types/responses/paginated-response';
+import {User} from '../common/rest/types/responses/user';
 import {buildQueryParams} from '../common/utils/util-functions';
 
 @Injectable({

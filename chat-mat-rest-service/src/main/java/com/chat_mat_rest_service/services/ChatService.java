@@ -1,8 +1,8 @@
 package com.chat_mat_rest_service.services;
 
-import com.chat_mat_rest_service.dtos.entities.ChatDto;
+import com.chat_mat_rest_service.dtos.responses.ChatDto;
 import com.chat_mat_rest_service.dtos.mappers.ChatMapper;
-import com.chat_mat_rest_service.dtos.rest.CreateChatRequest;
+import com.chat_mat_rest_service.dtos.requests.CreateChatRequest;
 import com.chat_mat_rest_service.entities.Chat;
 import com.chat_mat_rest_service.entities.ChatParticipant;
 import com.chat_mat_rest_service.entities.ChatParticipantId;
@@ -44,6 +44,21 @@ public class ChatService {
         User owner = userRepository.findById(currentUserId)
                 .orElseThrow(() -> new IllegalArgumentException("User not found"));
 
+        // Validate participants
+        if (request.getParticipantIds() == null || request.getParticipantIds().isEmpty()) {
+            throw new IllegalArgumentException("Participants list cannot be empty");
+        }
+
+        Long firstParticipantId = request.getParticipantIds().getFirst();
+
+        // Check for existing non-channel chat with the participant
+        if (!request.isChannel()) {
+            List<Chat> existingChats = chatRepository.findNonChannelChatsByParticipants(currentUserId, firstParticipantId);
+            if (!existingChats.isEmpty()) {
+                return chatMapper.toDto(existingChats.getFirst()); // Return the first matching chat
+            }
+        }
+
         // Fetch participants
         List<User> participants = userRepository.findAllById(request.getParticipantIds());
         if (participants.isEmpty()) {
@@ -53,7 +68,7 @@ public class ChatService {
         // Create and save the new chat
         Chat chat = new Chat();
         chat.setTitle(request.getTitle());
-        chat.setIsChannel(participants.size() > 1); // Determine if it's a channel
+        chat.setIsChannel(request.isChannel());
         chat.setOwner(owner);
         chat.setParticipants(participants);
         chatRepository.save(chat);

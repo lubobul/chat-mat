@@ -1,5 +1,5 @@
 package com.chat_mat_rest_service.controllers;
-import com.chat_mat_rest_service.dtos.entities.UserDto;
+import com.chat_mat_rest_service.dtos.responses.UserDto;
 import com.chat_mat_rest_service.services.UserService;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;

@@ -1,4 +1,4 @@
-import {QueryParams, QueryRequest} from '../rest/types/query-request';
+import {QueryParams, QueryRequest} from '../rest/types/requests/query-request';
 
 export function resolveErrorMessage(error: any): string{
     return error?.error?.error || error?.message || error?.error?.message || error;

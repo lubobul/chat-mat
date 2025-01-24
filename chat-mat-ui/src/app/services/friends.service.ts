@@ -1,8 +1,8 @@
 import { Injectable } from '@angular/core';
 import { Observable } from 'rxjs';
-import {QueryRequest} from '../common/rest/types/query-request';
-import {PaginatedResponse} from '../common/rest/types/paginated-response';
-import {User} from '../common/rest/types/user';
+import {QueryRequest} from '../common/rest/types/requests/query-request';
+import {PaginatedResponse} from '../common/rest/types/responses/paginated-response';
+import {User} from '../common/rest/types/responses/user';
 import {FriendsApiService} from '../common/rest/api-services/friends-api.service';
 
 @Injectable({

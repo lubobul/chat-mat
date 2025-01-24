@@ -2,9 +2,9 @@ import { Injectable } from '@angular/core';
 import { HttpClient } from '@angular/common/http';
 import { Observable } from 'rxjs';
 import { RegisterRequest, LoginRequest, JwtResponse, RestMessageResponse } from '../types/auth-types';
-import {PaginatedResponse} from '../types/paginated-response';
-import {User} from '../types/user';
-import {QueryParams, QueryRequest} from '../types/query-request';
+import {PaginatedResponse} from '../types/responses/paginated-response';
+import {User} from '../types/responses/user';
+import {QueryParams, QueryRequest} from '../types/requests/query-request';
 import {buildQueryParams} from '../../utils/util-functions';
 
 @Injectable({

@@ -1,8 +1,6 @@
 package com.chat_mat_rest_service.controllers;
-import com.chat_mat_rest_service.dtos.entities.UserDto;
+import com.chat_mat_rest_service.dtos.responses.UserDto;
 import com.chat_mat_rest_service.dtos.rest.RestMessageResponse;
-import com.chat_mat_rest_service.entities.Friend;
-import com.chat_mat_rest_service.entities.User;
 import com.chat_mat_rest_service.services.FriendService;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;

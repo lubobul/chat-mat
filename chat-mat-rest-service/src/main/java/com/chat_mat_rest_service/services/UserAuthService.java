@@ -4,6 +4,7 @@ import com.chat_mat_rest_service.auth.JwtUtil;
 import com.chat_mat_rest_service.dtos.auth.JwtResponse;
 import com.chat_mat_rest_service.dtos.auth.LoginRequest;
 import com.chat_mat_rest_service.dtos.auth.RegisterRequest;
+import com.chat_mat_rest_service.dtos.mappers.UserMapper;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import com.chat_mat_rest_service.entities.User;
 import com.chat_mat_rest_service.entities.UserSecret;
@@ -19,18 +20,21 @@ public class UserAuthService {
     private final UserSecretRepository userSecretRepository;
     private final PasswordEncoder passwordEncoder;
     private final JwtUtil jwtUtil;
-
+    private final UserMapper userMapper;
 
     public UserAuthService(
             UserRepository userRepository,
             UserSecretRepository userSecretRepository,
             PasswordEncoder passwordEncoder,
-            JwtUtil jwtUtil
+            JwtUtil jwtUtil,
+            UserMapper userMapper
     ) {
         this.userRepository = userRepository;
         this.userSecretRepository = userSecretRepository;
         this.passwordEncoder = passwordEncoder;
         this.jwtUtil = jwtUtil;
+        this.userMapper = userMapper;
+
     }
 
     public void register(RegisterRequest request) {
@@ -73,7 +77,7 @@ public class UserAuthService {
         }
 
         if (passwordEncoder.matches(request.getPassword(), userSecret.get().getPassword())) {
-            return new JwtResponse(jwtUtil.generateToken(user.get()));
+            return new JwtResponse(userMapper.toDto(user.get()), jwtUtil.generateToken(user.get()));
         }
 
         throw new IllegalArgumentException("The email or password you entered is incorrect.");

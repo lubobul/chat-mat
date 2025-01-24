@@ -1,7 +1,6 @@
 package com.chat_mat_rest_service.services;
 
-import com.chat_mat_rest_service.auth.JwtUserDetails;
-import com.chat_mat_rest_service.dtos.entities.UserDto;
+import com.chat_mat_rest_service.dtos.responses.UserDto;
 import com.chat_mat_rest_service.dtos.mappers.UserMapper;
 import com.chat_mat_rest_service.entities.Friend;
 import com.chat_mat_rest_service.entities.FriendId;
