@@ -14,6 +14,7 @@ import {CHAT_ROUTE_PATHS} from '../app.routes';
 import {DatePipe} from '@angular/common';
 import {ChatService} from '../services/chat.service';
 import {CreateChatRequest} from '../common/rest/types/requests/chat-request';
+import {ChatResponse} from '../common/rest/types/responses/chat-response';
 
 @Component({
     selector: 'app-chat-home',
@@ -33,7 +34,11 @@ import {CreateChatRequest} from '../common/rest/types/requests/chat-request';
 })
 export class ChatHomeComponent implements OnInit {
     friendSearchControl = new FormControl('');
+    chatSearchControl = new FormControl('');
+    channelSearchControl = new FormControl('');
     friends: User[] = [];
+    directChats: ChatResponse[] = [];
+    channels: ChatResponse[] = [];
     errorMessage = "";
     alertClosed = true;
     openViewUserModal = false;
@@ -51,6 +56,7 @@ export class ChatHomeComponent implements OnInit {
     ngOnInit(): void {
         this.refresh();
         this.subscribeToFriendsSearch();
+        this.subscribeToDirectChatsSearch();
     }
 
     public subscribeToFriendsSearch(): void{
@@ -68,6 +74,29 @@ export class ChatHomeComponent implements OnInit {
             .subscribe({
                 next: (response) => {
                     this.friends = response.content; // Update the filtered users
+                },
+                error: (error) => {
+                    this.errorMessage = resolveErrorMessage(error);
+                    this.alertClosed = false;
+                }
+            });
+    }
+
+    public subscribeToDirectChatsSearch(): void{
+        this.chatSearchControl.valueChanges
+            .pipe(
+                filter((query): query is string => query !== null),
+                debounceTime(500),
+                distinctUntilChanged(),
+                switchMap((query: string) => this.chatService.getDirectChats({
+                    page: 1,
+                    pageSize: 32,
+                    filter: query.trim() ? `title==${query.trim()}` : undefined
+                }))
+            )
+            .subscribe({
+                next: (response) => {
+                    this.directChats = response.content; // Update the filtered users
                 },
                 error: (error) => {
                     this.errorMessage = resolveErrorMessage(error);
@@ -101,7 +130,7 @@ export class ChatHomeComponent implements OnInit {
     public messageFriend(): void{
         this.friendActionLoading = true;
         this.chatService.createChat({
-            title: `Chat with ${this.selectedFriend.username}`,
+            title: this.selectedFriend.username,
             isChannel: false,
             participantIds: [this.selectedFriend.id]
         } as CreateChatRequest).subscribe({
@@ -126,6 +155,20 @@ export class ChatHomeComponent implements OnInit {
             pageSize: 32,
         }).subscribe((response) => {
             this.friends = response.content;
+        });
+
+        this.chatService.getDirectChats({
+            page: 1,
+            pageSize: 32,
+        }).subscribe((response) => {
+            this.directChats = response.content;
+        });
+
+        this.chatService.getChannelChats({
+            page: 1,
+            pageSize: 32,
+        }).subscribe((response) => {
+            this.channels = response.content;
         });
     }
 

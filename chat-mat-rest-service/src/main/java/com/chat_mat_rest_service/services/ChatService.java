@@ -10,6 +10,8 @@ import com.chat_mat_rest_service.entities.User;
 import com.chat_mat_rest_service.repositories.ChatParticipantRepository;
 import com.chat_mat_rest_service.repositories.ChatRepository;
 import com.chat_mat_rest_service.repositories.UserRepository;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
@@ -84,5 +86,32 @@ public class ChatService {
         });
 
         return chatMapper.toDto(chat);
+    }
+
+    public Page<ChatDto> getUserChats(String filter, Pageable pageable, boolean isChannel) {
+        Long currentUserId = getAuthenticatedUserId(); // Fetch the current user's ID
+        if (filter != null && !filter.isEmpty()) {
+            // Parse the filter for chatTitle==value
+            String[] conditions = filter.split(",");
+            String chatTitle = null;
+
+            for (String condition : conditions) {
+                if (condition.startsWith("title==")) {
+                    chatTitle = condition.substring("title==".length());
+                    break;
+                }
+            }
+
+            if (chatTitle != null) {
+                // Fetch chats where the user is either the owner or a participant with the given title
+                return chatRepository.findByOwnerIdOrParticipantIdAndTitleContainingIgnoreCase(
+                        currentUserId, chatTitle, isChannel, pageable
+                ).map(chatMapper::toDto);
+            }
+        }
+
+        // Fetch all chats where the user is either the owner or a participant
+        return chatRepository.findByOwnerIdOrParticipantId(currentUserId, isChannel, pageable)
+                .map(chatMapper::toDto);
     }
 }

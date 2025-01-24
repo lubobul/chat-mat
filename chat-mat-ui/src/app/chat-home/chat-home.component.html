@@ -15,9 +15,9 @@
     </header>
     <nav class="subnav">
         <ul class="nav">
-<!--            <li class="nav-item">-->
-<!--                <a class="nav-link" [routerLinkActive]="['active']" [routerLink]="CHAT_ROUTE_PATHS.CHAT">Chat</a>-->
-<!--            </li>-->
+            <!--            <li class="nav-item">-->
+            <!--                <a class="nav-link" [routerLinkActive]="['active']" [routerLink]="CHAT_ROUTE_PATHS.CHAT">Chat</a>-->
+            <!--            </li>-->
             <li class="nav-item">
                 <a class="nav-link" [routerLinkActive]="['active']" [routerLink]="CHAT_ROUTE_PATHS.CHAT_USERS">Users</a>
             </li>
@@ -33,18 +33,40 @@
                             <cds-icon shape="chat-bubble" clrVerticalNavIcon></cds-icon>
                             Direct messages
                             <clr-vertical-nav-group-children>
-                                <a clrVerticalNavLink routerLink="./normal/pidgey" routerLinkActive="active">Pidgey</a>
-                                <a clrVerticalNavLink routerLink="./normal/snorlax"
-                                   routerLinkActive="active">Snorlax</a>
+                                <form class="clr-form">
+                                    <input type="text"
+                                           id="directChatSearch"
+                                           placeholder="Search for messages..."
+                                           class="clr-input"
+                                           [formControl]="chatSearchControl"
+                                    />
+                                </form>
+                            </clr-vertical-nav-group-children>
+                            <clr-vertical-nav-group-children>
+                                @for (chat of directChats; track chat.id) {
+                                    <a [routerLink]="'/' +CHAT_ROUTE_PATHS.HOME+ '/' + CHAT_ROUTE_PATHS.CHAT + '/' + chat.id" class="user-nav-button"
+                                          clrVerticalNavLink>{{ chat.title }}</a>
+                                }
                             </clr-vertical-nav-group-children>
                         </clr-vertical-nav-group>
                         <clr-vertical-nav-group routerLinkActive="active">
                             <cds-icon shape="talk-bubbles" clrVerticalNavIcon></cds-icon>
                             Channels
                             <clr-vertical-nav-group-children>
-                                <a clrVerticalNavLink routerLink="./fire/charmander" routerLinkActive="active">Charmander</a>
-                                <a clrVerticalNavLink routerLink="./fire/charizard"
-                                   routerLinkActive="active">Charizard</a>
+                                <form class="clr-form">
+                                    <input type="text"
+                                           id="channelChatSearch"
+                                           placeholder="Search for messages..."
+                                           class="clr-input"
+                                           [formControl]="channelSearchControl"
+                                    />
+                                </form>
+                            </clr-vertical-nav-group-children>
+                            <clr-vertical-nav-group-children>
+                                @for (channel of channels; track channel.id) {
+                                    <a [routerLink]="'/' +CHAT_ROUTE_PATHS.HOME+ '/' + CHAT_ROUTE_PATHS.CHAT + '/' + channel.id" class="user-nav-button"
+                                       clrVerticalNavLink>{{ channel.title }}</a>
+                                }
                             </clr-vertical-nav-group-children>
                         </clr-vertical-nav-group>
                     </clr-vertical-nav>
@@ -76,12 +98,13 @@
                                     />
                                 </form>
                             </clr-vertical-nav-group-children>
-                            @for (user of friends; track user.id) {
-                                <clr-vertical-nav-group-children>
+                            <clr-vertical-nav-group-children>
+                                @for (user of friends; track user.id) {
                                     <span (click)="viewUser(user)" class="user-nav-button"
                                           clrVerticalNavLink>{{ user.username }}</span>
-                                </clr-vertical-nav-group-children>
-                            }
+
+                                }
+                            </clr-vertical-nav-group-children>
                         </clr-vertical-nav-group>
                     </clr-vertical-nav>
                 </div>
@@ -99,15 +122,18 @@
                             <label class="clr-col-3">Active since:</label>
                             <p class="clr-col-9 no-margin">{{ selectedFriend.createdAt | date }}</p>
                         </span>
-                        @if(friendActionLoading){
+                        @if (friendActionLoading) {
                             <clr-spinner>Loading...</clr-spinner>
                         }
                     </div>
                     <div class="modal-footer">
-                        <button [disabled]="friendActionLoading" type="button" class="btn btn-danger-outline unfriend-button" (click)="unfriend()">Unfriend</button>
+                        <button [disabled]="friendActionLoading" type="button"
+                                class="btn btn-danger-outline unfriend-button" (click)="unfriend()">Unfriend
+                        </button>
                         <button type="button" class="btn btn-outline" (click)="openViewUserModal = false">Cancel
                         </button>
-                        <button [disabled]="friendActionLoading" type="button" class="btn btn-primary" (click)="messageFriend()">Message
+                        <button [disabled]="friendActionLoading" type="button" class="btn btn-primary"
+                                (click)="messageFriend()">Message
                         </button>
                     </div>
                 </clr-modal>
