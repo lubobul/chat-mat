@@ -46,9 +46,13 @@ public class ChatController {
 
     @GetMapping("/{id}")
     public ResponseEntity<ChatDto> getChatById(
-            @PathVariable Long id
+            @PathVariable Long id,
+            @RequestParam(defaultValue = "0") int participantsPage,
+            @RequestParam(defaultValue = "25") int participantsSize,
+            @RequestParam(defaultValue = "0") int messagesPage,
+            @RequestParam(defaultValue = "25") int messagesSize
     ) {
-        ChatDto chat = chatService.getChatById(id);
+        ChatDto chat = chatService.getChatById(id, participantsPage, participantsSize, messagesPage, messagesSize);
         return ResponseEntity.ok(chat);
     }
 

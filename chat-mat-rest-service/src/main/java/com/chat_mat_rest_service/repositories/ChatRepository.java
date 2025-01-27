@@ -61,8 +61,7 @@ public interface ChatRepository extends JpaRepository<Chat, Long> {
         SELECT c
         FROM Chat c
         LEFT JOIN c.participants p
-        WHERE c.id = :chatId 
-        AND (c.owner.id = :userId OR p.id = :userId)
+        WHERE c.id = :chatId AND (c.owner.id = :userId OR p.id = :userId)
         AND c.deleted = false
     """)
     Optional<Chat> findByIdAndOwnerIdOrParticipantId(@Param("chatId") Long chatId, @Param("userId") Long userId);

@@ -33,7 +33,7 @@ public class Chat {
     @JoinColumn(name = "owner_id", nullable = false)
     private User owner;
 
-    @ManyToMany
+    @ManyToMany(fetch = FetchType.LAZY)
     @JoinTable(
             name = "chat_participants",
             joinColumns = @JoinColumn(name = "chat_id"),
@@ -41,6 +41,6 @@ public class Chat {
     )
     private List<User> participants;
 
-    @OneToMany(mappedBy = "chat", cascade = CascadeType.ALL, orphanRemoval = true)
+    @OneToMany(mappedBy = "chat", cascade = CascadeType.ALL, orphanRemoval = true, fetch = FetchType.LAZY)
     private List<ChatMessage> messages;
 }

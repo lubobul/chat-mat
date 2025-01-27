@@ -1,14 +1,18 @@
 package com.chat_mat_rest_service.services;
 
 import com.chat_mat_rest_service.custom.exceptions.ResourceNotFoundException;
+import com.chat_mat_rest_service.dtos.mappers.ChatMessageMapper;
+import com.chat_mat_rest_service.dtos.mappers.UserMapper;
 import com.chat_mat_rest_service.dtos.responses.ChatDto;
 import com.chat_mat_rest_service.dtos.mappers.ChatMapper;
 import com.chat_mat_rest_service.dtos.requests.CreateChatRequest;
 import com.chat_mat_rest_service.entities.*;
+import com.chat_mat_rest_service.repositories.ChatMessageRepository;
 import com.chat_mat_rest_service.repositories.ChatParticipantRepository;
 import com.chat_mat_rest_service.repositories.ChatRepository;
 import com.chat_mat_rest_service.repositories.UserRepository;
 import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 
@@ -21,29 +25,63 @@ import static com.chat_mat_rest_service.common.SecurityContextHelper.getAuthenti
 public class ChatService {
 
     private final ChatRepository chatRepository;
+    private final ChatMessageRepository chatMessageRepository;
     private final UserRepository userRepository;
     private final ChatParticipantRepository chatParticipantRepository;
     private final ChatMapper chatMapper;
+    private final UserMapper userMapper;
+    private final ChatMessageMapper chatMessageMapper;
 
     public ChatService(
             ChatRepository chatRepository,
+            ChatMessageRepository chatMessageRepository,
             UserRepository userRepository,
             ChatParticipantRepository chatParticipantRepository,
-            ChatMapper chatMapper
+            ChatMapper chatMapper,
+            UserMapper userMapper,
+            ChatMessageMapper chatMessageMapper
     ) {
         this.chatRepository = chatRepository;
+        this.chatMessageRepository = chatMessageRepository;
         this.userRepository = userRepository;
         this.chatParticipantRepository = chatParticipantRepository;
         this.chatMapper = chatMapper;
+        this.userMapper = userMapper;
+        this.chatMessageMapper = chatMessageMapper;
     }
 
-    public ChatDto getChatById(Long id) {
-        Long currentUserId = getAuthenticatedUserId(); // Use your existing method to extract userId from JWT
+    public ChatDto getChatById(
+            Long id,
+            int participantsPage,
+            int participantsSize,
+            int messagesPage,
+            int messagesSize
+    ) {
+        Long currentUserId = getAuthenticatedUserId();
 
+        // Fetch the basic chat details
         Chat chat = chatRepository.findByIdAndOwnerIdOrParticipantId(id, currentUserId)
                 .orElseThrow(() -> new ResourceNotFoundException("Chat not found"));
 
-        return chatMapper.toDto(chat);
+        // Fetch paginated participants
+        Pageable participantsPageable = PageRequest.of(participantsPage, participantsSize);
+        Page<User> participants = chatParticipantRepository.findParticipantsByChatId(chat.getId(), participantsPageable);
+
+        // Fetch paginated messages
+        Pageable messagesPageable = PageRequest.of(messagesPage, messagesSize);
+        Page<ChatMessage> messages = chatMessageRepository.findMessagesByChatId(chat.getId(), messagesPageable);
+
+        // Map to DTO
+        ChatDto chatDto = chatMapper.toDto(chat);
+        chatDto.setOwner(userMapper.toDto(chat.getOwner()));
+        chatDto.setParticipants(participants.getContent().stream().map(userMapper::toDto).toList());
+        chatDto.setMessages(messages.getContent().stream().map(chatMessageMapper::toDto).toList());
+
+        // Include pagination details if needed
+        chatDto.setParticipantsPageDetails(participants.getPageable());
+        chatDto.setMessagesPageDetails(messages.getPageable());
+
+        return chatDto;
     }
 
     public ChatDto createChat(CreateChatRequest request) {
