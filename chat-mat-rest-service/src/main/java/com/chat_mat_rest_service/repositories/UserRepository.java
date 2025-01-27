@@ -4,6 +4,7 @@ import com.chat_mat_rest_service.entities.User;
 import jakarta.transaction.Transactional;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
+import org.springframework.data.jpa.repository.EntityGraph;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Modifying;
 import org.springframework.data.jpa.repository.Query;
@@ -24,7 +25,10 @@ public interface UserRepository extends JpaRepository<User, Long> {
     Page<User> findByIdNot(Long id, Pageable pageable);
     Optional<User> findByEmail(String email);
 
-    //TODO Add and deleted != true
     boolean existsByEmail(String email);
-    boolean existsByUsername(String email);
+    boolean existsByUsername(String username);;
+
+    @Override
+    @Query("SELECT u FROM User u WHERE u.id = :id AND u.deleted = false")
+    Optional<User> findById(@Param("id") Long id);
 }

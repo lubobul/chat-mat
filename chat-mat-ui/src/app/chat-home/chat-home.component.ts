@@ -15,6 +15,7 @@ import {DatePipe} from '@angular/common';
 import {ChatService} from '../services/chat.service';
 import {CreateChatRequest} from '../common/rest/types/requests/chat-request';
 import {ChatResponse} from '../common/rest/types/responses/chat-response';
+import {AuthService} from '../services/auth.service';
 
 @Component({
     selector: 'app-chat-home',
@@ -44,16 +45,19 @@ export class ChatHomeComponent implements OnInit {
     openViewUserModal = false;
     selectedFriend: User = {} as User;
     friendActionLoading = false;
+    loggedInUser: User = {} as User;
 
     constructor(
         private friendsService: FriendsService,
         private chatService: ChatService,
+        private authService: AuthService,
         private router: Router,
         private activatedRoute: ActivatedRoute,
     ) {
     }
 
     ngOnInit(): void {
+        this.loggedInUser = this.authService.getUserIdentity();
         this.refresh();
         this.subscribeToFriendsSearch();
         this.subscribeToDirectChatsSearch();

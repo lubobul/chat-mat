@@ -19,3 +19,8 @@ export interface JwtResponse {
 export interface RestMessageResponse {
     message: string;
 }
+
+export interface UpdateProfileRequest {
+    username: string;
+    avatar: string;
+}

@@ -18,4 +18,8 @@ export class UsersApiService {
     getUsers(params: QueryParams | any): Observable<PaginatedResponse<User>> {
         return this.http.get<PaginatedResponse<User>>(this.apiUrl, { params });
     }
+
+    getUser(userId: number): Observable<User> {
+        return this.http.get<User>(`${this.apiUrl}/${userId}`);
+    }
 }

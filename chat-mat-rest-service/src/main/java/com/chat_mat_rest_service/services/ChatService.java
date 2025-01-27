@@ -1,12 +1,10 @@
 package com.chat_mat_rest_service.services;
 
+import com.chat_mat_rest_service.custom.exceptions.ResourceNotFoundException;
 import com.chat_mat_rest_service.dtos.responses.ChatDto;
 import com.chat_mat_rest_service.dtos.mappers.ChatMapper;
 import com.chat_mat_rest_service.dtos.requests.CreateChatRequest;
-import com.chat_mat_rest_service.entities.Chat;
-import com.chat_mat_rest_service.entities.ChatParticipant;
-import com.chat_mat_rest_service.entities.ChatParticipantId;
-import com.chat_mat_rest_service.entities.User;
+import com.chat_mat_rest_service.entities.*;
 import com.chat_mat_rest_service.repositories.ChatParticipantRepository;
 import com.chat_mat_rest_service.repositories.ChatRepository;
 import com.chat_mat_rest_service.repositories.UserRepository;
@@ -39,12 +37,21 @@ public class ChatService {
         this.chatMapper = chatMapper;
     }
 
+    public ChatDto getChatById(Long id) {
+        Long currentUserId = getAuthenticatedUserId(); // Use your existing method to extract userId from JWT
+
+        Chat chat = chatRepository.findByIdAndOwnerIdOrParticipantId(id, currentUserId)
+                .orElseThrow(() -> new ResourceNotFoundException("Chat not found"));
+
+        return chatMapper.toDto(chat);
+    }
+
     public ChatDto createChat(CreateChatRequest request) {
         Long currentUserId = getAuthenticatedUserId(); // Use your existing method to extract userId from JWT
 
         // Fetch the current user (chat owner)
         User owner = userRepository.findById(currentUserId)
-                .orElseThrow(() -> new IllegalArgumentException("User not found"));
+                .orElseThrow(() -> new ResourceNotFoundException("User not found"));
 
         // Validate participants
         if (request.getParticipantIds() == null || request.getParticipantIds().isEmpty()) {
@@ -64,7 +71,7 @@ public class ChatService {
         // Fetch participants
         List<User> participants = userRepository.findAllById(request.getParticipantIds());
         if (participants.isEmpty()) {
-            throw new IllegalArgumentException("Participants not found");
+            throw new ResourceNotFoundException("Participants not found");
         }
 
         // Create and save the new chat

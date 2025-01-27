@@ -1,9 +1,13 @@
 package com.chat_mat_rest_service.services;
+import com.chat_mat_rest_service.custom.exceptions.ResourceNotFoundException;
+import com.chat_mat_rest_service.dtos.requests.UpdateUserRequest;
 import com.chat_mat_rest_service.dtos.responses.UserDto;
 import com.chat_mat_rest_service.dtos.mappers.UserMapper;
 import com.chat_mat_rest_service.entities.Friend;
+import com.chat_mat_rest_service.entities.User;
 import com.chat_mat_rest_service.repositories.FriendRepository;
 import com.chat_mat_rest_service.repositories.UserRepository;
+import jakarta.transaction.Transactional;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageImpl;
 import org.springframework.data.domain.Pageable;
@@ -26,6 +30,47 @@ public class UserService {
         this.userRepository = userRepository;
         this.userMapper = userMapper;
         this.friendRepository = friendRepository;
+    }
+
+    // Fetch user by ID
+    public UserDto getUserById(Long id) {
+        User user = userRepository.findById(id)
+                .orElseThrow(() -> new ResourceNotFoundException("User not found"));
+        return userMapper.toDto(user);
+    }
+
+    @Transactional
+    public UserDto updateProfile(UpdateUserRequest updatedUserDetails) {
+        Long currentUserId = getAuthenticatedUserId();
+
+        // Check if the username already exists (for updates)
+        if (userRepository.existsByUsername(updatedUserDetails.getUsername())) {
+            throw new IllegalArgumentException("The username you entered already taken.");
+        }
+
+        // Fetch the existing user
+        User user = userRepository.findById(currentUserId)
+                .orElseThrow(() -> new ResourceNotFoundException("User not found"));
+
+        // Update fields
+        user.setUsername(updatedUserDetails.getUsername());
+        user.setAvatar(updatedUserDetails.getAvatar());
+        // Set other fields as needed
+
+        // Save the updated user
+        return userMapper.toDto(userRepository.save(user));
+    }
+
+    @Transactional
+    public void deleteProfile() {
+        Long currentUserId = getAuthenticatedUserId();
+
+        // Fetch the user
+        User user = userRepository.findById(currentUserId)
+                .orElseThrow(() -> new ResourceNotFoundException("User not found"));
+
+        user.setDeleted(true);  // Mark user as deleted
+        userRepository.save(user);
     }
 
     public Page<UserDto> getUsersWithoutFriendsInfo(String filter, Pageable pageable, boolean excludeSelf) {

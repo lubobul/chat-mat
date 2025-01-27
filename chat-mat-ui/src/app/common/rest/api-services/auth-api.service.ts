@@ -1,7 +1,14 @@
 import { Injectable } from '@angular/core';
 import { HttpClient } from '@angular/common/http';
 import { Observable } from 'rxjs';
-import { RegisterRequest, LoginRequest, JwtResponse, RestMessageResponse } from '../types/auth-types';
+import {
+    RegisterRequest,
+    LoginRequest,
+    JwtResponse,
+    RestMessageResponse,
+    UpdateProfileRequest
+} from '../types/auth-types';
+import {User} from '../types/responses/user';
 
 @Injectable({
     providedIn: 'root',
@@ -17,5 +24,9 @@ export class AuthApiService {
 
     login(request: LoginRequest): Observable<JwtResponse> {
         return this.http.post<JwtResponse>(`${this.apiUrl}/login`, request);
+    }
+
+    logout(): Observable<void> {
+        return this.http.post<void>(`${this.apiUrl}/logout`, null);
     }
 }

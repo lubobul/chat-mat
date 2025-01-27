@@ -64,7 +64,6 @@ export class ChatRegisterUserComponent {
             error: (error) => {
                 this.errorMessage = resolveErrorMessage(error);
                 this.alertClosed = false;
-                console.error(error);
             },
         });
     }

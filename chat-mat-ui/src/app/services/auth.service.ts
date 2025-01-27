@@ -1,8 +1,15 @@
 import {Injectable} from '@angular/core';
 import {AuthApiService} from '../common/rest/api-services/auth-api.service';
-import {JwtResponse, LoginRequest, RegisterRequest, RestMessageResponse} from '../common/rest/types/auth-types';
+import {
+    JwtResponse,
+    LoginRequest,
+    RegisterRequest,
+    RestMessageResponse,
+    UpdateProfileRequest
+} from '../common/rest/types/auth-types';
 import {Observable, tap} from 'rxjs';
 import {User} from '../common/rest/types/responses/user';
+import {ProfileApiService} from '../common/rest/api-services/profile-api.service';
 
 @Injectable({
     providedIn: 'root',
@@ -12,6 +19,7 @@ export class AuthService {
 
     constructor(
         private authApiService: AuthApiService,
+        private profileApiService: ProfileApiService,
     ) {
     }
 
@@ -22,16 +30,46 @@ export class AuthService {
     public login(request: LoginRequest): Observable<JwtResponse> {
         return this.authApiService.login(request).pipe(
             tap((response) => {
-                this.storeUserIdentity(response);
+                this.storeUserIdentity(response.user);
             })
         )
     }
 
-    private storeUserIdentity(userIdentity: JwtResponse): void{
+    logout(): Observable<void> {
+        return this.authApiService.logout().pipe(
+            tap((response) => {
+                this.clearUserIdentity();
+            })
+        )
+    }
+
+    updateProfile(request: UpdateProfileRequest): Observable<User> {
+        return this.profileApiService.updateProfile(request).pipe(
+            tap((response) => {
+                this.storeUserIdentity(response);
+            })
+        );
+    }
+
+    deleteProfile(): Observable<void> {
+        return this.profileApiService.deleteProfile().pipe(
+            tap((response) => {
+                this.clearUserIdentity();
+            })
+        );
+    }
+
+    private storeUserIdentity(userIdentity: User): void{
         localStorage.setItem(this.USER_IDENTITY_KEY, JSON.stringify(userIdentity));
     }
 
-    public getUserIdentity(): User{
-        return (JSON.parse(localStorage.getItem(this.USER_IDENTITY_KEY) as string) as JwtResponse).user;
+    private clearUserIdentity(): void{
+        localStorage.clear();
     }
+
+
+    public getUserIdentity(): User{
+        return JSON.parse(localStorage.getItem(this.USER_IDENTITY_KEY) as string);
+    }
+
 }

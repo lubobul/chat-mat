@@ -16,11 +16,15 @@ export class UsersService {
     ) {
     }
 
-
     getUsers(queryRequest: QueryRequest): Observable<PaginatedResponse<User>> {
         queryRequest.excludeSelf = true;
         const params = buildQueryParams(queryRequest) as any;
         params.withFriendsInfo = true;
         return this.usersApiService.getUsers(params);
     }
+
+    getUser(userId: number): Observable<User> {
+        return this.usersApiService.getUser(userId);
+    }
+
 }

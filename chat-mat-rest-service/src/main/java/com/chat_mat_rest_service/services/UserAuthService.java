@@ -37,6 +37,7 @@ public class UserAuthService {
 
     }
 
+    //TODO handle registration with same properties when user is soft deleted
     public void register(RegisterRequest request) {
         validateRegisterRequest(request);
 

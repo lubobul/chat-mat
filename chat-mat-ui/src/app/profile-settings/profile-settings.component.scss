@@ -1,0 +1,12 @@
+.profile-actions{
+    display: flex;
+    flex-flow: row;
+    margin-top: 2rem;
+    .delete-profile-btn{
+        margin-left: auto;
+    }
+
+    .logout-profile-btn{
+        margin-left: 0.6rem;
+    }
+}

@@ -10,6 +10,7 @@
             <a [routerLink]="CHAT_ROUTE_PATHS.PROFILE_SETTINGS" [routerLinkActive]="['active']"
                class="nav-link nav-icon">
                 <cds-icon shape="user"></cds-icon>
+                <span>{{loggedInUser.username}}</span>
             </a>
         </div>
     </header>

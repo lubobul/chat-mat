@@ -1,1 +1,49 @@
-<p>profile-settings works!</p>
+<h3>Profile settings</h3>
+<div class="card-block">
+<form [formGroup]="updateProfileForm">
+    @if (errorMessage) {
+        <clr-alert class="danger-alert" [clrAlertType]="'danger'" [clrAlertSizeSmall]="true"
+                   [(clrAlertClosed)]="alertClosed">
+            <clr-alert-item>
+                <span class="alert-text">{{ errorMessage }}</span>
+            </clr-alert-item>
+        </clr-alert>
+    }
+    <clr-input-container>
+        <label>Username</label>
+        <input clrInput type="name" formControlName="username" placeholder="Enter your username"/>
+        <clr-control-error *clrIfError="'required'">
+            Username field is required.
+        </clr-control-error>
+        <clr-control-helper>
+            With this name you will be seen by others.
+        </clr-control-helper>
+    </clr-input-container>
+
+    <clr-input-container>
+        <label>Email</label>
+        <input clrInput type="email" formControlName="email" placeholder="Enter your email"/>
+    </clr-input-container>
+
+    <div class="profile-actions">
+        <button type="submit" (click)="updateProfile()" [disabled]="updateProfileForm.invalid" class="btn btn-primary btn-form-action">Update Profile</button>
+        <button type="submit" (click)="logout()" class="btn btn-primary btn-primary-outline logout-profile-btn">Logout</button>
+        <button type="submit" (click)="openDeleteProfileModal()" class="btn btn-danger-outline delete-profile-btn">Delete Profile</button>
+    </div>
+
+</form>
+</div>
+
+<clr-modal [(clrModalOpen)]="showConfirm">
+    <h3 class="modal-title">Are you sure?</h3>
+    <div class="modal-body">
+        <p>Deleting your profiled cannot be reverted, all conversations and profile data will be lost.</p>
+        <p>Are you sure you want to delete your profile?.</p>
+    </div>
+    <div class="modal-footer">
+        <button type="button" class="btn btn-outline" (click)="showConfirm = false">Cancel</button>
+        <button type="button" class="btn btn-outline-danger" (click)="deleteProfile()">
+            Delete
+        </button>
+    </div>
+</clr-modal>

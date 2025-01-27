@@ -1,5 +1,6 @@
 package com.chat_mat_rest_service.services;
 
+import com.chat_mat_rest_service.custom.exceptions.ResourceNotFoundException;
 import com.chat_mat_rest_service.dtos.responses.UserDto;
 import com.chat_mat_rest_service.dtos.mappers.UserMapper;
 import com.chat_mat_rest_service.entities.Friend;
@@ -62,9 +63,9 @@ public class FriendService {
         }
 
         User user = userRepository.findById(userId)
-                .orElseThrow(() -> new IllegalArgumentException("User not found"));
+                .orElseThrow(() -> new ResourceNotFoundException("User not found"));
         User friend = userRepository.findById(friendId)
-                .orElseThrow(() -> new IllegalArgumentException("Friend not found"));
+                .orElseThrow(() -> new ResourceNotFoundException("Friend not found"));
 
         if (user.getFriends().contains(friend)) {
             throw new IllegalArgumentException("This user is already your friend");
@@ -83,7 +84,7 @@ public class FriendService {
         // Check if the friendship exists
         FriendId friendIdKey = new FriendId(userId, friendId);
         if (!friendRepository.existsById(friendIdKey)) {
-            throw new IllegalArgumentException("This user is not your friend");
+            throw new ResourceNotFoundException("This user is not your friend");
         }
 
         // Remove the friend using the repository

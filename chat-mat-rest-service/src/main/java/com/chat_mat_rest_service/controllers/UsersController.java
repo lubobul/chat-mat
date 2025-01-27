@@ -1,4 +1,5 @@
 package com.chat_mat_rest_service.controllers;
+import com.chat_mat_rest_service.dtos.requests.UpdateUserRequest;
 import com.chat_mat_rest_service.dtos.responses.UserDto;
 import com.chat_mat_rest_service.services.UserService;
 import org.springframework.data.domain.Page;
@@ -26,5 +27,12 @@ public class UsersController {
     ) {
         Page<UserDto> users = userService.getUsers(filter, pageable, excludeSelf, withFriendsInfo);
         return ResponseEntity.ok(users);
+    }
+
+    // Get user by ID
+    @GetMapping("/{id}")
+    public ResponseEntity<UserDto> getUserById(@PathVariable("id") Long id) {
+        UserDto user = userService.getUserById(id);
+        return ResponseEntity.ok(user);
     }
 }

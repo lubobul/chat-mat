@@ -8,6 +8,7 @@ import org.springframework.data.jpa.repository.Query;
 import org.springframework.data.repository.query.Param;
 
 import java.util.List;
+import java.util.Optional;
 
 public interface ChatRepository extends JpaRepository<Chat, Long> {
     @Query("""
@@ -55,5 +56,15 @@ public interface ChatRepository extends JpaRepository<Chat, Long> {
             @Param("isChannel") boolean isChannel,
             Pageable pageable
     );
+
+    @Query("""
+        SELECT c
+        FROM Chat c
+        LEFT JOIN c.participants p
+        WHERE c.id = :chatId 
+        AND (c.owner.id = :userId OR p.id = :userId)
+        AND c.deleted = false
+    """)
+    Optional<Chat> findByIdAndOwnerIdOrParticipantId(@Param("chatId") Long chatId, @Param("userId") Long userId);
 
 }
