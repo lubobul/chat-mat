@@ -45,7 +45,7 @@
                             </clr-vertical-nav-group-children>
                             <clr-vertical-nav-group-children>
                                 @for (chat of directChats; track chat.id) {
-                                    <a [routerLink]="'/' +CHAT_ROUTE_PATHS.HOME+ '/' + CHAT_ROUTE_PATHS.CHAT + '/' + chat.id" class="user-nav-button"
+                                    <a [routerLinkActive]="['active']" [routerLink]="'/' +CHAT_ROUTE_PATHS.HOME+ '/' + CHAT_ROUTE_PATHS.CHAT + '/' + chat.id" class="user-nav-button"
                                           clrVerticalNavLink>{{ chat | chatTitle: currentUser }}</a>
                                 }
                             </clr-vertical-nav-group-children>
@@ -65,7 +65,7 @@
                             </clr-vertical-nav-group-children>
                             <clr-vertical-nav-group-children>
                                 @for (channel of channels; track channel.id) {
-                                    <a [routerLink]="'/' +CHAT_ROUTE_PATHS.HOME+ '/' + CHAT_ROUTE_PATHS.CHAT + '/' + channel.id" class="user-nav-button"
+                                    <a [routerLinkActive]="['active']" [routerLink]="'/' +CHAT_ROUTE_PATHS.HOME+ '/' + CHAT_ROUTE_PATHS.CHAT + '/' + channel.id" class="user-nav-button"
                                        clrVerticalNavLink>{{ channel.title }}</a>
                                 }
                             </clr-vertical-nav-group-children>

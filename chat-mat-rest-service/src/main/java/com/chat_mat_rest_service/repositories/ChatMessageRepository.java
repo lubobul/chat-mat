@@ -12,7 +12,7 @@ public interface ChatMessageRepository extends JpaRepository<ChatMessage, Long> 
     SELECT m 
     FROM ChatMessage m 
     WHERE m.chat.id = :chatId
-    ORDER BY m.createdAt ASC
+    ORDER BY m.createdAt DESC
 """)
     Page<ChatMessage> findMessagesByChatId(@Param("chatId") Long chatId, Pageable pageable);
 

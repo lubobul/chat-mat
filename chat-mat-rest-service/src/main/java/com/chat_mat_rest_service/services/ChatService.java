@@ -18,6 +18,8 @@ import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 
+import java.util.ArrayList;
+import java.util.Collections;
 import java.util.List;
 
 import static com.chat_mat_rest_service.common.SecurityContextHelper.getAuthenticatedUserId;
@@ -73,11 +75,22 @@ public class ChatService {
         Pageable messagesPageable = PageRequest.of(messagesPage, messagesSize);
         Page<ChatMessage> messages = chatMessageRepository.findMessagesByChatId(chat.getId(), messagesPageable);
 
+        // Reverse the messages content
+        List<ChatMessage> reversedMessages = new ArrayList<>(messages.getContent());
+        Collections.reverse(reversedMessages);
+
+        // Create a new PageImpl with reversed content
+        Page<ChatMessage> reversedMessagesPage = new PageImpl<>(
+                reversedMessages,
+                messages.getPageable(),
+                messages.getTotalElements()
+        );
+
         // Map to DTO
         ChatDto chatDto = chatMapper.toDto(chat);
         chatDto.setOwner(userMapper.toDto(chat.getOwner()));
         chatDto.setParticipantsPage(participants.map(userMapper::toDto));
-        chatDto.setMessagesPage(messages.map(chatMessageMapper::toDto));
+        chatDto.setMessagesPage(reversedMessagesPage.map(chatMessageMapper::toDto));
 
         return chatDto;
     }
@@ -130,33 +143,6 @@ public class ChatService {
 
         return chatMapper.toDto(chat);
     }
-
-//    public Page<ChatDto> getUserChats(String filter, Pageable pageable, boolean isChannel) {
-//        Long currentUserId = getAuthenticatedUserId(); // Fetch the current user's ID
-//        if (filter != null && !filter.isEmpty()) {
-//            // Parse the filter for chatTitle==value
-//            String[] conditions = filter.split(",");
-//            String chatTitle = null;
-//
-//            for (String condition : conditions) {
-//                if (condition.startsWith("title==")) {
-//                    chatTitle = condition.substring("title==".length());
-//                    break;
-//                }
-//            }
-//
-//            if (chatTitle != null) {
-//                // Fetch chats where the user is either the owner or a participant with the given title
-//                return chatRepository.findByOwnerIdOrParticipantIdAndTitleContainingIgnoreCase(
-//                        currentUserId, chatTitle, isChannel, pageable
-//                ).map(chatMapper::toDto);
-//            }
-//        }
-//
-//        // Fetch all chats where the user is either the owner or a participant
-//        return chatRepository.findByOwnerIdOrParticipantId(currentUserId, isChannel, pageable)
-//                .map(chatMapper::toDto);
-//    }
 
     public Page<ChatDto> getUserChats(String filter, Pageable pageable, boolean isChannel) {
         Long currentUserId = getAuthenticatedUserId(); // Fetch the current user's ID

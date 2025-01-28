@@ -1,5 +1,24 @@
-<div class="main-container">
     <div class="chat-container">
+
+        <nav class="subnav">
+            @if(chat?.isChannel){
+                <h6 class="chat-title">{{chat?.title}}</h6>
+            }@else if(!!chat?.participantsPage?.content?.length){
+                <h6 class="chat-title">Direct chat with {{chat?.participantsPage?.content[0]?.username}}</h6>
+            }
+
+            @if(chat?.isChannel){
+                <ul class="nav nav-chat-links">
+                    <li class="nav-item">
+                        <a class="nav-link">Participants</a>
+                    </li>
+                    <li class="nav-item">
+                        <a class="nav-link" >Channel setting</a>
+                    </li>
+                </ul>
+            }
+
+        </nav>
         <div #scrollContainer class="main-chat-history">
             @for (chatMessage of loadedChatMessages; track chatMessage.id) {
                 <div class="chat-message-container" [class]="chatMessage.isMine ? 'author-message-margin' : ''">
@@ -14,7 +33,7 @@
                         class="chat-message-content"
                         [class]="chatMessage.isMine ? 'my-message' : 'their-message'"
                     >
-                        <p>{{ chatMessage.messageContent }}</p>
+                        <p [innerHTML]="chatMessage.messageContent | emojiParse"></p>
                     </div>
                 </div>
 
@@ -32,4 +51,3 @@
             <cds-icon class="send-button-icon" (click)="sendMessage()" [size]="'lg'" shape="circle-arrow"></cds-icon>
         </div>
     </div>
-</div>
