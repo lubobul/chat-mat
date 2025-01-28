@@ -13,7 +13,7 @@ import {Router} from '@angular/router';
 import {FormValidators} from '../common/utils/form-validators';
 import {UsersApiService} from '../common/rest/api-services/users-api.service';
 import {resolveErrorMessage} from '../common/utils/util-functions';
-import {User} from '../common/rest/types/responses/user';
+import {UserResponse} from '../common/rest/types/responses/userResponse';
 import {UpdateProfileRequest} from '../common/rest/types/auth-types';
 import {CHAT_ROUTE_PATHS} from '../app.routes';
 
@@ -36,7 +36,7 @@ export class ProfileSettingsComponent implements OnInit{
     updateProfileForm: FormGroup = {} as any;
     errorMessage: string | null = null;
     alertClosed = true;
-    user: User = {} as any;
+    user: UserResponse = {} as any;
     showConfirm = false;
 
     constructor(
@@ -53,7 +53,7 @@ export class ProfileSettingsComponent implements OnInit{
     }
 
     //TODO Could potentially be checking if user exists while typing username
-    private buildForm(user: User): void{
+    private buildForm(user: UserResponse): void{
         this.updateProfileForm = this.fb.group({
             username: [user.username, [Validators.required, Validators.minLength(6)]],
             email: [user.email, [Validators.required, Validators.email]],
@@ -69,7 +69,7 @@ export class ProfileSettingsComponent implements OnInit{
                 avatar: "",
             } as UpdateProfileRequest
         ).subscribe({
-            next: (user: User) => {
+            next: (user: UserResponse) => {
                 this.router.navigate([CHAT_ROUTE_PATHS.HOME]);
             },
             error: (error) => {

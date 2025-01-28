@@ -2,7 +2,7 @@ import { Injectable } from '@angular/core';
 import { Observable } from 'rxjs';
 import {QueryRequest} from '../common/rest/types/requests/query-request';
 import {PaginatedResponse} from '../common/rest/types/responses/paginated-response';
-import {User} from '../common/rest/types/responses/user';
+import {UserResponse} from '../common/rest/types/responses/userResponse';
 import {FriendsApiService} from '../common/rest/api-services/friends-api.service';
 
 @Injectable({
@@ -11,15 +11,15 @@ import {FriendsApiService} from '../common/rest/api-services/friends-api.service
 export class FriendsService {
     constructor(private friendsApiService: FriendsApiService) {}
 
-    getFriends(queryRequest: QueryRequest): Observable<PaginatedResponse<User>> {
+    getFriends(queryRequest: QueryRequest): Observable<PaginatedResponse<UserResponse>> {
         return this.friendsApiService.getFriends(queryRequest);
     }
 
-    addFriend(user: User): Observable<void>{
+    addFriend(user: UserResponse): Observable<void>{
         return this.friendsApiService.addFriend(user);
     }
 
-    removeFriend(user: User): Observable<void>{
+    removeFriend(user: UserResponse): Observable<void>{
         return this.friendsApiService.removeFriend(user);
     }
 }

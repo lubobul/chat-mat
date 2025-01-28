@@ -12,6 +12,8 @@ import java.sql.Timestamp;
 public class ChatMessageDto {
     private Long id;
     private String messageContent;
+    private Long senderId;
     private String senderUsername;
+    private String senderAvatar;
     private Timestamp createdAt;
 }

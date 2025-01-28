@@ -1,0 +1,25 @@
+<div class="main-container">
+    <div class="chat-container">
+        <div #scrollContainer class="main-chat-history">
+            @for (chatMessage of loadedChatMessages; track chatMessage.id) {
+                <div
+                    class="chat-message"
+                    [class]="chatMessage.isMine ? 'user-message' : 'bot-message'"
+                >
+                    <h3>{{ chatMessage.messageContent }}</h3>
+                </div>
+            }
+        </div>
+        <div class="input-container">
+            <textarea
+                [disabled]="loading"
+                class="chat-user-input"
+                name="w3review"
+                [(ngModel)]="userChatInput"
+                (keydown)="onKeydown($event)"
+                placeholder="Write your message..."
+            ></textarea>
+            <cds-icon class="send-button-icon" (click)="sendMessage()" [size]="'lg'" shape="circle-arrow"></cds-icon>
+        </div>
+    </div>
+</div>

@@ -8,7 +8,7 @@ import {
     RestMessageResponse,
     UpdateProfileRequest
 } from '../types/auth-types';
-import {User} from '../types/responses/user';
+import {UserResponse} from '../types/responses/userResponse';
 
 @Injectable({
     providedIn: 'root',
@@ -18,8 +18,8 @@ export class ProfileApiService {
 
     constructor(private http: HttpClient) {}
 
-    updateProfile(request: UpdateProfileRequest): Observable<User> {
-        return this.http.put<User>(this.apiUrl, request);
+    updateProfile(request: UpdateProfileRequest): Observable<UserResponse> {
+        return this.http.put<UserResponse>(this.apiUrl, request);
     }
 
     deleteProfile(): Observable<void> {

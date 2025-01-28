@@ -1,7 +1,7 @@
 import {Component, OnInit} from '@angular/core';
 import {UsersService} from '../services/users.service';
 import {PaginatedResponse} from '../common/rest/types/responses/paginated-response';
-import {User} from '../common/rest/types/responses/user';
+import {UserResponse} from '../common/rest/types/responses/userResponse';
 import {ClarityModule, ClrDatagridStateInterface} from '@clr/angular';
 import {DatePipe} from '@angular/common';
 import {debounceTime, mergeMap, Subject} from 'rxjs';
@@ -21,11 +21,11 @@ export class ChatUsersComponent implements OnInit{
     errorMessage = "";
     alertClosed = true;
     loading = true;
-    usersPage: PaginatedResponse<User> = {
+    usersPage: PaginatedResponse<UserResponse> = {
         pageSize: 0,
         content: [],
         totalPages: 0,
-    } as unknown as PaginatedResponse<User>;
+    } as unknown as PaginatedResponse<UserResponse>;
 
     private restQuery: QueryRequest = {
         page: 1,
@@ -75,7 +75,7 @@ export class ChatUsersComponent implements OnInit{
         });
     }
 
-    public addFriend(user: User): void{
+    public addFriend(user: UserResponse): void{
         this.friendsService.addFriend(user).subscribe({
             next: () => {
                 this.refresh();
@@ -87,7 +87,7 @@ export class ChatUsersComponent implements OnInit{
         });
     }
 
-    public unfriend(user: User): void{
+    public unfriend(user: UserResponse): void{
         this.friendsService.removeFriend(user).subscribe({
             next: () => {
                 this.refresh();

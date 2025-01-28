@@ -3,7 +3,7 @@ import { HttpClient } from '@angular/common/http';
 import { Observable } from 'rxjs';
 import { RegisterRequest, LoginRequest, JwtResponse, RestMessageResponse } from '../types/auth-types';
 import {PaginatedResponse} from '../types/responses/paginated-response';
-import {User} from '../types/responses/user';
+import {UserResponse} from '../types/responses/userResponse';
 import {QueryRequest} from '../types/requests/query-request';
 import {buildQueryParams} from '../../utils/util-functions';
 
@@ -15,16 +15,16 @@ export class FriendsApiService {
 
     constructor(private http: HttpClient) {}
 
-    getFriends(queryRequest: QueryRequest): Observable<PaginatedResponse<User>> {
+    getFriends(queryRequest: QueryRequest): Observable<PaginatedResponse<UserResponse>> {
         const params = buildQueryParams(queryRequest) as any;
-        return this.http.get<PaginatedResponse<User>>(this.apiUrl, { params });
+        return this.http.get<PaginatedResponse<UserResponse>>(this.apiUrl, { params });
     }
 
-    addFriend(user: User): Observable<void>{
+    addFriend(user: UserResponse): Observable<void>{
         return this.http.post<void>(`${this.apiUrl}/${user.id}`, null);
     }
 
-    removeFriend(user: User): Observable<void>{
+    removeFriend(user: UserResponse): Observable<void>{
         return this.http.delete<void>(`${this.apiUrl}/${user.id}`);
     }
 }

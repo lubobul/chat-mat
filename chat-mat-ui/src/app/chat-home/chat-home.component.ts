@@ -6,7 +6,7 @@ import {
 } from '@clr/angular';
 import {FormControl, ReactiveFormsModule} from '@angular/forms';
 import {CdsIconModule} from '@cds/angular';
-import {User} from '../common/rest/types/responses/user';
+import {UserResponse} from '../common/rest/types/responses/userResponse';
 import {debounceTime, distinctUntilChanged, filter, switchMap} from 'rxjs';
 import {resolveErrorMessage} from '../common/utils/util-functions';
 import {FriendsService} from '../services/friends.service';
@@ -37,15 +37,15 @@ export class ChatHomeComponent implements OnInit {
     friendSearchControl = new FormControl('');
     chatSearchControl = new FormControl('');
     channelSearchControl = new FormControl('');
-    friends: User[] = [];
+    friends: UserResponse[] = [];
     directChats: ChatResponse[] = [];
     channels: ChatResponse[] = [];
     errorMessage = "";
     alertClosed = true;
     openViewUserModal = false;
-    selectedFriend: User = {} as User;
+    selectedFriend: UserResponse = {} as UserResponse;
     friendActionLoading = false;
-    loggedInUser: User = {} as User;
+    loggedInUser: UserResponse = {} as UserResponse;
 
     constructor(
         private friendsService: FriendsService,
@@ -109,7 +109,7 @@ export class ChatHomeComponent implements OnInit {
             });
     }
 
-    public viewUser(user: User): void{
+    public viewUser(user: UserResponse): void{
         this.selectedFriend = user;
         this.openViewUserModal = true;
     }

@@ -7,6 +7,16 @@
     }
 }
 
+.chat-application-dynamic-content{
+    display: flex;
+    justify-content: space-between;
+    width: 100%;
+}
+
+.chat-application-outlet{
+    flex-grow: 1;
+}
+
 .message-nav{
     overflow-y: auto;
     overflow-x: hidden;
@@ -21,12 +31,13 @@
 }
 
 .friends-nav{
+    display: flex;
     overflow-y: auto;
     overflow-x: hidden;
     min-width: 13rem;
     height: 100vh;
     clr-vertical-nav{
-        margin-left: auto;
+        flex-grow: 1;
         height: 100%;
     }
 }

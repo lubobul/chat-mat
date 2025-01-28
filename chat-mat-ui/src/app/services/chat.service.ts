@@ -1,6 +1,6 @@
 import {Injectable} from '@angular/core';
 import {Observable} from 'rxjs';
-import {CreateChatRequest} from '../common/rest/types/requests/chat-request';
+import {ChatMessageRequest, CreateChatRequest} from '../common/rest/types/requests/chat-request';
 import {ChatResponse} from '../common/rest/types/responses/chat-response';
 import {ChatApiService} from '../common/rest/api-services/chat-api.service';
 import {QueryRequest} from '../common/rest/types/requests/query-request';
@@ -17,7 +17,6 @@ export class ChatService {
     ) {
     }
 
-
     createChat(chatRequest: CreateChatRequest): Observable<ChatResponse>{
         return this.chatApiService.createChat(chatRequest);
     }
@@ -31,5 +30,13 @@ export class ChatService {
         const params = buildQueryParams(queryRequest) as any;
         params.channel = true;
         return this.chatApiService.getChats(params);
+    }
+
+    getChat(chatId: number): Observable<ChatResponse> {
+        return this.chatApiService.getChat(chatId);
+    }
+
+    sendMessage(message: ChatMessageRequest, chatId: number): Observable<ChatMessageRequest> {
+        return this.chatApiService.sendMessage(message, chatId);
     }
 }

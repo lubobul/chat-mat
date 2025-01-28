@@ -9,13 +9,12 @@ import org.mapstruct.Mapping;
 
 @Mapper(componentModel = "spring")
 public interface ChatMapper extends GenericMapper<Chat, ChatDto> {
-    ChatDto chatDto = new ChatDto();
     @Mapping(target = "id", source = "id")
     @Mapping(target = "title", source = "title")
     @Mapping(target = "isChannel", source = "isChannel")
     @Mapping(target = "createdAt", source = "createdAt")
     @Mapping(target = "owner", ignore = true) // Ignore this field
-    @Mapping(target = "participants", ignore = true) // Ignore this field
-    @Mapping(target = "messages", ignore = true) // Ignore this field
+    @Mapping(target = "participantsPage", ignore = true) // Ignore this field
+    @Mapping(target = "messagesPage", ignore = true) // Ignore this field
     ChatDto toDto(Chat chat);
 }

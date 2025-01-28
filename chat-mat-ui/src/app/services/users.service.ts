@@ -3,7 +3,7 @@ import {UsersApiService} from '../common/rest/api-services/users-api.service';
 import {QueryRequest} from '../common/rest/types/requests/query-request';
 import {Observable} from 'rxjs';
 import {PaginatedResponse} from '../common/rest/types/responses/paginated-response';
-import {User} from '../common/rest/types/responses/user';
+import {UserResponse} from '../common/rest/types/responses/userResponse';
 import {buildQueryParams} from '../common/utils/util-functions';
 
 @Injectable({
@@ -16,14 +16,14 @@ export class UsersService {
     ) {
     }
 
-    getUsers(queryRequest: QueryRequest): Observable<PaginatedResponse<User>> {
+    getUsers(queryRequest: QueryRequest): Observable<PaginatedResponse<UserResponse>> {
         queryRequest.excludeSelf = true;
         const params = buildQueryParams(queryRequest) as any;
         params.withFriendsInfo = true;
         return this.usersApiService.getUsers(params);
     }
 
-    getUser(userId: number): Observable<User> {
+    getUser(userId: number): Observable<UserResponse> {
         return this.usersApiService.getUser(userId);
     }
 

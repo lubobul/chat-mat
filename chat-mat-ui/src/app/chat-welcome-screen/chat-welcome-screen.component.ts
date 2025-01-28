@@ -1,5 +1,5 @@
 import { Component } from '@angular/core';
-import {User} from '../common/rest/types/responses/user';
+import {UserResponse} from '../common/rest/types/responses/userResponse';
 import {AuthService} from '../services/auth.service';
 
 @Component({
@@ -14,7 +14,7 @@ export class ChatWelcomeScreenComponent {
     constructor(private authService: AuthService) {
     }
 
-    public get userIdentity(): User{
+    public get userIdentity(): UserResponse{
         return this.authService.getUserIdentity();
     }
 }

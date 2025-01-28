@@ -8,7 +8,7 @@ import {
     UpdateProfileRequest
 } from '../common/rest/types/auth-types';
 import {Observable, tap} from 'rxjs';
-import {User} from '../common/rest/types/responses/user';
+import {UserResponse} from '../common/rest/types/responses/userResponse';
 import {ProfileApiService} from '../common/rest/api-services/profile-api.service';
 
 @Injectable({
@@ -43,7 +43,7 @@ export class AuthService {
         )
     }
 
-    updateProfile(request: UpdateProfileRequest): Observable<User> {
+    updateProfile(request: UpdateProfileRequest): Observable<UserResponse> {
         return this.profileApiService.updateProfile(request).pipe(
             tap((response) => {
                 this.storeUserIdentity(response);
@@ -59,7 +59,7 @@ export class AuthService {
         );
     }
 
-    private storeUserIdentity(userIdentity: User): void{
+    private storeUserIdentity(userIdentity: UserResponse): void{
         localStorage.setItem(this.USER_IDENTITY_KEY, JSON.stringify(userIdentity));
     }
 
@@ -68,7 +68,7 @@ export class AuthService {
     }
 
 
-    public getUserIdentity(): User{
+    public getUserIdentity(): UserResponse{
         return JSON.parse(localStorage.getItem(this.USER_IDENTITY_KEY) as string);
     }
 

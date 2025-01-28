@@ -1,4 +1,4 @@
-import {User} from './responses/user';
+import {UserResponse} from './responses/userResponse';
 
 export interface RegisterRequest {
     username: string;
@@ -12,7 +12,7 @@ export interface LoginRequest {
 }
 
 export interface JwtResponse {
-    user: User;
+    user: UserResponse;
     token: string;
 }
 

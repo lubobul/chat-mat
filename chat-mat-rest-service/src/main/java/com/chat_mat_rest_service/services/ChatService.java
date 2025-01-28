@@ -74,12 +74,8 @@ public class ChatService {
         // Map to DTO
         ChatDto chatDto = chatMapper.toDto(chat);
         chatDto.setOwner(userMapper.toDto(chat.getOwner()));
-        chatDto.setParticipants(participants.getContent().stream().map(userMapper::toDto).toList());
-        chatDto.setMessages(messages.getContent().stream().map(chatMessageMapper::toDto).toList());
-
-        // Include pagination details if needed
-        chatDto.setParticipantsPageDetails(participants.getPageable());
-        chatDto.setMessagesPageDetails(messages.getPageable());
+        chatDto.setParticipantsPage(participants.map(userMapper::toDto));
+        chatDto.setMessagesPage(messages.map(chatMessageMapper::toDto));
 
         return chatDto;
     }

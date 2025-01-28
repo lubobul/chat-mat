@@ -3,3 +3,7 @@ export interface CreateChatRequest {
     isChannel: boolean;
     participantIds: number[];
 }
+
+export interface ChatMessageRequest{
+    messageContent: string;
+}

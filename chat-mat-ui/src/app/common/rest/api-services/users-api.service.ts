@@ -3,7 +3,7 @@ import { HttpClient } from '@angular/common/http';
 import { Observable } from 'rxjs';
 import { RegisterRequest, LoginRequest, JwtResponse, RestMessageResponse } from '../types/auth-types';
 import {PaginatedResponse} from '../types/responses/paginated-response';
-import {User} from '../types/responses/user';
+import {UserResponse} from '../types/responses/userResponse';
 import {QueryParams, QueryRequest} from '../types/requests/query-request';
 import {buildQueryParams} from '../../utils/util-functions';
 
@@ -15,11 +15,11 @@ export class UsersApiService {
 
     constructor(private http: HttpClient) {}
 
-    getUsers(params: QueryParams | any): Observable<PaginatedResponse<User>> {
-        return this.http.get<PaginatedResponse<User>>(this.apiUrl, { params });
+    getUsers(params: QueryParams | any): Observable<PaginatedResponse<UserResponse>> {
+        return this.http.get<PaginatedResponse<UserResponse>>(this.apiUrl, { params });
     }
 
-    getUser(userId: number): Observable<User> {
-        return this.http.get<User>(`${this.apiUrl}/${userId}`);
+    getUser(userId: number): Observable<UserResponse> {
+        return this.http.get<UserResponse>(`${this.apiUrl}/${userId}`);
     }
 }

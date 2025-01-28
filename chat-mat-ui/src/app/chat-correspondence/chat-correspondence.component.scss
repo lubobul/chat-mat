@@ -2,6 +2,7 @@
     display: flex;
     flex-flow: column;
     align-items: center;
+    width: 100%;
     height: 100vh;
     overflow: hidden;
 }
@@ -9,41 +10,44 @@
 .chat-container {
     display: flex;
     flex-flow: column;
-    min-width: 36rem; //make this 38 so it fits in the fmi main page
-    max-width: 38rem;
+    min-width: 36rem;
     height: 100vh;
+    width: 100%;
 
-    .chat-user-input {
-        flex-grow: 1;
-        padding: 1rem;
-        border-radius: 1rem;
-        border: 1px solid #ccc;
-        font-size: 14px;
-        resize: none;
-        outline: none;
-        margin-right: 1rem;
-        box-shadow: 5px 5px 10px 0px gray;
-    }
-
-    .send-button {
-        border-radius: 1rem;
-        border: 1px solid #ccc;
-        box-shadow: 5px 5px 10px 0px gray;
-        background-color: #219ebc;
-        width: 6rem;
-        color: white;
-        font-size: large;
-        cursor: pointer;
-
-        &:hover {
-            background-color: #138194;
-        }
-    }
 
     .input-container {
         display: flex;
-        margin-bottom: 1rem;
-        margin-top: 1rem;
+        margin-bottom: 4rem;
+        margin-top: auto;
+        flex-shrink: 0;
+        height: 7rem;
+        align-items: center;
+        justify-content: center;
+
+        .chat-user-input {
+            flex-grow: 1;
+            padding: 1rem;
+            border-radius: 1rem;
+            border: 1px solid #ccc;
+            font-size: 14px;
+            resize: none;
+            outline: none;
+            margin-right: 1rem;
+            box-shadow: 5px 5px 10px 0px gray;
+            height: 4rem;
+        }
+
+
+        .send-button-icon {
+            margin-right: 0.6rem;
+            transform: rotate(90deg);
+            color: var(--clr-color-action-100);
+            &:hover{
+                cursor: pointer;
+                color: var(--clr-color-action-400);
+            }
+        }
+
     }
 
     .chat-user-input:focus {
@@ -60,13 +64,13 @@
     }
 
     &::-webkit-scrollbar-thumb {
-        background-color: #023047; /* Color of the scroll thumb */
+        background-color: var(--clr-color-action-800); /* Color of the scroll thumb */
         border-radius: 10px; /* Roundness of the scroll thumb */
-        border: 3px solid #8ecae6; /* Space around the scroll thumb */
+        border: 3px solid var(--clr-color-action-200); /* Space around the scroll thumb */
     }
 
     &::-webkit-scrollbar-track {
-        background: #add4e7; /* Color of the scrollbar track */
+        background: var(--clr-color-action-100); /* Color of the scrollbar track */
     }
 
     .chat-message {
