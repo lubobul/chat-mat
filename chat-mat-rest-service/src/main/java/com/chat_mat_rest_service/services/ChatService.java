@@ -6,12 +6,14 @@ import com.chat_mat_rest_service.dtos.mappers.UserMapper;
 import com.chat_mat_rest_service.dtos.responses.ChatDto;
 import com.chat_mat_rest_service.dtos.mappers.ChatMapper;
 import com.chat_mat_rest_service.dtos.requests.CreateChatRequest;
+import com.chat_mat_rest_service.dtos.responses.UserDto;
 import com.chat_mat_rest_service.entities.*;
 import com.chat_mat_rest_service.repositories.ChatMessageRepository;
 import com.chat_mat_rest_service.repositories.ChatParticipantRepository;
 import com.chat_mat_rest_service.repositories.ChatRepository;
 import com.chat_mat_rest_service.repositories.UserRepository;
 import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageImpl;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
@@ -129,8 +131,37 @@ public class ChatService {
         return chatMapper.toDto(chat);
     }
 
+//    public Page<ChatDto> getUserChats(String filter, Pageable pageable, boolean isChannel) {
+//        Long currentUserId = getAuthenticatedUserId(); // Fetch the current user's ID
+//        if (filter != null && !filter.isEmpty()) {
+//            // Parse the filter for chatTitle==value
+//            String[] conditions = filter.split(",");
+//            String chatTitle = null;
+//
+//            for (String condition : conditions) {
+//                if (condition.startsWith("title==")) {
+//                    chatTitle = condition.substring("title==".length());
+//                    break;
+//                }
+//            }
+//
+//            if (chatTitle != null) {
+//                // Fetch chats where the user is either the owner or a participant with the given title
+//                return chatRepository.findByOwnerIdOrParticipantIdAndTitleContainingIgnoreCase(
+//                        currentUserId, chatTitle, isChannel, pageable
+//                ).map(chatMapper::toDto);
+//            }
+//        }
+//
+//        // Fetch all chats where the user is either the owner or a participant
+//        return chatRepository.findByOwnerIdOrParticipantId(currentUserId, isChannel, pageable)
+//                .map(chatMapper::toDto);
+//    }
+
     public Page<ChatDto> getUserChats(String filter, Pageable pageable, boolean isChannel) {
         Long currentUserId = getAuthenticatedUserId(); // Fetch the current user's ID
+
+        Page<Chat> chats;
         if (filter != null && !filter.isEmpty()) {
             // Parse the filter for chatTitle==value
             String[] conditions = filter.split(",");
@@ -145,14 +176,37 @@ public class ChatService {
 
             if (chatTitle != null) {
                 // Fetch chats where the user is either the owner or a participant with the given title
-                return chatRepository.findByOwnerIdOrParticipantIdAndTitleContainingIgnoreCase(
+                chats = chatRepository.findByOwnerIdOrParticipantIdAndTitleContainingIgnoreCase(
                         currentUserId, chatTitle, isChannel, pageable
-                ).map(chatMapper::toDto);
+                );
+            } else {
+                chats = chatRepository.findByOwnerIdOrParticipantId(currentUserId, isChannel, pageable);
             }
+        } else {
+            // Fetch all chats where the user is either the owner or a participant
+            chats = chatRepository.findByOwnerIdOrParticipantId(currentUserId, isChannel, pageable);
         }
 
-        // Fetch all chats where the user is either the owner or a participant
-        return chatRepository.findByOwnerIdOrParticipantId(currentUserId, isChannel, pageable)
-                .map(chatMapper::toDto);
+        // Map Chat entities to ChatDto
+        return chats.map(chat -> {
+            ChatDto chatDto = chatMapper.toDto(chat);
+
+            // Only add owner and one participant if the chat is not a channel
+            if (!chat.getIsChannel()) {
+                chatDto.setOwner(userMapper.toDto(chat.getOwner()));
+
+                // Add only one participant to participantsPage if participants exist
+                if (chat.getParticipants() != null && !chat.getParticipants().isEmpty()) {
+                    List<UserDto> singleParticipantList = chat.getParticipants().stream()
+                            .limit(1)
+                            .map(userMapper::toDto)
+                            .toList();
+                    chatDto.setParticipantsPage(new PageImpl<>(singleParticipantList));
+                }
+            }
+
+            return chatDto;
+        });
     }
+
 }

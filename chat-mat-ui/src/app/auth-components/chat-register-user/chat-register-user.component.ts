@@ -38,7 +38,7 @@ export class ChatRegisterUserComponent {
         private router: Router
     ) {
         this.registerForm = this.fb.group({
-            username: ['', [Validators.required, Validators.minLength(6)]],
+            username: ['', [Validators.required, Validators.minLength(3)]],
             email: ['', [Validators.required, Validators.email]],
             password: ['', [Validators.required, Validators.minLength(6)]],
             repeatPassword: ['', [Validators.required, Validators.minLength(6)]],

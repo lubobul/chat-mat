@@ -55,7 +55,7 @@ export class ProfileSettingsComponent implements OnInit{
     //TODO Could potentially be checking if user exists while typing username
     private buildForm(user: UserResponse): void{
         this.updateProfileForm = this.fb.group({
-            username: [user.username, [Validators.required, Validators.minLength(6)]],
+            username: [user.username, [Validators.required, Validators.minLength(3)]],
             email: [user.email, [Validators.required, Validators.email]],
         } as AbstractControlOptions);
 

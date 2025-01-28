@@ -2,12 +2,22 @@
     <div class="chat-container">
         <div #scrollContainer class="main-chat-history">
             @for (chatMessage of loadedChatMessages; track chatMessage.id) {
-                <div
-                    class="chat-message"
-                    [class]="chatMessage.isMine ? 'my-message' : 'their-message'"
-                >
-                    <p>{{ chatMessage.messageContent }}</p>
+                <div class="chat-message-container" [class]="chatMessage.isMine ? 'author-message-margin' : ''">
+                    <div class="chat-message-info">
+                        @if(!chatMessage.isMine){
+                            <p class="chat-message-username">{{chatMessage.senderUsername}}</p>
+                        }
+                        <p class="chat-message-time">{{chatMessage.createdAt | date : "dd.MM, hh:mm"}}</p>
+                    </div>
+
+                    <div
+                        class="chat-message-content"
+                        [class]="chatMessage.isMine ? 'my-message' : 'their-message'"
+                    >
+                        <p>{{ chatMessage.messageContent }}</p>
+                    </div>
                 </div>
+
             }
         </div>
         <div class="input-container">

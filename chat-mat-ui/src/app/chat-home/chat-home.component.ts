@@ -16,6 +16,7 @@ import {ChatService} from '../services/chat.service';
 import {CreateChatRequest} from '../common/rest/types/requests/chat-request';
 import {ChatResponse} from '../common/rest/types/responses/chat-response';
 import {AuthService} from '../services/auth.service';
+import {ChatTitlePipe} from './chat-title.pipe';
 
 @Component({
     selector: 'app-chat-home',
@@ -27,7 +28,8 @@ import {AuthService} from '../services/auth.service';
         CdsIconModule,
         ClarityModule,
         ReactiveFormsModule,
-        DatePipe
+        DatePipe,
+        ChatTitlePipe
     ],
     templateUrl: './chat-home.component.html',
     standalone: true,
@@ -45,7 +47,7 @@ export class ChatHomeComponent implements OnInit {
     openViewUserModal = false;
     selectedFriend: UserResponse = {} as UserResponse;
     friendActionLoading = false;
-    loggedInUser: UserResponse = {} as UserResponse;
+    currentUser: UserResponse = {} as UserResponse;
 
     constructor(
         private friendsService: FriendsService,
@@ -57,7 +59,7 @@ export class ChatHomeComponent implements OnInit {
     }
 
     ngOnInit(): void {
-        this.loggedInUser = this.authService.getUserIdentity();
+        this.currentUser = this.authService.getUserIdentity();
         this.refresh();
         this.subscribeToFriendsSearch();
         this.subscribeToDirectChatsSearch();
@@ -134,7 +136,7 @@ export class ChatHomeComponent implements OnInit {
     public messageFriend(): void{
         this.friendActionLoading = true;
         this.chatService.createChat({
-            title: this.selectedFriend.username,
+            title: `${this.selectedFriend.username}-${this.currentUser.username}`,
             isChannel: false,
             participantIds: [this.selectedFriend.id]
         } as CreateChatRequest).subscribe({

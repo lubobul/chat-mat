@@ -32,23 +32,22 @@
             outline: none;
             margin-right: 1rem;
             height: 3rem;
+            &:focus{
+                border-color: var(--clr-color-action-600);
+            }
         }
 
 
         .send-button-icon {
             margin-right: 0.6rem;
             transform: rotate(90deg);
-            color: var(--clr-color-action-100);
+            color: var(--clr-color-neutral-600);
             &:hover{
                 cursor: pointer;
-                color: var(--clr-color-action-400);
+                color: var(--clr-color-action-600);
             }
         }
 
-    }
-
-    .chat-user-input:focus {
-        border-color: #023047;
     }
 }
 
@@ -70,29 +69,50 @@
         background: var(--clr-color-action-100); /* Color of the scrollbar track */
     }
 
-    .chat-message {
-
-        p{
-            color: black;
-            padding: 0.1rem;
-            margin: 0.1rem;
-        }
-
-        padding: 0.2rem;
+    .chat-message-container{
+        display: flex;
+        flex-flow: column;
+        width: fit-content;
         margin-top: 0.2rem;
         margin-bottom: 0.2rem;
-        border-radius: 0.6rem;
-    }
+        .chat-message-info{
+            display: flex;
+            align-items: center;
+            .chat-message-username{
+                margin:0 0.4rem 0 0;
+                font-weight: bold;
+            }
 
-    .my-message {
-        background-color: var(--clr-color-action-100);
-        max-width: fit-content;
-        display: flex;
-        margin-left: auto;
-    }
+            .chat-message-time{
+                margin: 0.1rem 0 0 0;
+                font-size: 0.5rem;
+            }
+        }
+        .chat-message-content {
 
-    .their-message {
-        background-color: var(--clr-color-neutral-400);
-        max-width: fit-content;
+            p{
+                color: black;
+                padding: 0.1rem;
+                margin: 0.1rem;
+            }
+
+            padding: 0.2rem;
+            border-radius: 0.6rem;
+        }
+
+        .my-message {
+            background-color: var(--clr-color-action-100);
+            max-width: fit-content;
+            display: flex;
+        }
+
+        .their-message {
+            background-color: var(--clr-color-neutral-400);
+            max-width: fit-content;
+        }
     }
+}
+
+.author-message-margin{
+    margin-left: auto;
 }

@@ -11,11 +11,12 @@ import {AuthService} from '../services/auth.service';
 import {ChatMessageViewModel} from '../common/view-models/chat-message-view-models';
 import {ChatMessageRequest} from '../common/rest/types/requests/chat-request';
 import {CdsIconModule} from '@cds/angular';
+import {DatePipe} from '@angular/common';
 
 
 @Component({
     selector: 'chat-correspondence',
-    imports: [FormsModule, CdsIconModule],
+    imports: [FormsModule, CdsIconModule, DatePipe],
     templateUrl: './chat-correspondence.component.html',
     standalone: true,
     styleUrl: './chat-correspondence.component.scss',

@@ -12,6 +12,9 @@
     <clr-input-container>
         <label>Username</label>
         <input clrInput type="name" formControlName="username" placeholder="Enter your username"/>
+        <clr-control-error *clrIfError="'minlength'">
+            Username should be more than 3 characters long.
+        </clr-control-error>
         <clr-control-error *clrIfError="'required'">
             Username field is required.
         </clr-control-error>

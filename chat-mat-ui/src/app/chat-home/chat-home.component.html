@@ -10,7 +10,7 @@
             <a [routerLink]="CHAT_ROUTE_PATHS.PROFILE_SETTINGS" [routerLinkActive]="['active']"
                class="nav-link nav-icon">
                 <cds-icon shape="user"></cds-icon>
-                <span>{{loggedInUser.username}}</span>
+                <span>{{currentUser.username}}</span>
             </a>
         </div>
     </header>
@@ -46,7 +46,7 @@
                             <clr-vertical-nav-group-children>
                                 @for (chat of directChats; track chat.id) {
                                     <a [routerLink]="'/' +CHAT_ROUTE_PATHS.HOME+ '/' + CHAT_ROUTE_PATHS.CHAT + '/' + chat.id" class="user-nav-button"
-                                          clrVerticalNavLink>{{ chat.title }}</a>
+                                          clrVerticalNavLink>{{ chat | chatTitle: currentUser }}</a>
                                 }
                             </clr-vertical-nav-group-children>
                         </clr-vertical-nav-group>
