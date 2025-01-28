@@ -95,7 +95,7 @@ public class ChatService {
         return chatDto;
     }
 
-    public ChatDto createChat(CreateChatRequest request) {
+    public ChatDto getOrCreateChat(CreateChatRequest request) {
         Long currentUserId = getAuthenticatedUserId(); // Use your existing method to extract userId from JWT
 
         // Fetch the current user (chat owner)
@@ -111,7 +111,7 @@ public class ChatService {
 
         // Check for existing non-channel chat with the participant
         if (!request.isChannel()) {
-            List<Chat> existingChats = chatRepository.findNonChannelChatsByParticipants(currentUserId, firstParticipantId);
+            List<Chat> existingChats = chatRepository.findNonChannelChatsByParticipantsOrOwner(currentUserId, firstParticipantId);
             if (!existingChats.isEmpty()) {
                 return chatMapper.toDto(existingChats.getFirst()); // Return the first matching chat
             }

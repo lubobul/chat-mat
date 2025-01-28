@@ -1,5 +1,5 @@
 <clr-side-panel [(clrSidePanelOpen)]="opened" [clrSidePanelStaticBackdrop]="true" [clrSidePanelSize]="'lg'">
-    <h3 class="side-panel-title">Create New Chat</h3>
+    <h3 class="side-panel-title">Create new channel</h3>
     <div class="side-panel-body">
         @if (errorMessage) {
             <clr-alert class="danger-alert" [clrAlertType]="'danger'" [(clrAlertClosed)]="alertClosed">
@@ -8,7 +8,7 @@
                 </clr-alert-item>
             </clr-alert>
         }
-        <h5>Chat name</h5>
+        <h5>Channel name</h5>
 
         <form [formGroup]="channelForm">
             <clr-input-container>
@@ -21,7 +21,7 @@
                 </clr-control-error>
             </clr-input-container>
 
-            <h5>Select channel participants</h5>
+            <h5>Select channel participants from your friend list</h5>
             <clr-datagrid
                 (clrDgRefresh)="refreshByGrid($event)"
                 [clrDgLoading]="loading"
@@ -33,7 +33,7 @@
                 <clr-dg-column [clrDgField]="'username'">Username</clr-dg-column>
                 <clr-dg-column [clrDgField]="'email'">Email</clr-dg-column>
                 <clr-dg-column>Active Since</clr-dg-column>
-
+                <clr-dg-placeholder>No friends found.</clr-dg-placeholder>
                 @for (user of usersPage.content; track user.id) {
                     <clr-dg-row [clrDgItem]="user">
                         <clr-dg-cell>{{ user.username }}</clr-dg-cell>

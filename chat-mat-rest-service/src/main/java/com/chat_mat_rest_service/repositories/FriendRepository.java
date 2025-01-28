@@ -20,6 +20,19 @@ public interface FriendRepository extends JpaRepository<Friend, FriendId> {
     // Filter friends by username
     Page<Friend> findByUserIdAndFriendUsernameContainingIgnoreCase(Long userId, String username, Pageable pageable);
 
+    @Query("""
+    SELECT f
+    FROM Friend f
+    WHERE f.user.id = :userId
+      AND f.friend.deleted = false
+      AND (:username IS NULL OR f.friend.username LIKE %:username%)
+""")
+    Page<Friend> findNonDeletedFriendsByUserId(
+            @Param("userId") Long userId,
+            @Param("username") String username,
+            Pageable pageable
+    );
+
     @Modifying
     @Transactional
     @Query(value = "INSERT INTO friends (user_id, friend_id) VALUES (:userId, :friendId)", nativeQuery = true)

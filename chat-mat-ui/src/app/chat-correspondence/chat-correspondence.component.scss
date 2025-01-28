@@ -47,10 +47,10 @@
         .send-button-icon {
             margin-right: 0.6rem;
             transform: rotate(90deg);
-            color: var(--clr-color-neutral-500);
+            color: var(--clr-color-action-600);
             &:hover{
                 cursor: pointer;
-                color: var(--clr-color-action-600);
+                color: var(--clr-color-action-800);
             }
         }
 

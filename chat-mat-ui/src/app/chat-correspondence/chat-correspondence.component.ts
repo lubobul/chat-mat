@@ -26,11 +26,12 @@ import {CdsIconModule} from '@cds/angular';
 import {DatePipe} from '@angular/common';
 import {PaginatedResponse} from '../common/rest/types/responses/paginated-response';
 import {EmojiParserPipe} from '../common/pipes/emoji-parser.pipe';
+import {ClrAlertModule} from '@clr/angular';
 
 
 @Component({
     selector: 'chat-correspondence',
-    imports: [FormsModule, CdsIconModule, DatePipe, EmojiParserPipe],
+    imports: [FormsModule, CdsIconModule, DatePipe, EmojiParserPipe, ClrAlertModule],
     templateUrl: './chat-correspondence.component.html',
     standalone: true,
     styleUrl: './chat-correspondence.component.scss',

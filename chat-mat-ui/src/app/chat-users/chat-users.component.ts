@@ -21,6 +21,7 @@ export class ChatUsersComponent implements OnInit{
     errorMessage = "";
     alertClosed = true;
     loading = true;
+
     usersPage: PaginatedResponse<UserResponse> = {
         pageSize: 0,
         content: [],

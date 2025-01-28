@@ -7,7 +7,7 @@ import {
 import {FormControl, ReactiveFormsModule} from '@angular/forms';
 import {CdsIconModule} from '@cds/angular';
 import {UserResponse} from '../common/rest/types/responses/userResponse';
-import {debounceTime, distinctUntilChanged, filter, switchMap} from 'rxjs';
+import {debounceTime, distinctUntilChanged, filter, forkJoin, map, Observable, switchMap, tap} from 'rxjs';
 import {resolveErrorMessage} from '../common/utils/util-functions';
 import {FriendsService} from '../services/friends.service';
 import {CHAT_ROUTE_PATHS} from '../app.routes';
@@ -64,13 +64,13 @@ export class ChatHomeComponent implements OnInit {
 
     ngOnInit(): void {
         this.currentUser = this.authService.getUserIdentity();
-        this.refresh();
+        this.refresh().subscribe();
         this.subscribeToFriendsSearch();
         this.subscribeToDirectChatsSearch();
         this.subscribeToChannelsSearch();
     }
 
-    public subscribeToFriendsSearch(): void{
+    public subscribeToFriendsSearch(): void {
         this.friendSearchControl.valueChanges
             .pipe(
                 filter((query): query is string => query !== null),
@@ -93,7 +93,7 @@ export class ChatHomeComponent implements OnInit {
             });
     }
 
-    public subscribeToDirectChatsSearch(): void{
+    public subscribeToDirectChatsSearch(): void {
         this.chatSearchControl.valueChanges
             .pipe(
                 filter((query): query is string => query !== null),
@@ -116,7 +116,7 @@ export class ChatHomeComponent implements OnInit {
             });
     }
 
-    public subscribeToChannelsSearch(): void{
+    public subscribeToChannelsSearch(): void {
         this.channelSearchControl.valueChanges
             .pipe(
                 filter((query): query is string => query !== null),
@@ -139,18 +139,19 @@ export class ChatHomeComponent implements OnInit {
             });
     }
 
-    public viewUser(user: UserResponse): void{
+    public viewUser(user: UserResponse): void {
         this.selectedFriend = user;
         this.openViewUserModal = true;
     }
 
-    public unfriend(): void{
+    public unfriend(): void {
         this.friendActionLoading = true;
         this.friendsService.removeFriend(this.selectedFriend).subscribe({
             next: () => {
                 this.friendActionLoading = false;
                 this.openViewUserModal = false;
-                this.router.navigate([`${CHAT_ROUTE_PATHS.HOME}`]);;
+                this.router.navigate([`${CHAT_ROUTE_PATHS.HOME}`]);
+                ;
             },
             error: (error) => {
                 this.friendActionLoading = false;
@@ -161,7 +162,7 @@ export class ChatHomeComponent implements OnInit {
         });
     }
 
-    public messageFriend(): void{
+    public createOrOpenDirectChatWithFriend(): void {
         this.friendActionLoading = true;
         this.chatService.createChat({
             title: `${this.selectedFriend.username}-${this.currentUser.username}`,
@@ -171,7 +172,7 @@ export class ChatHomeComponent implements OnInit {
             next: (chat) => {
                 this.friendActionLoading = false;
                 this.openViewUserModal = false;
-                this.refresh();
+                this.refresh().subscribe();
                 this.router.navigate([`${CHAT_ROUTE_PATHS.HOME}/${CHAT_ROUTE_PATHS.CHAT}/${chat.id}`]);
             },
             error: (error) => {
@@ -183,37 +184,40 @@ export class ChatHomeComponent implements OnInit {
         });
     }
 
-    public refresh(): void{
-        this.friendsService.getFriends({
-            page: 1,
-            pageSize: 32,
-        }).subscribe((response) => {
-            this.friends = response.content;
-        });
+    public refresh(): Observable<void> {
 
-        this.chatService.getDirectChats({
-            page: 1,
-            pageSize: 32,
-        }).subscribe((response) => {
-            this.directChats = response.content;
-        });
+        return forkJoin([
+            this.friendsService.getFriends({
+                page: 1,
+                pageSize: 32,
+            }),
+            this.chatService.getDirectChats({
+                page: 1,
+                pageSize: 32,
+            }),
+            this.chatService.getChannelChats({
+                page: 1,
+                pageSize: 32,
+            })
+        ]).pipe(
+            map((data) => {
+                const [friends, directChats, channels] = data;
+                this.friends = friends.content;
+                this.directChats = directChats.content;
+                this.channels = channels.content;
 
-        this.chatService.getChannelChats({
-            page: 1,
-            pageSize: 32,
-        }).subscribe((response) => {
-            this.channels = response.content;
-        });
+                return;
+            })
+        );
     }
 
 
-
-    public openNewChatSideBar(): void{
+    public openNewChatSideBar(): void {
         this.newChatComponent.open();
     }
 
-    channelCreated(channel: ChatResponse): void{
-        this.refresh();
+    channelCreated(channel: ChatResponse): void {
+        this.refresh().subscribe();
         this.router.navigate([`${CHAT_ROUTE_PATHS.HOME}/${CHAT_ROUTE_PATHS.CHAT}/${channel.id}`]);
     }
 }

@@ -18,11 +18,10 @@ public interface ChatRepository extends JpaRepository<Chat, Long> {
     FROM Chat c
     JOIN c.participants p1
     WHERE c.isChannel = false
-      AND c.owner.id = :currentUserId
-      AND p1.id = :participantId
+      AND ((c.owner.id = :currentUserId AND p1.id = :participantId) OR (c.owner.id = :participantId AND p1.id = :currentUserId))
       AND c.deleted = false
 """)
-    List<Chat> findNonChannelChatsByParticipants(
+    List<Chat> findNonChannelChatsByParticipantsOrOwner(
             @Param("currentUserId") Long currentUserId,
             @Param("participantId") Long participantId
     );
@@ -34,6 +33,7 @@ public interface ChatRepository extends JpaRepository<Chat, Long> {
         LEFT JOIN c.participants p
         WHERE (c.owner.id = :userId OR p.id = :userId)
           AND LOWER(c.title) LIKE LOWER(CONCAT('%', :title, '%'))
+          AND c.owner.deleted = false
           AND c.deleted = false
           AND c.isChannel = :isChannel
     """)
@@ -50,6 +50,7 @@ public interface ChatRepository extends JpaRepository<Chat, Long> {
         FROM Chat c
         LEFT JOIN c.participants p
         WHERE (c.owner.id = :userId OR p.id = :userId)
+        AND c.owner.deleted = false
         AND c.deleted = false
         AND c.isChannel = :isChannel
     """)
@@ -64,6 +65,7 @@ public interface ChatRepository extends JpaRepository<Chat, Long> {
         FROM Chat c
         LEFT JOIN c.participants p
         WHERE c.id = :chatId AND (c.owner.id = :userId OR p.id = :userId)
+        AND c.owner.deleted = false
         AND c.deleted = false
     """)
     Optional<Chat> findByIdAndOwnerIdOrParticipantId(@Param("chatId") Long chatId, @Param("userId") Long userId);

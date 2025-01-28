@@ -10,7 +10,7 @@
             <a [routerLink]="CHAT_ROUTE_PATHS.PROFILE_SETTINGS" [routerLinkActive]="['active']"
                class="nav-link nav-icon">
                 <cds-icon shape="user"></cds-icon>
-                <span>{{currentUser.username}}</span>
+                <span>{{ currentUser.username }}</span>
             </a>
         </div>
     </header>
@@ -29,8 +29,11 @@
             <div class="chat-application-dynamic-content">
                 <nav class="message-nav">
                     <clr-vertical-nav [clrVerticalNavCollapsible]="false">
-                        <button (click)="openNewChatSideBar()" class="btn btn-primary button-new-chat"><cds-icon shape="chat-bubble"></cds-icon>New chat</button>
-                        <clr-vertical-nav-group routerLinkActive="active">
+                        <button (click)="openNewChatSideBar()" class="btn btn-primary button-new-chat">
+                            <cds-icon shape="chat-bubble"></cds-icon>
+                            New chat
+                        </button>
+                        <clr-vertical-nav-group routerLinkActive="active" [clrVerticalNavGroupExpanded]="true">
                             <cds-icon shape="chat-bubble" clrVerticalNavIcon></cds-icon>
                             Direct messages
                             <clr-vertical-nav-group-children>
@@ -44,29 +47,41 @@
                                 </form>
                             </clr-vertical-nav-group-children>
                             <clr-vertical-nav-group-children>
-                                @for (chat of directChats; track chat.id) {
-                                    <a [routerLinkActive]="['active']" [routerLink]="'/' +CHAT_ROUTE_PATHS.HOME+ '/' + CHAT_ROUTE_PATHS.CHAT + '/' + chat.id" class="user-nav-button"
-                                          clrVerticalNavLink>{{ chat | chatTitle: currentUser }}</a>
+                                @if (!!directChats?.length) {
+                                    @for (chat of directChats; track chat.id) {
+                                        <a [routerLinkActive]="['active']"
+                                           [routerLink]="'/' +CHAT_ROUTE_PATHS.HOME+ '/' + CHAT_ROUTE_PATHS.CHAT + '/' + chat.id"
+                                           class="user-nav-button"
+                                           clrVerticalNavLink>{{ chat | chatTitle: currentUser }}</a>
+                                    }
+                                } @else {
+                                    <span clrVerticalNavLink>No direct chats</span>
                                 }
                             </clr-vertical-nav-group-children>
                         </clr-vertical-nav-group>
-                        <clr-vertical-nav-group routerLinkActive="active">
+                        <clr-vertical-nav-group routerLinkActive="active" [clrVerticalNavGroupExpanded]="true">
                             <cds-icon shape="talk-bubbles" clrVerticalNavIcon></cds-icon>
                             Channels
                             <clr-vertical-nav-group-children>
                                 <form class="clr-form">
                                     <input type="text"
                                            id="channelChatSearch"
-                                           placeholder="Search for messages..."
+                                           placeholder="Search for channels..."
                                            class="clr-input"
                                            [formControl]="channelSearchControl"
                                     />
                                 </form>
                             </clr-vertical-nav-group-children>
                             <clr-vertical-nav-group-children>
-                                @for (channel of channels; track channel.id) {
-                                    <a [routerLinkActive]="['active']" [routerLink]="'/' +CHAT_ROUTE_PATHS.HOME+ '/' + CHAT_ROUTE_PATHS.CHAT + '/' + channel.id" class="user-nav-button"
-                                       clrVerticalNavLink>{{ channel.title }}</a>
+                                @if (!!channels?.length) {
+                                    @for (channel of channels; track channel.id) {
+                                        <a [routerLinkActive]="['active']"
+                                           [routerLink]="'/' +CHAT_ROUTE_PATHS.HOME+ '/' + CHAT_ROUTE_PATHS.CHAT + '/' + channel.id"
+                                           class="user-nav-button"
+                                           clrVerticalNavLink>{{ channel.title }}</a>
+                                    }
+                                } @else {
+                                    <span clrVerticalNavLink>No channels</span>
                                 }
                             </clr-vertical-nav-group-children>
                         </clr-vertical-nav-group>
@@ -86,7 +101,7 @@
 
                 <div class="friends-nav">
                     <clr-vertical-nav [clrVerticalNavCollapsible]="false">
-                        <clr-vertical-nav-group>
+                        <clr-vertical-nav-group [clrVerticalNavGroupExpanded]="true">
                             <cds-icon shape="assign-user" clrVerticalNavIcon></cds-icon>
                             Friends
                             <clr-vertical-nav-group-children>
@@ -100,11 +115,16 @@
                                 </form>
                             </clr-vertical-nav-group-children>
                             <clr-vertical-nav-group-children>
-                                @for (user of friends; track user.id) {
-                                    <span (click)="viewUser(user)" class="user-nav-button"
-                                          clrVerticalNavLink>{{ user.username }}</span>
+                                @if (!!friends?.length) {
+                                    @for (user of friends; track user.id) {
+                                        <span (click)="viewUser(user)" class="user-nav-button"
+                                              clrVerticalNavLink>{{ user.username }}</span>
 
+                                    }
+                                } @else {
+                                    <span clrVerticalNavLink>No friends</span>
                                 }
+
                             </clr-vertical-nav-group-children>
                         </clr-vertical-nav-group>
                     </clr-vertical-nav>
@@ -138,7 +158,7 @@
         <button type="button" class="btn btn-outline" (click)="openViewUserModal = false">Cancel
         </button>
         <button [disabled]="friendActionLoading" type="button" class="btn btn-primary"
-                (click)="messageFriend()">Message
+                (click)="createOrOpenDirectChatWithFriend()">Message
         </button>
     </div>
 </clr-modal>

@@ -1,5 +1,11 @@
     <div class="chat-container">
-
+        @if (errorMessage) {
+            <clr-alert class="danger-alert" [clrAlertType]="'danger'" [(clrAlertClosed)]="alertClosed">
+                <clr-alert-item>
+                    <span class="alert-text">{{ errorMessage }}</span>
+                </clr-alert-item>
+            </clr-alert>
+        }
         <nav class="subnav">
             @if(chat?.isChannel){
                 <h6 class="chat-title">{{chat?.title}}</h6>

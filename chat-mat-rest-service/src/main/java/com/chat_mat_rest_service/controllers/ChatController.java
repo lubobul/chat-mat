@@ -30,7 +30,7 @@ public class ChatController {
     public ResponseEntity<ChatDto> getOrCreateChat(
             @RequestBody CreateChatRequest request
     ) {
-        ChatDto chatResponse = chatService.createChat(request);
+        ChatDto chatResponse = chatService.getOrCreateChat(request);
         return ResponseEntity.ok(chatResponse);
     }
 

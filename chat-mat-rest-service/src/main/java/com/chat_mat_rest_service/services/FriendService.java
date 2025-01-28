@@ -48,10 +48,9 @@ public class FriendService {
                     username = condition.substring("username==".length());
                 }
             }
-
-            friendsPage = friendRepository.findByUserIdAndFriendUsernameContainingIgnoreCase(userId, username, pageable);
+            friendsPage = friendRepository.findNonDeletedFriendsByUserId(userId, username, pageable);
         } else {
-            friendsPage = friendRepository.findByUserId(userId, pageable);
+            friendsPage = friendRepository.findNonDeletedFriendsByUserId(userId, null, pageable);
         }
 
 

@@ -23,8 +23,6 @@ export const loginRedirectInterceptor: HttpInterceptorFn = (req, next) => {
             } else if (error.status === 403) {
                 // Optional: Show a forbidden message or handle gracefully
                 console.error('Access denied. You do not have permission to perform this action.');
-            } else if (error.status === 404){
-                router.navigate(['/home']);
             }
             return throwError(() => error);
         })
