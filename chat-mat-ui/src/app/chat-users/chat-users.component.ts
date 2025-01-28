@@ -10,7 +10,7 @@ import {buildRestGridFilter, resolveErrorMessage} from '../common/utils/util-fun
 import {FriendsService} from '../services/friends.service';
 
 @Component({
-    selector: 'app-chat-users',
+    selector: 'chat-users',
     imports: [ClarityModule, DatePipe,],
     templateUrl: './chat-users.component.html',
     standalone: true,

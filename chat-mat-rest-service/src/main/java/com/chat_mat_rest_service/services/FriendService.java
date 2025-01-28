@@ -6,6 +6,7 @@ import com.chat_mat_rest_service.dtos.mappers.UserMapper;
 import com.chat_mat_rest_service.entities.Friend;
 import com.chat_mat_rest_service.entities.FriendId;
 import com.chat_mat_rest_service.entities.User;
+import com.chat_mat_rest_service.repositories.ChatRepository;
 import com.chat_mat_rest_service.repositories.FriendRepository;
 import com.chat_mat_rest_service.repositories.UserRepository;
 import org.springframework.data.domain.Page;
@@ -20,14 +21,16 @@ import static com.chat_mat_rest_service.common.SecurityContextHelper.getAuthenti
 public class FriendService {
 
     private final FriendRepository friendRepository;
+    private final ChatRepository chatRepository;
     private final UserRepository userRepository;
     private final UserMapper userMapper;
 
 
-    public FriendService(FriendRepository friendRepository, UserRepository userRepository, UserMapper userMapper) {
+    public FriendService(FriendRepository friendRepository, UserRepository userRepository, ChatRepository chatRepository, UserMapper userMapper) {
         this.friendRepository = friendRepository;
         this.userRepository = userRepository;
         this.userMapper = userMapper;
+        this.chatRepository = chatRepository;
     }
 
     public Page<UserDto> getFriends(String filter, Pageable pageable) {
@@ -87,8 +90,14 @@ public class FriendService {
             throw new ResourceNotFoundException("This user is not your friend");
         }
 
-        // Remove the friend using the repository
+        // Remove the friendship
         friendRepository.removeFriend(userId, friendId);
+
+        // Soft delete applicable chats
+        List<Long> chatIds = chatRepository.findChatsToSoftDelete(userId, friendId);
+        if (!chatIds.isEmpty()) {
+            chatRepository.softDeleteChats(chatIds);
+        }
     }
 
     public List<UserDto> verifyFriends(List<Long> friendIds) {

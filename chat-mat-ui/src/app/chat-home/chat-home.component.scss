@@ -24,6 +24,7 @@
     height: 100vh;
     .button-new-chat{
         margin-left: 0.6rem;
+        width: 6rem;
     }
     clr-vertical-nav{
         height: 100%;
@@ -37,7 +38,7 @@
     min-width: 13rem;
     height: 100vh;
     clr-vertical-nav{
-        flex-grow: 1;
+        margin-left: auto;
         height: 100%;
     }
 }

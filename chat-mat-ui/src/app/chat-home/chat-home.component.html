@@ -29,7 +29,7 @@
             <div class="chat-application-dynamic-content">
                 <nav class="message-nav">
                     <clr-vertical-nav [clrVerticalNavCollapsible]="false">
-                        <button class="btn btn-primary button-new-chat">New chat</button>
+                        <button (click)="openNewChatSideBar()" class="btn btn-primary button-new-chat"><cds-icon shape="chat-bubble"></cds-icon>New chat</button>
                         <clr-vertical-nav-group routerLinkActive="active">
                             <cds-icon shape="chat-bubble" clrVerticalNavIcon></cds-icon>
                             Direct messages
@@ -142,4 +142,7 @@
         </button>
     </div>
 </clr-modal>
+
+
+<new-chat (channelCreated)="channelCreated($event)" #newChat></new-chat>
 

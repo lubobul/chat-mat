@@ -44,7 +44,7 @@ export class ChatCorrespondenceComponent implements OnInit, AfterViewChecked, On
     chat: ChatResponse;
     currentUser: UserResponse;
     loadedChatMessages: ChatMessageViewModel[];
-    scrolledToBottom = false;
+    initialScrollToBottom = false;
 
     protected userChatInput: string = '';
 
@@ -62,7 +62,9 @@ export class ChatCorrespondenceComponent implements OnInit, AfterViewChecked, On
     }
 
     ngAfterViewChecked(): void {
-        this.scrollToBottom();
+        if(!this.initialScrollToBottom && !!this.loadedChatMessages?.length){
+            this.scrollToBottom();
+        }
     }
 
     ngOnDestroy(): void {
@@ -106,6 +108,7 @@ export class ChatCorrespondenceComponent implements OnInit, AfterViewChecked, On
         ).subscribe({
             next: (chat) => {
                 this.userChatInput = "";
+                this.scrollToBottom();
             }, error: (error) => {
                 this.errorMessage = resolveErrorMessage(error);
                 this.alertClosed = false;
@@ -115,8 +118,8 @@ export class ChatCorrespondenceComponent implements OnInit, AfterViewChecked, On
         });
     }
 
-    private loadCorrespondence(chatId: number): Observable<ChatResponse>{
-        return  this.chatService.getChat(chatId).pipe(
+    private loadCorrespondence(chatId: number): Observable<ChatResponse> {
+        return this.chatService.getChat(chatId).pipe(
             tap((chat: ChatResponse) => {
                 this.chat = chat;
                 this.loadedChatMessages = chat.messagesPage.content.map((message) => {
@@ -166,9 +169,7 @@ export class ChatCorrespondenceComponent implements OnInit, AfterViewChecked, On
     }
 
     private scrollToBottom(): void {
-        if(!this.scrolledToBottom && !!this.loadedChatMessages?.length){
-            this.scrollContainer.nativeElement.scrollTop = this.scrollContainer.nativeElement.scrollHeight;
-            this.scrolledToBottom = true;
-        }
+        this.scrollContainer.nativeElement.scrollTop = this.scrollContainer.nativeElement.scrollHeight;
+        this.initialScrollToBottom = true;
     }
 }

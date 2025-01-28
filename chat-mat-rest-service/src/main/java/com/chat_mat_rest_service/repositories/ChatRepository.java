@@ -1,9 +1,11 @@
 package com.chat_mat_rest_service.repositories;
 
 import com.chat_mat_rest_service.entities.Chat;
+import jakarta.transaction.Transactional;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.jpa.repository.JpaRepository;
+import org.springframework.data.jpa.repository.Modifying;
 import org.springframework.data.jpa.repository.Query;
 import org.springframework.data.repository.query.Param;
 
@@ -65,5 +67,24 @@ public interface ChatRepository extends JpaRepository<Chat, Long> {
         AND c.deleted = false
     """)
     Optional<Chat> findByIdAndOwnerIdOrParticipantId(@Param("chatId") Long chatId, @Param("userId") Long userId);
+
+    @Query("""
+        SELECT c.id
+        FROM Chat c
+        JOIN c.participants p
+        WHERE c.owner.id = :userId
+          AND c.isChannel = false
+          AND p.id = :friendId
+    """)
+    List<Long> findChatsToSoftDelete(@Param("userId") Long userId, @Param("friendId") Long friendId);
+
+    @Modifying
+    @Transactional
+    @Query("""
+        UPDATE Chat c
+        SET c.deleted = true
+        WHERE c.id IN :chatIds
+    """)
+    void softDeleteChats(@Param("chatIds") List<Long> chatIds);
 
 }
