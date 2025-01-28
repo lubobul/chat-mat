@@ -14,27 +14,24 @@
     height: 100vh;
     width: 100%;
 
-
     .input-container {
         display: flex;
-        margin-bottom: 4rem;
+        margin-bottom: 5rem;
         margin-top: auto;
-        flex-shrink: 0;
-        height: 7rem;
+        height: 6rem;
         align-items: center;
         justify-content: center;
 
         .chat-user-input {
             flex-grow: 1;
-            padding: 1rem;
-            border-radius: 1rem;
+            padding: 0.6rem;
+            border-radius: 0.6rem;
             border: 1px solid #ccc;
             font-size: 14px;
             resize: none;
             outline: none;
             margin-right: 1rem;
-            box-shadow: 5px 5px 10px 0px gray;
-            height: 4rem;
+            height: 3rem;
         }
 
 
@@ -74,29 +71,28 @@
     }
 
     .chat-message {
-        color: white;
 
-        p, h3 {
+        p{
+            color: black;
             padding: 0.1rem;
             margin: 0.1rem;
         }
 
-        padding: 1rem;
-        margin-top: 1rem;
-        margin-bottom: 1rem;
-        border-radius: 1rem;
-        box-shadow: 5px 5px 10px 0px gray;
+        padding: 0.2rem;
+        margin-top: 0.2rem;
+        margin-bottom: 0.2rem;
+        border-radius: 0.6rem;
     }
 
-    .user-message {
-        background-color: #ffb703;
+    .my-message {
+        background-color: var(--clr-color-action-100);
         max-width: fit-content;
         display: flex;
         margin-left: auto;
     }
 
-    .bot-message {
-        background-color: #023047;
+    .their-message {
+        background-color: var(--clr-color-neutral-400);
         max-width: fit-content;
     }
 }

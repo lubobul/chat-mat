@@ -4,9 +4,9 @@
             @for (chatMessage of loadedChatMessages; track chatMessage.id) {
                 <div
                     class="chat-message"
-                    [class]="chatMessage.isMine ? 'user-message' : 'bot-message'"
+                    [class]="chatMessage.isMine ? 'my-message' : 'their-message'"
                 >
-                    <h3>{{ chatMessage.messageContent }}</h3>
+                    <p>{{ chatMessage.messageContent }}</p>
                 </div>
             }
         </div>
@@ -14,7 +14,7 @@
             <textarea
                 [disabled]="loading"
                 class="chat-user-input"
-                name="w3review"
+                name="messageInput"
                 [(ngModel)]="userChatInput"
                 (keydown)="onKeydown($event)"
                 placeholder="Write your message..."
