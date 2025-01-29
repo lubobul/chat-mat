@@ -16,4 +16,16 @@ public interface ChatParticipantRepository extends JpaRepository<ChatParticipant
 """)
     Page<User> findParticipantsByChatId(@Param("chatId") Long chatId, Pageable pageable);
 
+    @Query("""
+        SELECT p.user 
+        FROM ChatParticipant p 
+        WHERE p.chat.id = :chatId 
+        AND LOWER(p.user.username) LIKE LOWER(CONCAT('%', :username, '%'))
+    """)
+    Page<User> findParticipantsByChatIdAndUsernameContainingIgnoreCase(
+            @Param("chatId") Long chatId,
+            @Param("username") String username,
+            Pageable pageable
+    );
+
 }

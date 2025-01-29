@@ -3,9 +3,10 @@ import {Observable} from 'rxjs';
 import {ChatMessageRequest, CreateChatRequest} from '../common/rest/types/requests/chat-request';
 import {ChatResponse} from '../common/rest/types/responses/chat-response';
 import {ChatApiService} from '../common/rest/api-services/chat-api.service';
-import {QueryRequest} from '../common/rest/types/requests/query-request';
+import {QueryParams, QueryRequest} from '../common/rest/types/requests/query-request';
 import {PaginatedResponse} from '../common/rest/types/responses/paginated-response';
 import {buildQueryParams} from '../common/utils/util-functions';
+import {UserResponse} from '../common/rest/types/responses/userResponse';
 
 @Injectable({
     providedIn: 'root',
@@ -38,5 +39,10 @@ export class ChatService {
 
     sendMessage(message: ChatMessageRequest, chatId: number): Observable<ChatMessageRequest> {
         return this.chatApiService.sendMessage(message, chatId);
+    }
+
+    getParticipants(chatId: number, queryRequest: QueryRequest): Observable<PaginatedResponse<UserResponse>> {
+        const params = buildQueryParams(queryRequest) as any;
+        return this.chatApiService.getParticipants(chatId, params);
     }
 }

@@ -1,5 +1,5 @@
 <clr-side-panel [(clrSidePanelOpen)]="opened" [clrSidePanelStaticBackdrop]="true" [clrSidePanelSize]="'lg'">
-    <h3 class="side-panel-title">Create new channel</h3>
+    <h3 class="side-panel-title">Edit channel</h3>
     <div class="side-panel-body">
         @if (errorMessage) {
             <clr-alert class="danger-alert" [clrAlertType]="'danger'" [(clrAlertClosed)]="alertClosed">
@@ -34,7 +34,7 @@
                 <clr-dg-column [clrDgField]="'email'">Email</clr-dg-column>
                 <clr-dg-column>Active Since</clr-dg-column>
                 <clr-dg-placeholder>No friends found.</clr-dg-placeholder>
-                @for (user of currentParticipants.content; track user.id) {
+                @for (user of usersPage.content; track user.id) {
                     <clr-dg-row [clrDgItem]="user">
                         <clr-dg-cell>{{ user.username }}</clr-dg-cell>
                         <clr-dg-cell>{{ user.email }}</clr-dg-cell>
@@ -43,7 +43,7 @@
                 }
 
                 <clr-dg-footer>
-                    <clr-dg-pagination #pagination [clrDgPageSize]="5" [clrDgTotalItems]="currentParticipants.totalElements">
+                    <clr-dg-pagination #pagination [clrDgPageSize]="5" [clrDgTotalItems]="usersPage.totalElements">
                         <clr-dg-page-size [clrPageSizeOptions]="[5, 10, 15]">Users per page</clr-dg-page-size>
                         {{ pagination.firstItem + 1 }} - {{ pagination.lastItem + 1 }} of
                         {{ pagination.totalItems }} users

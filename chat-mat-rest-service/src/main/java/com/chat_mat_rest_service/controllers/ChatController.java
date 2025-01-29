@@ -4,6 +4,7 @@ import com.chat_mat_rest_service.dtos.requests.SendMessageRequest;
 import com.chat_mat_rest_service.dtos.responses.ChatDto;
 import com.chat_mat_rest_service.dtos.requests.CreateChatRequest;
 import com.chat_mat_rest_service.dtos.responses.ChatMessageDto;
+import com.chat_mat_rest_service.dtos.responses.UserDto;
 import com.chat_mat_rest_service.services.ChatMessageService;
 import com.chat_mat_rest_service.services.ChatService;
 import org.springframework.data.domain.Page;
@@ -63,5 +64,15 @@ public class ChatController {
     ) {
         ChatMessageDto message = chatMessageService.createMessage(chatId, chatMessage);
         return ResponseEntity.ok(message);
+    }
+
+    @GetMapping("/{chatId}/participants")
+    public ResponseEntity<Page<UserDto>> getChatParticipants(
+            @PathVariable Long chatId,
+            @RequestParam(value = "filter", required = false) String participantFilter,
+            Pageable pageable
+    ) {
+        Page<UserDto> participants = chatService.getChatParticipants(chatId, participantFilter, pageable);
+        return ResponseEntity.ok(participants);
     }
 }

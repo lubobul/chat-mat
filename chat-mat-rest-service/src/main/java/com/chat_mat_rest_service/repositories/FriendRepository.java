@@ -14,12 +14,6 @@ import java.util.List;
 
 public interface FriendRepository extends JpaRepository<Friend, FriendId> {
 
-    // Find friends of a user with optional pagination
-    Page<Friend> findByUserId(Long userId, Pageable pageable);
-
-    // Filter friends by username
-    Page<Friend> findByUserIdAndFriendUsernameContainingIgnoreCase(Long userId, String username, Pageable pageable);
-
     @Query("""
     SELECT f
     FROM Friend f
@@ -32,6 +26,14 @@ public interface FriendRepository extends JpaRepository<Friend, FriendId> {
             @Param("username") String username,
             Pageable pageable
     );
+
+    @Query("""
+        SELECT f.friend.id 
+        FROM Friend f 
+        WHERE f.user.id = :userId
+          AND f.friend.deleted = false
+    """)
+    List<Long> findFriendIdsByUserId(@Param("userId") Long userId);
 
     @Modifying
     @Transactional

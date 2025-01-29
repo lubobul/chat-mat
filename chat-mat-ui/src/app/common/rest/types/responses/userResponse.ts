@@ -4,5 +4,5 @@ export interface UserResponse {
     email: string;
     createdAt: string;
     avatar?: string;
-    friendOfYours?: boolean;
+    isFriendOfYours?: boolean;
 }

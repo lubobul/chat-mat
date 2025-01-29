@@ -8,10 +8,7 @@ import com.chat_mat_rest_service.dtos.mappers.ChatMapper;
 import com.chat_mat_rest_service.dtos.requests.CreateChatRequest;
 import com.chat_mat_rest_service.dtos.responses.UserDto;
 import com.chat_mat_rest_service.entities.*;
-import com.chat_mat_rest_service.repositories.ChatMessageRepository;
-import com.chat_mat_rest_service.repositories.ChatParticipantRepository;
-import com.chat_mat_rest_service.repositories.ChatRepository;
-import com.chat_mat_rest_service.repositories.UserRepository;
+import com.chat_mat_rest_service.repositories.*;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageImpl;
 import org.springframework.data.domain.PageRequest;
@@ -35,7 +32,7 @@ public class ChatService {
     private final ChatMapper chatMapper;
     private final UserMapper userMapper;
     private final ChatMessageMapper chatMessageMapper;
-
+    private final FriendRepository friendRepository;
     public ChatService(
             ChatRepository chatRepository,
             ChatMessageRepository chatMessageRepository,
@@ -43,7 +40,8 @@ public class ChatService {
             ChatParticipantRepository chatParticipantRepository,
             ChatMapper chatMapper,
             UserMapper userMapper,
-            ChatMessageMapper chatMessageMapper
+            ChatMessageMapper chatMessageMapper,
+            FriendRepository friendRepository
     ) {
         this.chatRepository = chatRepository;
         this.chatMessageRepository = chatMessageRepository;
@@ -52,6 +50,7 @@ public class ChatService {
         this.chatMapper = chatMapper;
         this.userMapper = userMapper;
         this.chatMessageMapper = chatMessageMapper;
+        this.friendRepository = friendRepository;
     }
 
     public ChatDto getChatById(
@@ -192,6 +191,47 @@ public class ChatService {
             }
 
             return chatDto;
+        });
+    }
+
+    //TODO if owner -> return participands - fine
+    // if participant -> return participants excluding self including owner, mark owner as owner
+    //
+    public Page<UserDto> getChatParticipants(Long chatId, String filter, Pageable pageable) {
+        Long currentUserId = getAuthenticatedUserId();
+
+        // Fetch the basic chat details
+        chatRepository.findByIdAndOwnerIdOrParticipantId(chatId, currentUserId)
+                .orElseThrow(() -> new ResourceNotFoundException("You are not allowed to view participants of this chat."));
+
+        String username = null;
+
+        if (filter != null) {
+            // Split filter into individual conditions
+            String[] conditions = filter.split(",");
+            for (String condition : conditions) {
+                if (condition.startsWith("username==")) {
+                    username = condition.substring("username==".length());
+                }
+            }
+        }
+
+        // Fetch paginated participants with optional filtering
+        Page<User> participants;
+        if (username != null && !username.isEmpty()) {
+            participants = chatParticipantRepository.findParticipantsByChatIdAndUsernameContainingIgnoreCase(chatId, username, pageable);
+        } else {
+            participants = chatParticipantRepository.findParticipantsByChatId(chatId, pageable);
+        }
+
+        // Get friend list for the current user
+        List<Long> friendIds = friendRepository.findFriendIdsByUserId(currentUserId);
+
+        // Map participants to DTOs with isFriendOfYours flag
+        return participants.map(participant -> {
+            UserDto userDto = userMapper.toDto(participant);
+            userDto.setIsFriendOfYours(friendIds.contains(participant.getId()));
+            return userDto;
         });
     }
 

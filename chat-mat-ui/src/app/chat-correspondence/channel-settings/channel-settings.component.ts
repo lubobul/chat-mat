@@ -7,21 +7,19 @@ import {
     ClrSidePanelModule
 } from '@clr/angular';
 import {DatePipe} from '@angular/common';
-import {debounceTime, mergeMap, Subject, Subscription} from 'rxjs';
-import {PaginatedResponse} from '../common/rest/types/responses/paginated-response';
-import {UserResponse} from '../common/rest/types/responses/userResponse';
-import {QueryRequest, QueryRequestSortType} from '../common/rest/types/requests/query-request';
-import {UsersService} from '../services/users.service';
-import {FriendsService} from '../services/friends.service';
-import {buildRestGridFilter, resolveErrorMessage} from '../common/utils/util-functions';
+import {debounceTime, mergeMap, Subject} from 'rxjs';
+import {PaginatedResponse} from '../../common/rest/types/responses/paginated-response';
+import {UserResponse} from '../../common/rest/types/responses/userResponse';
+import {QueryRequest, QueryRequestSortType} from '../../common/rest/types/requests/query-request';
+import {FriendsService} from '../../services/friends.service';
+import {buildRestGridFilter, resolveErrorMessage} from '../../common/utils/util-functions';
 import {FormBuilder, FormGroup, FormsModule, ReactiveFormsModule, Validators} from '@angular/forms';
-import {ChatService} from '../services/chat.service';
-import {CreateChatRequest} from '../common/rest/types/requests/chat-request';
-import {CHAT_ROUTE_PATHS} from '../app.routes';
-import {ChatResponse} from '../common/rest/types/responses/chat-response';
+import {ChatService} from '../../services/chat.service';
+import {CreateChatRequest} from '../../common/rest/types/requests/chat-request';
+import {ChatResponse} from '../../common/rest/types/responses/chat-response';
 
 @Component({
-    selector: 'new-chat',
+    selector: 'channel-settings',
     imports: [
         ClrAlertModule,
         ClrDatagridModule,
@@ -31,16 +29,16 @@ import {ChatResponse} from '../common/rest/types/responses/chat-response';
         FormsModule,
         ReactiveFormsModule
     ],
-    templateUrl: './new-chat.component.html',
+    templateUrl: './channel-settings.component.html',
     standalone: true,
-    styleUrl: './new-chat.component.scss'
+    styleUrl: './channel-settings.component.scss'
 })
-export class NewChatComponent implements OnInit{
+export class ChannelSettingsComponent implements OnInit{
     private onDataGridRefresh = new Subject<ClrDatagridStateInterface>();
     errorMessage = "";
     alertClosed = true;
     loading = true;
-    currentParticipants: PaginatedResponse<UserResponse> = {
+    usersPage: PaginatedResponse<UserResponse> = {
         pageSize: 0,
         content: [],
         totalPages: 0,
@@ -97,7 +95,7 @@ export class NewChatComponent implements OnInit{
                 return this.friendsService.getFriends(this.restQuery);
             })).subscribe( {
             next: (response) => {
-                this.currentParticipants = response;
+                this.usersPage = response;
                 this.loading = false;
 
             }, error: (error) => {
@@ -111,7 +109,7 @@ export class NewChatComponent implements OnInit{
         this.onDataGridRefresh.next(state);
     }
 
-    public open(): void {
+    public open(chat: ChatResponse): void {
         this.opened = true;
         this.buildForm();
         this.subscribeToUsersGrid();

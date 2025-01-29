@@ -150,13 +150,11 @@ public class UserService {
                 .map(friend -> friend.getFriend().getId())
                 .collect(Collectors.toSet());
 
-        // Map over the user page and set the isFriendOfYours property
-        List<UserDto> updatedUserDtos = userPageWithoutFriendsInfo.stream()
-                .peek(userDto -> userDto.setFriendOfYours(friendIds.contains(userDto.getId())))
-                .toList();
-
-        // Return the updated list as a Page
-        return new PageImpl<>(updatedUserDtos, pageable, userPageWithoutFriendsInfo.getTotalElements());
+        // Map participants to DTOs with isFriendOfYours flag
+        return userPageWithoutFriendsInfo.map(userDto -> {
+            userDto.setIsFriendOfYours(friendIds.contains(userDto.getId()));
+            return userDto;
+        });
     }
 
     public Page<UserDto> getUsers(String filter, Pageable pageable, boolean excludeSelf, boolean withFriendsInfo){

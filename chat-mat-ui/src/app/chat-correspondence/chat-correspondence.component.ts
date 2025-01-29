@@ -1,11 +1,10 @@
 import {AfterViewChecked, Component, ElementRef, OnDestroy, OnInit, ViewChild} from '@angular/core';
-import {ActivatedRoute, Router, RouterOutlet} from '@angular/router';
+import {ActivatedRoute, Router} from '@angular/router';
 import {FormsModule} from '@angular/forms';
 import {
     BehaviorSubject,
     catchError,
     delayWhen,
-    interval,
     map,
     mergeMap, Observable,
     retry,
@@ -24,20 +23,24 @@ import {ChatMessageViewModel} from '../common/view-models/chat-message-view-mode
 import {ChatMessageRequest} from '../common/rest/types/requests/chat-request';
 import {CdsIconModule} from '@cds/angular';
 import {DatePipe} from '@angular/common';
-import {PaginatedResponse} from '../common/rest/types/responses/paginated-response';
 import {EmojiParserPipe} from '../common/pipes/emoji-parser.pipe';
 import {ClrAlertModule} from '@clr/angular';
+import {ChannelParticipantsComponent} from './channel-participants/channel-participants.component';
+import {ChannelSettingsComponent} from './channel-settings/channel-settings.component';
+import {NewChatComponent} from '../new-chat/new-chat.component';
 
 
 @Component({
     selector: 'chat-correspondence',
-    imports: [FormsModule, CdsIconModule, DatePipe, EmojiParserPipe, ClrAlertModule],
+    imports: [FormsModule, CdsIconModule, DatePipe, EmojiParserPipe, ClrAlertModule, ChannelParticipantsComponent, ChannelSettingsComponent],
     templateUrl: './chat-correspondence.component.html',
     standalone: true,
     styleUrl: './chat-correspondence.component.scss',
 })
 export class ChatCorrespondenceComponent implements OnInit, AfterViewChecked, OnDestroy {
     @ViewChild('scrollContainer') private scrollContainer!: ElementRef;
+    @ViewChild("channelSettings") private channelSettings: ChannelSettingsComponent;
+    @ViewChild("channelParticipants") private channelParticipants: ChannelParticipantsComponent;
 
     loading = true;
     errorMessage = "";
@@ -45,7 +48,7 @@ export class ChatCorrespondenceComponent implements OnInit, AfterViewChecked, On
     chat: ChatResponse;
     currentUser: UserResponse;
     loadedChatMessages: ChatMessageViewModel[];
-    initialScrollToBottom = false;
+    scrollToBottomFlag = false;
 
     protected userChatInput: string = '';
 
@@ -63,7 +66,7 @@ export class ChatCorrespondenceComponent implements OnInit, AfterViewChecked, On
     }
 
     ngAfterViewChecked(): void {
-        if(!this.initialScrollToBottom && !!this.loadedChatMessages?.length){
+        if(this.scrollToBottomFlag && !!this.loadedChatMessages?.length){
             this.scrollToBottom();
         }
     }
@@ -79,7 +82,7 @@ export class ChatCorrespondenceComponent implements OnInit, AfterViewChecked, On
                 return routeParameters[CHAT_ROUTE_PATHS.CHAT_ID];
             })
         ).pipe(mergeMap((chatId) => {
-            return this.loadCorrespondence(chatId);
+            return this.loadCorrespondence(chatId, false);
         })).subscribe({
             next: () => {
                 this.startChatPolling(5000);
@@ -104,12 +107,11 @@ export class ChatCorrespondenceComponent implements OnInit, AfterViewChecked, On
             } as ChatMessageRequest, this.chat.id
         ).pipe(
             mergeMap(() => {
-                return this.loadCorrespondence(this.chat.id);
+                return this.loadCorrespondence(this.chat.id, false);
             })
         ).subscribe({
             next: (chat) => {
                 this.userChatInput = "";
-                this.scrollToBottom();
             }, error: (error) => {
                 this.errorMessage = resolveErrorMessage(error);
                 this.alertClosed = false;
@@ -119,9 +121,18 @@ export class ChatCorrespondenceComponent implements OnInit, AfterViewChecked, On
         });
     }
 
-    private loadCorrespondence(chatId: number): Observable<ChatResponse> {
+    public openChannelParticipants(): void{
+        this.channelParticipants.open(this.chat);
+    }
+
+    public openChannelSettings(): void{
+        this.channelSettings.open(this.chat);
+    }
+
+    private loadCorrespondence(chatId: number, fromPolling: boolean): Observable<ChatResponse> {
         return this.chatService.getChat(chatId).pipe(
             tap((chat: ChatResponse) => {
+                this.scrollToBottomFlag = !fromPolling;
                 this.chat = chat;
                 this.loadedChatMessages = chat.messagesPage.content.map((message) => {
                     return {
@@ -150,7 +161,7 @@ export class ChatCorrespondenceComponent implements OnInit, AfterViewChecked, On
         this.pollingSubscription = this.pollingSbj.pipe(
             delayWhen((interval) => timer(interval)),
             mergeMap(() => {
-                return this.loadCorrespondence(this.chat.id);
+                return this.loadCorrespondence(this.chat.id, true);
             }),
             tap(() => {
                 this.pollingSbj.next(interval);
@@ -170,7 +181,10 @@ export class ChatCorrespondenceComponent implements OnInit, AfterViewChecked, On
     }
 
     private scrollToBottom(): void {
-        this.scrollContainer.nativeElement.scrollTop = this.scrollContainer.nativeElement.scrollHeight;
-        this.initialScrollToBottom = true;
+        setTimeout(() => {
+            this.scrollContainer.nativeElement.scrollTop = this.scrollContainer.nativeElement.scrollHeight;
+            this.scrollToBottomFlag = false;
+        });
+
     }
 }

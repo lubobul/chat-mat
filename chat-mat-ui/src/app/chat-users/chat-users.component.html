@@ -13,11 +13,11 @@
     <clr-dg-column [clrDgField]="'email'">Email</clr-dg-column>
     <clr-dg-column>Friend Status</clr-dg-column>
     <clr-dg-column>Active Since</clr-dg-column>
-
+    <clr-dg-placeholder>No users found.</clr-dg-placeholder>
     @for(user of usersPage.content; track user.id){
         <clr-dg-row>
             <clr-dg-action-overflow>
-                @if(user.friendOfYours){
+                @if(user.isFriendOfYours){
                     <button class="action-item" (click)="unfriend(user)">Unfriend</button>
                 }@else{
                     <button class="action-item" (click)="addFriend(user)">Add Friend</button>
@@ -27,7 +27,7 @@
             </clr-dg-action-overflow>
             <clr-dg-cell>{{ user.username }}</clr-dg-cell>
             <clr-dg-cell>{{ user.email }}</clr-dg-cell>
-            <clr-dg-cell>{{ user.friendOfYours ? "Friend" : "Not Friend" }}</clr-dg-cell>
+            <clr-dg-cell>{{ user.isFriendOfYours ? "Friend" : "Not Friend" }}</clr-dg-cell>
             <clr-dg-cell>{{ user.createdAt | date }}</clr-dg-cell>
         </clr-dg-row>
     }

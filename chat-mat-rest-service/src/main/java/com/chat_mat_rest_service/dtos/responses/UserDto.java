@@ -1,5 +1,6 @@
 package com.chat_mat_rest_service.dtos.responses;
 
+import com.fasterxml.jackson.annotation.JsonInclude;
 import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;
@@ -15,5 +16,8 @@ public class UserDto {
     private String email;
     private String avatar; // Base64 encoded image
     private Timestamp createdAt;
-    private boolean isFriendOfYours;
+    @JsonInclude(JsonInclude.Include.NON_NULL)
+    private Boolean isFriendOfYours; // Will be absent if null
+    @JsonInclude(JsonInclude.Include.NON_NULL)
+    private Boolean isChannelOwner; // Will be absent if null
 }
