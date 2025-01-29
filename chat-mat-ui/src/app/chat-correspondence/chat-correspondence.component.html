@@ -10,7 +10,7 @@
         @if (chat?.isChannel) {
             <h6 class="chat-title">{{ chat?.title }}</h6>
         } @else if (!!chat?.participantsPage?.content?.length) {
-            <h6 class="chat-title">Direct chat with {{ chat?.participantsPage?.content[0]?.username }}</h6>
+            <h6 class="chat-title">Direct chat with {{ chat | chatTitle: currentUser }}</h6>
         }
 
         @if (chat?.isChannel) {

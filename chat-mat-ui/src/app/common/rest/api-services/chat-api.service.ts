@@ -36,4 +36,8 @@ export class ChatApiService {
     getParticipants(chatId: number, params: QueryParams | any): Observable<PaginatedResponse<UserResponse>> {
         return this.http.get<PaginatedResponse<UserResponse>>(`${this.apiUrl}/${chatId}/participants`, {params});
     }
+
+    getFriendsNotPartOfChat(chatId: number, params: QueryParams | any): Observable<PaginatedResponse<UserResponse>> {
+        return this.http.get<PaginatedResponse<UserResponse>>(`${this.apiUrl}/${chatId}/friendsNotInChat`, {params});
+    }
 }

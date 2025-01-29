@@ -2,6 +2,7 @@ package com.chat_mat_rest_service.repositories;
 
 import com.chat_mat_rest_service.entities.Friend;
 import com.chat_mat_rest_service.entities.FriendId;
+import com.chat_mat_rest_service.entities.User;
 import jakarta.transaction.Transactional;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
@@ -55,5 +56,35 @@ public interface FriendRepository extends JpaRepository<Friend, FriendId> {
     @Transactional
     @Query(value = "DELETE FROM friends WHERE user_id = :userId AND friend_id = :friendId", nativeQuery = true)
     void removeFriend(@Param("userId") Long userId, @Param("friendId") Long friendId);
+
+    // Fetch friends not in the chat
+    @Query("""
+        SELECT f.friend
+        FROM Friend f
+        WHERE f.user.id = :userId
+          AND f.friend.deleted = false
+          AND f.friend.id NOT IN (
+              SELECT p.user.id FROM ChatParticipant p WHERE p.chat.id = :chatId
+          )
+    """)
+    Page<User> findFriendsNotInChat(@Param("userId") Long userId, @Param("chatId") Long chatId, Pageable pageable);
+
+    // Fetch friends not in the chat with username filtering
+    @Query("""
+        SELECT f.friend
+        FROM Friend f
+        WHERE f.user.id = :userId
+          AND f.friend.deleted = false
+          AND LOWER(f.friend.username) LIKE LOWER(CONCAT('%', :usernameFilter, '%'))
+          AND f.friend.id NOT IN (
+              SELECT p.user.id FROM ChatParticipant p WHERE p.chat.id = :chatId
+          )
+    """)
+    Page<User> findFriendsNotInChatFiltered(
+            @Param("userId") Long userId,
+            @Param("chatId") Long chatId,
+            @Param("usernameFilter") String usernameFilter,
+            Pageable pageable
+    );
 
 }

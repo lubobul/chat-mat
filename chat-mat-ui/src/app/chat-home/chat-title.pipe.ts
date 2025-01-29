@@ -6,10 +6,6 @@ import {UserResponse} from '../common/rest/types/responses/userResponse';
 export class ChatTitlePipe implements PipeTransform {
     public transform(chat: ChatResponse, currentUser: UserResponse): string {
 
-        if (chat?.owner?.id == currentUser.id){
-            return chat.participantsPage.content[0].username;
-        }else{
-            return chat.owner.username;
-        }
+        return <string>chat.participantsPage.content.find((user) => user.id != currentUser.id)?.username;
     }
 }

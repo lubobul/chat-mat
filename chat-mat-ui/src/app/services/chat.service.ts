@@ -45,4 +45,10 @@ export class ChatService {
         const params = buildQueryParams(queryRequest) as any;
         return this.chatApiService.getParticipants(chatId, params);
     }
+
+    getFriendsNotPartOfChat(chatId: number, queryRequest: QueryRequest): Observable<PaginatedResponse<UserResponse>> {
+        const params = buildQueryParams(queryRequest) as any;
+        return this.chatApiService.getFriendsNotPartOfChat(chatId, params);
+    }
+    
 }

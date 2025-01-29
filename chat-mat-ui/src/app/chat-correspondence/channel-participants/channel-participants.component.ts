@@ -34,20 +34,38 @@ import {ChatResponse} from '../../common/rest/types/responses/chat-response';
     styleUrl: './channel-participants.component.scss'
 })
 export class ChannelParticipantsComponent implements OnInit{
-    private onDataGridRefresh = new Subject<ClrDatagridStateInterface>();
+    private onParticipantsGridRefresh = new Subject<ClrDatagridStateInterface>();
+    private onFriendsGridRefresh = new Subject<ClrDatagridStateInterface>();
+
     errorMessage = "";
     alertClosed = true;
-    loading = true;
-    usersPage: PaginatedResponse<UserResponse> = {
+    participantsLoading = true;
+    friendsLoading = true;
+
+    participantsPage: PaginatedResponse<UserResponse> = {
         pageSize: 0,
         content: [],
         totalPages: 0,
     } as unknown as PaginatedResponse<UserResponse>;
+
+    friendsPage: PaginatedResponse<UserResponse> = {
+        pageSize: 0,
+        content: [],
+        totalPages: 0,
+    } as unknown as PaginatedResponse<UserResponse>;
+
     selectedFriends: UserResponse[] = [];
-    private restQuery: QueryRequest = {
+
+    private participantsRestQuery: QueryRequest = {
         page: 1,
         pageSize: 5,
     };
+
+    private friendsRestQuery: QueryRequest = {
+        page: 1,
+        pageSize: 5,
+    };
+
     currentChat: ChatResponse;
 
     protected opened = false;
@@ -63,12 +81,12 @@ export class ChannelParticipantsComponent implements OnInit{
 
     ngOnInit(): void {
     }
-    public subscribeToUsersGrid(): void{
-        this.onDataGridRefresh.pipe(
+    public subscribeToParticipantsGrid(): void{
+        this.onParticipantsGridRefresh.pipe(
             debounceTime(500),
             mergeMap((state) => {
-                this.loading = true;
-                this.restQuery = {
+                this.participantsLoading = true;
+                this.participantsRestQuery = {
                     pageSize: state?.page?.size || 5,
                     page: state.page?.current || 1,
                     sort: state.sort ? {
@@ -77,11 +95,11 @@ export class ChannelParticipantsComponent implements OnInit{
                     } : undefined,
                     filter: buildRestGridFilter(state.filters)
                 }
-                return this.chatService.getParticipants(this.currentChat.id, this.restQuery);
+                return this.chatService.getParticipants(this.currentChat.id, this.participantsRestQuery);
             })).subscribe( {
             next: (response) => {
-                this.usersPage = response;
-                this.loading = false;
+                this.participantsPage = response;
+                this.participantsLoading = false;
 
             }, error: (error) => {
                 this.errorMessage = resolveErrorMessage(error);
@@ -90,15 +108,54 @@ export class ChannelParticipantsComponent implements OnInit{
         });
     }
 
-    public refreshByGrid(state: ClrDatagridStateInterface): void {
-        this.onDataGridRefresh.next(state);
+    public subscribeToFriendsGrid(): void{
+        this.onFriendsGridRefresh.pipe(
+            debounceTime(500),
+            mergeMap((state) => {
+                this.friendsLoading = true;
+                this.friendsRestQuery = {
+                    pageSize: state?.page?.size || 5,
+                    page: state.page?.current || 1,
+                    sort: state.sort ? {
+                        sortField: `friend.${state.sort.by as string}`,
+                        sortType: state.sort.reverse ? QueryRequestSortType.DESC : QueryRequestSortType.ASC
+                    } : undefined,
+                    filter: buildRestGridFilter(state.filters)
+                }
+                return this.chatService.getFriendsNotPartOfChat(this.currentChat.id, this.friendsRestQuery);
+            })).subscribe( {
+            next: (response) => {
+                this.friendsPage = response;
+                this.friendsLoading = false;
+
+            }, error: (error) => {
+                this.errorMessage = resolveErrorMessage(error);
+                this.alertClosed = false;
+            }
+        });
+    }
+
+    public refreshByParticipantsGrid(state: ClrDatagridStateInterface): void {
+        this.onParticipantsGridRefresh.next(state);
+    }
+
+    public refreshByFriendsGrid(state: ClrDatagridStateInterface): void {
+        this.onFriendsGridRefresh.next(state);
     }
 
     public open(chat: ChatResponse): void {
         this.currentChat = chat;
         this.opened = true;
-        this.subscribeToUsersGrid();
-        this.refreshByGrid({
+        this.subscribeToParticipantsGrid();
+        this.refreshByParticipantsGrid({
+            page: {
+                size: 5,
+                current: 1,
+            }
+        });
+
+        this.subscribeToFriendsGrid();
+        this.refreshByFriendsGrid({
             page: {
                 size: 5,
                 current: 1,
@@ -112,7 +169,7 @@ export class ChannelParticipantsComponent implements OnInit{
     }
 
     public addFriend(user: UserResponse): void{
-        this.loading = true;
+        this.participantsLoading = true;
         this.friendsService.addFriend(user).subscribe({
             next: () => {
                 this.refresh();
@@ -125,7 +182,7 @@ export class ChannelParticipantsComponent implements OnInit{
     }
 
     public unfriend(user: UserResponse): void{
-        this.loading = true;
+        this.participantsLoading = true;
         this.friendsService.removeFriend(user).subscribe({
             next: () => {
                 this.refresh();
@@ -138,11 +195,11 @@ export class ChannelParticipantsComponent implements OnInit{
     }
 
     private refresh(): void{
-        this.chatService.getParticipants(this.currentChat.id, this.restQuery).subscribe(
+        this.chatService.getParticipants(this.currentChat.id, this.participantsRestQuery).subscribe(
             {
                 next: (response) => {
-                    this.usersPage = response;
-                    this.loading = false;
+                    this.participantsPage = response;
+                    this.participantsLoading = false;
                 },
                 error: (error) => {
                     this.errorMessage = resolveErrorMessage(error);

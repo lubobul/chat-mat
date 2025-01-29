@@ -75,4 +75,16 @@ public class ChatController {
         Page<UserDto> participants = chatService.getChatParticipants(chatId, participantFilter, pageable);
         return ResponseEntity.ok(participants);
     }
+
+    @GetMapping("/{chatId}/friendsNotInChat")
+    public ResponseEntity<Page<UserDto>> getFriendsNotInChat(
+            @PathVariable Long chatId,
+            @RequestParam(value = "filter", required = false) String usernameFilter,
+            Pageable pageable
+
+    ) {
+        Page<UserDto> friendsNotInChat = chatService.getFriendsNotInChat(chatId, usernameFilter, pageable);
+        return ResponseEntity.ok(friendsNotInChat);
+    }
+
 }

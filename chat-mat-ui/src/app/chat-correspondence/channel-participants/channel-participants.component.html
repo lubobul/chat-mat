@@ -9,14 +9,14 @@
             </clr-alert>
         }
         <h5>Current participants</h5>
-        <clr-datagrid (clrDgRefresh)="refreshByGrid($event)" [clrDgLoading]="loading">
+        <clr-datagrid (clrDgRefresh)="refreshByParticipantsGrid($event)" [clrDgLoading]="participantsLoading">
             <clr-dg-column [clrDgField]="'username'">Username</clr-dg-column>
             <clr-dg-column>Email</clr-dg-column>
             <clr-dg-column>Friend Status</clr-dg-column>
             <clr-dg-column>Active Since</clr-dg-column>
             <clr-dg-placeholder>No participants found.</clr-dg-placeholder>
 
-            @for(user of usersPage.content; track user.id){
+            @for(user of participantsPage.content; track user.id){
                 <clr-dg-row>
                     <clr-dg-action-overflow>
                         @if(user.isFriendOfYours){
@@ -35,7 +35,7 @@
             }
 
             <clr-dg-footer>
-                <clr-dg-pagination #pagination [clrDgPageSize]="5" [clrDgTotalItems]="usersPage.totalElements">
+                <clr-dg-pagination #pagination [clrDgPageSize]="5" [clrDgTotalItems]="participantsPage.totalElements">
                     <clr-dg-page-size [clrPageSizeOptions]="[5, 10, 15]">Users per page</clr-dg-page-size>
                     {{ pagination.firstItem + 1 }} - {{ pagination.lastItem + 1 }} of
                     {{ pagination.totalItems }} users
@@ -45,17 +45,17 @@
 
         <h5>Add more channel participants from your friend list</h5>
         <clr-datagrid
-            (clrDgRefresh)="refreshByGrid($event)"
-            [clrDgLoading]="loading"
+            (clrDgRefresh)="refreshByFriendsGrid($event)"
+            [clrDgLoading]="friendsLoading"
             [(clrDgSelected)]="selectedFriends"
             [clrDgPreserveSelection]="true"
             [clrDgItemsTrackBy]="trackByFnc"
         >
             <clr-dg-column [clrDgField]="'username'">Username</clr-dg-column>
-            <clr-dg-column [clrDgField]="'email'">Email</clr-dg-column>
+            <clr-dg-column>Email</clr-dg-column>
             <clr-dg-column>Active Since</clr-dg-column>
             <clr-dg-placeholder>No friends found.</clr-dg-placeholder>
-            @for (user of usersPage.content; track user.id) {
+            @for (user of friendsPage.content; track user.id) {
                 <clr-dg-row [clrDgItem]="user">
                     <clr-dg-cell>{{ user.username }}</clr-dg-cell>
                     <clr-dg-cell>{{ user.email }}</clr-dg-cell>
@@ -64,7 +64,7 @@
             }
 
             <clr-dg-footer>
-                <clr-dg-pagination #pagination [clrDgPageSize]="5" [clrDgTotalItems]="usersPage.totalElements">
+                <clr-dg-pagination #pagination [clrDgPageSize]="5" [clrDgTotalItems]="friendsPage.totalElements">
                     <clr-dg-page-size [clrPageSizeOptions]="[5, 10, 15]">Users per page</clr-dg-page-size>
                     {{ pagination.firstItem + 1 }} - {{ pagination.lastItem + 1 }} of
                     {{ pagination.totalItems }} users

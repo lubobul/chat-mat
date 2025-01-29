@@ -28,11 +28,12 @@ import {ClrAlertModule} from '@clr/angular';
 import {ChannelParticipantsComponent} from './channel-participants/channel-participants.component';
 import {ChannelSettingsComponent} from './channel-settings/channel-settings.component';
 import {NewChatComponent} from '../new-chat/new-chat.component';
+import {ChatTitlePipe} from '../chat-home/chat-title.pipe';
 
 
 @Component({
     selector: 'chat-correspondence',
-    imports: [FormsModule, CdsIconModule, DatePipe, EmojiParserPipe, ClrAlertModule, ChannelParticipantsComponent, ChannelSettingsComponent],
+    imports: [FormsModule, CdsIconModule, DatePipe, EmojiParserPipe, ClrAlertModule, ChannelParticipantsComponent, ChannelSettingsComponent, ChatTitlePipe],
     templateUrl: './chat-correspondence.component.html',
     standalone: true,
     styleUrl: './chat-correspondence.component.scss',

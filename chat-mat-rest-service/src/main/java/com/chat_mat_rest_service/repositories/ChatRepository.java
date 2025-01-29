@@ -13,6 +13,7 @@ import java.util.List;
 import java.util.Optional;
 
 public interface ChatRepository extends JpaRepository<Chat, Long> {
+    boolean existsByIdAndOwnerId(Number chatId, Number currentUserId);
     @Query("""
     SELECT c
     FROM Chat c

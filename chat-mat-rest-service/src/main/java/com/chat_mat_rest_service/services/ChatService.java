@@ -122,6 +122,9 @@ public class ChatService {
             throw new ResourceNotFoundException("Participants not found");
         }
 
+        //Add Owner to the participants list
+        participants.add(owner);
+
         // Create and save the new chat
         Chat chat = new Chat();
         chat.setTitle(request.getTitle());
@@ -176,14 +179,13 @@ public class ChatService {
         return chats.map(chat -> {
             ChatDto chatDto = chatMapper.toDto(chat);
 
-            // Only add owner and one participant if the chat is not a channel
+            // Only add two participants if the chat is not a channel
             if (!chat.getIsChannel()) {
-                chatDto.setOwner(userMapper.toDto(chat.getOwner()));
 
                 // Add only one participant to participantsPage if participants exist
                 if (chat.getParticipants() != null && !chat.getParticipants().isEmpty()) {
                     List<UserDto> singleParticipantList = chat.getParticipants().stream()
-                            .limit(1)
+                            .limit(2)
                             .map(userMapper::toDto)
                             .toList();
                     chatDto.setParticipantsPage(new PageImpl<>(singleParticipantList));
@@ -194,9 +196,7 @@ public class ChatService {
         });
     }
 
-    //TODO if owner -> return participands - fine
-    // if participant -> return participants excluding self including owner, mark owner as owner
-    //
+    //TODO if owner -> map isOwner
     public Page<UserDto> getChatParticipants(Long chatId, String filter, Pageable pageable) {
         Long currentUserId = getAuthenticatedUserId();
 
@@ -234,5 +234,38 @@ public class ChatService {
             return userDto;
         });
     }
+
+    public Page<UserDto> getFriendsNotInChat(Long chatId, String filter, Pageable pageable) {
+        Long currentUserId = getAuthenticatedUserId();
+
+        // Ensure user is admin of the chat
+        boolean isAuthorized = chatRepository.existsByIdAndOwnerId(chatId, currentUserId);
+        if (!isAuthorized) {
+            throw new ResourceNotFoundException("You are not allowed to view this chat.");
+        }
+        String username = null;
+
+        if (filter != null) {
+            // Split filter into individual conditions
+            String[] conditions = filter.split(",");
+            for (String condition : conditions) {
+                if (condition.startsWith("username==")) {
+                    username = condition.substring("username==".length());
+                }
+            }
+        }
+
+        // Get friends of the current user
+        Page<User> friends;
+        if (username != null && !username.isEmpty()) {
+            friends = friendRepository.findFriendsNotInChatFiltered(currentUserId, chatId, username, pageable);
+        } else {
+            friends = friendRepository.findFriendsNotInChat(currentUserId, chatId, pageable);
+        }
+
+        // Map to DTO
+        return friends.map(userMapper::toDto);
+    }
+
 
 }
