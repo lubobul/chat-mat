@@ -20,11 +20,18 @@
         }
 
         .chat-title {
+            font-size: 0.8rem;
+            text-decoration: none;
+            color: var(--clr-color-action-600);
             width: 20rem;
             margin: 0 0 0 1.2rem;
             overflow: hidden; /* Hide overflow content */
             text-overflow: ellipsis; /* Add ellipsis (...) for overflowed text */
             white-space: nowrap; /* Prevent text wrapping */
+            &:hover {
+                color: var(--clr-color-action-400);
+
+            }
         }
     }
 }

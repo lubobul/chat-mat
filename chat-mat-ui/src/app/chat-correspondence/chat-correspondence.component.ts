@@ -27,7 +27,6 @@ import {EmojiParserPipe} from '../common/pipes/emoji-parser.pipe';
 import {ClrAlertModule} from '@clr/angular';
 import {ChannelParticipantsComponent} from './channel-participants/channel-participants.component';
 import {ChannelSettingsComponent} from './channel-settings/channel-settings.component';
-import {ChatTitlePipe} from '../application-home/chat-title.pipe';
 
 
 @Component({
@@ -39,8 +38,6 @@ import {ChatTitlePipe} from '../application-home/chat-title.pipe';
 })
 export class ChatCorrespondenceComponent implements OnInit, AfterViewChecked, OnDestroy {
     @ViewChild('scrollContainer') private scrollContainer!: ElementRef;
-    @ViewChild("channelSettings") private channelSettings: ChannelSettingsComponent;
-    @ViewChild("channelParticipants") private channelParticipants: ChannelParticipantsComponent;
 
     loading = true;
     errorMessage = "";
@@ -119,14 +116,6 @@ export class ChatCorrespondenceComponent implements OnInit, AfterViewChecked, On
 
             }
         });
-    }
-
-    public openChannelParticipants(): void {
-        this.channelParticipants.open(this.chat);
-    }
-
-    public openChannelSettings(): void {
-        this.channelSettings.open(this.chat);
     }
 
     private loadCorrespondence(chatId: number, fromPolling: boolean): Observable<ChatResponse> {

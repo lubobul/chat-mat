@@ -7,7 +7,7 @@ import {
     ClrSidePanelModule
 } from '@clr/angular';
 import {DatePipe} from '@angular/common';
-import {debounceTime, mergeMap, Subject} from 'rxjs';
+import {catchError, debounceTime, map, mergeMap, Observable, Subject, tap, throwError} from 'rxjs';
 import {PaginatedResponse} from '../../common/rest/types/responses/paginated-response';
 import {UserResponse} from '../../common/rest/types/responses/userResponse';
 import {QueryRequest, QueryRequestSortType} from '../../common/rest/types/requests/query-request';
@@ -17,6 +17,9 @@ import {FormBuilder, FormGroup, FormsModule, ReactiveFormsModule, Validators} fr
 import {ChatService} from '../../services/chat.service';
 import {CreateChatRequest} from '../../common/rest/types/requests/chat-request';
 import {ChatResponse} from '../../common/rest/types/responses/chat-response';
+import {ActivatedRoute, Params, Router} from '@angular/router';
+import {AuthService} from '../../services/auth.service';
+import {CHAT_ROUTE_PATHS} from '../../app.routes';
 
 @Component({
     selector: 'channel-participants',
@@ -68,19 +71,72 @@ export class ChannelParticipantsComponent implements OnInit{
 
     currentChat: ChatResponse;
 
-    protected opened = false;
+    currentUser: UserResponse;
 
     constructor(
-        private chatService: ChatService,
         private friendsService: FriendsService,
+        private activatedRoute: ActivatedRoute,
+        private router: Router,
+        private chatService: ChatService,
+        private authService: AuthService,
     ) {
+        this.currentUser = authService.getUserIdentity();
     }
+
     public trackByFnc = function (item: UserResponse): number | undefined {
         return item?.id;
     };
 
     ngOnInit(): void {
+        this.initChatHomeComponent();
+
     }
+
+    public initChatHomeComponent(): void {
+        (this.activatedRoute.parent?.params as Observable<Params>).pipe(
+            map((routeParameters) => {
+                return routeParameters[CHAT_ROUTE_PATHS.CHAT_ID];
+            })
+        ).pipe(mergeMap((chatId) => {
+            return this.loadCorrespondence(chatId, false);
+        })).subscribe({
+            next: () => {
+            }
+        });
+    }
+
+    private loadCorrespondence(chatId: number, fromPolling: boolean): Observable<ChatResponse> {
+        return this.chatService.getChat(chatId).pipe(
+            tap((chat: ChatResponse) => {
+                this.currentChat = chat;
+                this.initGrids();
+            }),
+            catchError((error) => {
+                this.errorMessage = resolveErrorMessage(error);
+                this.alertClosed = false;
+                return throwError(error);
+            }),
+        )
+    }
+
+    private initGrids(): void{
+        this.subscribeToParticipantsGrid();
+        this.refreshByParticipantsGrid({
+            page: {
+                size: 5,
+                current: 1,
+            }
+        });
+
+        this.subscribeToFriendsGrid();
+        this.refreshByFriendsGrid({
+            page: {
+                size: 5,
+                current: 1,
+            }
+        });
+    }
+
     public subscribeToParticipantsGrid(): void{
         this.onParticipantsGridRefresh.pipe(
             debounceTime(500),
@@ -141,31 +197,6 @@ export class ChannelParticipantsComponent implements OnInit{
 
     public refreshByFriendsGrid(state: ClrDatagridStateInterface): void {
         this.onFriendsGridRefresh.next(state);
-    }
-
-    public open(chat: ChatResponse): void {
-        this.currentChat = chat;
-        this.opened = true;
-        this.subscribeToParticipantsGrid();
-        this.refreshByParticipantsGrid({
-            page: {
-                size: 5,
-                current: 1,
-            }
-        });
-
-        this.subscribeToFriendsGrid();
-        this.refreshByFriendsGrid({
-            page: {
-                size: 5,
-                current: 1,
-            }
-        });
-    }
-
-    public close(): void {
-        this.opened = false;
-        this.selectedFriends = [];
     }
 
     public addFriend(user: UserResponse): void{

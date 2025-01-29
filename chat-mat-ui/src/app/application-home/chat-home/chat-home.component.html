@@ -9,18 +9,18 @@
 
     <nav class="subnav">
         @if (chat?.isChannel) {
-            <h6 class="chat-title">{{ chat?.title }}</h6>
+            <a [routerLinkActive]="['active']" [routerLink]="CHAT_ROUTE_PATHS.CHAT_CORRESPONDENCE" class="chat-title">{{ chat?.title }}</a>
         } @else if (!!chat?.participantsPage?.content?.length) {
-            <h6 class="chat-title">Direct chat with {{ chat | chatTitle: currentUser }}</h6>
+            <a [routerLinkActive]="['active']" [routerLink]="CHAT_ROUTE_PATHS.CHAT_CORRESPONDENCE" class="chat-title">Direct chat with {{ chat | chatTitle: currentUser }}</a>
         }
 
         @if (chat?.isChannel) {
             <ul class="nav nav-chat-links">
                 <li class="nav-item">
-                    <span class="nav-link channel-nav-item">Participants</span>
+                    <a [routerLinkActive]="['active']" [routerLink]="CHAT_ROUTE_PATHS.CHAT_PARTICIPANTS" class="nav-link channel-nav-item">Participants</a>
                 </li>
                 <li class="nav-item channel-nav-item">
-                    <span class="nav-link">Channel setting</span>
+                    <a [routerLinkActive]="['active']" [routerLink]="CHAT_ROUTE_PATHS.CHAT_SETTINGS" class="nav-link">Channel setting</a>
                 </li>
             </ul>
         }

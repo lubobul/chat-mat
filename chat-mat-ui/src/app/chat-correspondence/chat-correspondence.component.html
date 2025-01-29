@@ -6,25 +6,6 @@
             </clr-alert-item>
         </clr-alert>
     }
-<!--    <nav class="subnav">-->
-<!--        @if (chat?.isChannel) {-->
-<!--            <h6 class="chat-title">{{ chat?.title }}</h6>-->
-<!--        } @else if (!!chat?.participantsPage?.content?.length) {-->
-<!--            <h6 class="chat-title">Direct chat with {{ chat | chatTitle: currentUser }}</h6>-->
-<!--        }-->
-
-<!--        @if (chat?.isChannel) {-->
-<!--            <ul class="nav nav-chat-links">-->
-<!--                <li class="nav-item">-->
-<!--                    <span (click)="openChannelParticipants()" class="nav-link channel-nav-item">Participants</span>-->
-<!--                </li>-->
-<!--                <li class="nav-item channel-nav-item">-->
-<!--                    <span (click)="openChannelSettings()" class="nav-link">Channel setting</span>-->
-<!--                </li>-->
-<!--            </ul>-->
-<!--        }-->
-
-<!--    </nav>-->
     <div #scrollContainer class="main-chat-history">
         @for (chatMessage of loadedChatMessages; track chatMessage.id) {
             <div class="chat-message-container" [class]="chatMessage.isMine ? 'author-message-margin' : ''">
@@ -57,6 +38,3 @@
         <cds-icon class="send-button-icon" (click)="sendMessage()" [size]="'lg'" shape="circle-arrow"></cds-icon>
     </div>
 </div>
-
-<channel-participants #channelParticipants></channel-participants>
-<channel-settings #channelSettings></channel-settings>

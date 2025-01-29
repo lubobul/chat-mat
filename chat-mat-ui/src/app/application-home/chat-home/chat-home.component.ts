@@ -1,5 +1,5 @@
 import {Component, OnInit} from '@angular/core';
-import {ActivatedRoute, Params, Router, RouterOutlet} from '@angular/router';
+import {ActivatedRoute, Params, Router, RouterLink, RouterLinkActive, RouterOutlet} from '@angular/router';
 import {catchError, map, mergeMap, Observable, tap, throwError} from 'rxjs';
 import {ChatResponse} from '../../common/rest/types/responses/chat-response';
 import {resolveErrorMessage} from '../../common/utils/util-functions';
@@ -15,7 +15,9 @@ import {ClrAlertModule} from '@clr/angular';
     imports: [
         RouterOutlet,
         ChatTitlePipe,
-        ClrAlertModule
+        ClrAlertModule,
+        RouterLinkActive,
+        RouterLink
     ],
     templateUrl: './chat-home.component.html',
     standalone: true,
@@ -70,4 +72,6 @@ export class ChatHomeComponent implements OnInit{
             }),
         )
     }
+
+    protected readonly CHAT_ROUTE_PATHS = CHAT_ROUTE_PATHS;
 }

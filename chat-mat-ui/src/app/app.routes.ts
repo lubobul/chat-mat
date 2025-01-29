@@ -7,6 +7,8 @@ import {ProfileSettingsComponent} from './profile-settings/profile-settings.comp
 import {ChatWelcomeScreenComponent} from './chat-welcome-screen/chat-welcome-screen.component';
 import {ChatCorrespondenceComponent} from './chat-correspondence/chat-correspondence.component';
 import {ChatHomeComponent} from './application-home/chat-home/chat-home.component';
+import {ChannelParticipantsComponent} from './chat-correspondence/channel-participants/channel-participants.component';
+import {ChannelSettingsComponent} from './chat-correspondence/channel-settings/channel-settings.component';
 
 export const CHAT_ROUTE_PATHS = {
     HOME: "home",
@@ -14,6 +16,8 @@ export const CHAT_ROUTE_PATHS = {
     CHAT_ID: "chat_id",
     CHANNEL: "channel",
     CHAT_CORRESPONDENCE: "correspondence",
+    CHAT_PARTICIPANTS: "participants",
+    CHAT_SETTINGS: "settings",
     CHAT_USERS: "users",
     LOGIN: "login",
     REGISTER: "register",
@@ -62,6 +66,14 @@ export const routes: Routes = [
                                     {
                                         path: CHAT_ROUTE_PATHS.CHAT_CORRESPONDENCE,
                                         component: ChatCorrespondenceComponent,
+                                    },
+                                    {
+                                        path: CHAT_ROUTE_PATHS.CHAT_PARTICIPANTS,
+                                        component: ChannelParticipantsComponent,
+                                    },
+                                    {
+                                        path: CHAT_ROUTE_PATHS.CHAT_SETTINGS,
+                                        component: ChannelSettingsComponent,
                                     },
                                 ]
                             },
