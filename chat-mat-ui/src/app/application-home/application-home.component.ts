@@ -30,7 +30,7 @@ import {ChatTitlePipe} from './chat-title.pipe';
 import {NewChatComponent} from '../new-chat/new-chat.component';
 
 @Component({
-    selector: 'app-chat-home',
+    selector: 'application-home',
     imports: [
         RouterOutlet,
         ClrVerticalNavModule,
@@ -43,11 +43,11 @@ import {NewChatComponent} from '../new-chat/new-chat.component';
         ChatTitlePipe,
         NewChatComponent,
     ],
-    templateUrl: './chat-home.component.html',
+    templateUrl: './application-home.component.html',
     standalone: true,
-    styleUrl: './chat-home.component.scss'
+    styleUrl: './application-home.component.scss'
 })
-export class ChatHomeComponent implements OnInit, OnDestroy {
+export class ApplicationHomeComponent implements OnInit, OnDestroy {
     friendSearchControl = new FormControl('');
     chatSearchControl = new FormControl('');
     channelSearchControl = new FormControl('');

@@ -1,27 +1,15 @@
-.chat-container {
+:host{
+    flex-grow: 1; /* Allow it to take all the remaining space */
+    overflow: hidden; /* Prevent unnecessary scrolling */
+    display: flex;
+    flex-direction: column;
+}
 
-    .subnav{
-        .nav-chat-links{
-            .channel-nav-item{
-                cursor: pointer;
-            }
-            flex: 0;
-            padding-right: 1.2rem;
-        }
-        .chat-title{
-            width: 20rem;
-            margin: 0 0 0 1.2rem;
-            overflow: hidden; /* Hide overflow content */
-            text-overflow: ellipsis; /* Add ellipsis (...) for overflowed text */
-            white-space: nowrap; /* Prevent text wrapping */
-        }
-    }
-
+.chat-correspondence-container {
     display: flex;
     flex-flow: column;
     min-width: 36rem;
-    height: 100vh;
-    width: 100%;
+    height: 100%;
 
     .input-container {
         display: flex;

@@ -1,5 +1,5 @@
 import {AfterViewChecked, Component, ElementRef, OnDestroy, OnInit, ViewChild} from '@angular/core';
-import {ActivatedRoute, Router} from '@angular/router';
+import {ActivatedRoute, Params, Router} from '@angular/router';
 import {FormsModule} from '@angular/forms';
 import {
     BehaviorSubject,
@@ -27,13 +27,12 @@ import {EmojiParserPipe} from '../common/pipes/emoji-parser.pipe';
 import {ClrAlertModule} from '@clr/angular';
 import {ChannelParticipantsComponent} from './channel-participants/channel-participants.component';
 import {ChannelSettingsComponent} from './channel-settings/channel-settings.component';
-import {NewChatComponent} from '../new-chat/new-chat.component';
-import {ChatTitlePipe} from '../chat-home/chat-title.pipe';
+import {ChatTitlePipe} from '../application-home/chat-title.pipe';
 
 
 @Component({
     selector: 'chat-correspondence',
-    imports: [FormsModule, CdsIconModule, DatePipe, EmojiParserPipe, ClrAlertModule, ChannelParticipantsComponent, ChannelSettingsComponent, ChatTitlePipe],
+    imports: [FormsModule, CdsIconModule, DatePipe, EmojiParserPipe, ClrAlertModule, ChannelParticipantsComponent, ChannelSettingsComponent],
     templateUrl: './chat-correspondence.component.html',
     standalone: true,
     styleUrl: './chat-correspondence.component.scss',
@@ -67,7 +66,7 @@ export class ChatCorrespondenceComponent implements OnInit, AfterViewChecked, On
     }
 
     ngAfterViewChecked(): void {
-        if(this.scrollToBottomFlag && !!this.loadedChatMessages?.length){
+        if (this.scrollToBottomFlag && !!this.loadedChatMessages?.length) {
             this.scrollToBottom();
         }
     }
@@ -78,7 +77,7 @@ export class ChatCorrespondenceComponent implements OnInit, AfterViewChecked, On
 
     public initChatComponent(): void {
         this.loading = true;
-        this.activatedRoute.params.pipe(
+        (this.activatedRoute.parent?.params as Observable<Params>).pipe(
             map((routeParameters) => {
                 return routeParameters[CHAT_ROUTE_PATHS.CHAT_ID];
             })
@@ -122,11 +121,11 @@ export class ChatCorrespondenceComponent implements OnInit, AfterViewChecked, On
         });
     }
 
-    public openChannelParticipants(): void{
+    public openChannelParticipants(): void {
         this.channelParticipants.open(this.chat);
     }
 
-    public openChannelSettings(): void{
+    public openChannelSettings(): void {
         this.channelSettings.open(this.chat);
     }
 

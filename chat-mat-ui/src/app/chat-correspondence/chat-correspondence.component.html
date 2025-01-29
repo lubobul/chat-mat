@@ -1,4 +1,4 @@
-<div class="chat-container">
+<div class="chat-correspondence-container">
     @if (errorMessage) {
         <clr-alert class="danger-alert" [clrAlertType]="'danger'" [(clrAlertClosed)]="alertClosed">
             <clr-alert-item>
@@ -6,25 +6,25 @@
             </clr-alert-item>
         </clr-alert>
     }
-    <nav class="subnav">
-        @if (chat?.isChannel) {
-            <h6 class="chat-title">{{ chat?.title }}</h6>
-        } @else if (!!chat?.participantsPage?.content?.length) {
-            <h6 class="chat-title">Direct chat with {{ chat | chatTitle: currentUser }}</h6>
-        }
+<!--    <nav class="subnav">-->
+<!--        @if (chat?.isChannel) {-->
+<!--            <h6 class="chat-title">{{ chat?.title }}</h6>-->
+<!--        } @else if (!!chat?.participantsPage?.content?.length) {-->
+<!--            <h6 class="chat-title">Direct chat with {{ chat | chatTitle: currentUser }}</h6>-->
+<!--        }-->
 
-        @if (chat?.isChannel) {
-            <ul class="nav nav-chat-links">
-                <li class="nav-item">
-                    <span (click)="openChannelParticipants()" class="nav-link channel-nav-item">Participants</span>
-                </li>
-                <li class="nav-item channel-nav-item">
-                    <span (click)="openChannelSettings()" class="nav-link">Channel setting</span>
-                </li>
-            </ul>
-        }
+<!--        @if (chat?.isChannel) {-->
+<!--            <ul class="nav nav-chat-links">-->
+<!--                <li class="nav-item">-->
+<!--                    <span (click)="openChannelParticipants()" class="nav-link channel-nav-item">Participants</span>-->
+<!--                </li>-->
+<!--                <li class="nav-item channel-nav-item">-->
+<!--                    <span (click)="openChannelSettings()" class="nav-link">Channel setting</span>-->
+<!--                </li>-->
+<!--            </ul>-->
+<!--        }-->
 
-    </nav>
+<!--    </nav>-->
     <div #scrollContainer class="main-chat-history">
         @for (chatMessage of loadedChatMessages; track chatMessage.id) {
             <div class="chat-message-container" [class]="chatMessage.isMine ? 'author-message-margin' : ''">

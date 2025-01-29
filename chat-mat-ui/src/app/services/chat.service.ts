@@ -1,12 +1,13 @@
 import {Injectable} from '@angular/core';
-import {Observable} from 'rxjs';
+import {catchError, Observable, tap, throwError} from 'rxjs';
 import {ChatMessageRequest, CreateChatRequest} from '../common/rest/types/requests/chat-request';
 import {ChatResponse} from '../common/rest/types/responses/chat-response';
 import {ChatApiService} from '../common/rest/api-services/chat-api.service';
 import {QueryParams, QueryRequest} from '../common/rest/types/requests/query-request';
 import {PaginatedResponse} from '../common/rest/types/responses/paginated-response';
-import {buildQueryParams} from '../common/utils/util-functions';
+import {buildQueryParams, resolveErrorMessage} from '../common/utils/util-functions';
 import {UserResponse} from '../common/rest/types/responses/userResponse';
+import {ChatMessageViewModel} from '../common/view-models/chat-message-view-models';
 
 @Injectable({
     providedIn: 'root',
@@ -50,5 +51,5 @@ export class ChatService {
         const params = buildQueryParams(queryRequest) as any;
         return this.chatApiService.getFriendsNotPartOfChat(chatId, params);
     }
-    
+
 }
