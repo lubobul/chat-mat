@@ -8,7 +8,7 @@ import {
     RestMessageResponse,
     UpdateProfileRequest
 } from '../types/auth-types';
-import {UserResponse} from '../types/responses/userResponse';
+import {UserResponse} from '../types/responses/user-response';
 
 @Injectable({
     providedIn: 'root',

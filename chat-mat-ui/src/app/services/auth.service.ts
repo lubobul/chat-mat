@@ -8,7 +8,7 @@ import {
     UpdateProfileRequest
 } from '../common/rest/types/auth-types';
 import {Observable, tap} from 'rxjs';
-import {UserResponse} from '../common/rest/types/responses/userResponse';
+import {UserResponse} from '../common/rest/types/responses/user-response';
 import {ProfileApiService} from '../common/rest/api-services/profile-api.service';
 
 @Injectable({

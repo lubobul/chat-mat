@@ -9,6 +9,7 @@
 <h5>Current participants</h5>
 <clr-datagrid (clrDgRefresh)="refreshByParticipantsGrid($event)" [clrDgLoading]="participantsLoading">
     <clr-dg-column [clrDgField]="'username'">Username</clr-dg-column>
+    <clr-dg-column>User Type</clr-dg-column>
     <clr-dg-column>Email</clr-dg-column>
     <clr-dg-column>Friend Status</clr-dg-column>
     <clr-dg-column>Active Since</clr-dg-column>
@@ -20,12 +21,19 @@
                 @if (user.isFriendOfYours) {
                     <button class="action-item" (click)="unfriend(user)">Unfriend</button>
                 } @else {
-                    <button class="action-item" (click)="addFriend(user)">Add Friend</button>
+                    @if(currentUser?.user.id != user.id){
+                        <button class="action-item" (click)="addFriend(user)">Add Friend</button>
+                    }
+                }
+
+                @if(currentUser.chatUserType === ChatUserType.ADMIN || currentUser.chatUserType === ChatUserType.OWNER){
+                    <button class="action-item" (click)="removeChatParticipant(user)">Remove participant</button>
                 }
 
 
             </clr-dg-action-overflow>
             <clr-dg-cell>{{ user.username }}</clr-dg-cell>
+            <clr-dg-cell>{{ user.chatUserType }}</clr-dg-cell>
             <clr-dg-cell>{{ user.email }}</clr-dg-cell>
             <clr-dg-cell>{{ user.isFriendOfYours ? "Friend" : "Not Friend" }}</clr-dg-cell>
             <clr-dg-cell>{{ user.createdAt | date }}</clr-dg-cell>
@@ -40,32 +48,48 @@
         </clr-dg-pagination>
     </clr-dg-footer>
 </clr-datagrid>
+@if(currentUser?.chatUserType === ChatUserType.ADMIN || currentUser?.chatUserType === ChatUserType.OWNER){
+    <button type="button" class="btn btn-primary add-participants-button"
+            (click)="openAddNewParticipantsModal()">Add Participants
+    </button>
+}
 
-<h5>Add more channel participants from your friend list</h5>
-<clr-datagrid
-    (clrDgRefresh)="refreshByFriendsGrid($event)"
-    [clrDgLoading]="friendsLoading"
-    [(clrDgSelected)]="selectedFriends"
-    [clrDgPreserveSelection]="true"
-    [clrDgItemsTrackBy]="trackByFnc"
->
-    <clr-dg-column [clrDgField]="'username'">Username</clr-dg-column>
-    <clr-dg-column>Email</clr-dg-column>
-    <clr-dg-column>Active Since</clr-dg-column>
-    <clr-dg-placeholder>No friends found.</clr-dg-placeholder>
-    @for (user of friendsPage.content; track user.id) {
-        <clr-dg-row [clrDgItem]="user">
-            <clr-dg-cell>{{ user.username }}</clr-dg-cell>
-            <clr-dg-cell>{{ user.email }}</clr-dg-cell>
-            <clr-dg-cell>{{ user.createdAt | date }}</clr-dg-cell>
-        </clr-dg-row>
-    }
+<clr-modal [clrModalSize]="'xl'" [(clrModalOpen)]="openAddParticipantsModal">
+    <h3 class="modal-title">Add more channel participants from your friend list</h3>
+    <div class="modal-body">
+        <clr-datagrid
+            (clrDgRefresh)="refreshByFriendsGrid($event)"
+            [clrDgLoading]="friendsLoading"
+            [(clrDgSelected)]="selectedFriends"
+            [clrDgPreserveSelection]="true"
+            [clrDgItemsTrackBy]="trackByFnc"
+        >
+            <clr-dg-column [clrDgField]="'username'">Username</clr-dg-column>
+            <clr-dg-column>Email</clr-dg-column>
+            <clr-dg-column>Active Since</clr-dg-column>
+            <clr-dg-placeholder>No friends found.</clr-dg-placeholder>
+            @for (user of friendsPage.content; track user.id) {
+                <clr-dg-row [clrDgItem]="user">
+                    <clr-dg-cell>{{ user.username }}</clr-dg-cell>
+                    <clr-dg-cell>{{ user.email }}</clr-dg-cell>
+                    <clr-dg-cell>{{ user.createdAt | date }}</clr-dg-cell>
+                </clr-dg-row>
+            }
 
-    <clr-dg-footer>
-        <clr-dg-pagination #pagination [clrDgPageSize]="5" [clrDgTotalItems]="friendsPage.totalElements">
-            <clr-dg-page-size [clrPageSizeOptions]="[5, 10, 15]">Users per page</clr-dg-page-size>
-            {{ pagination.firstItem + 1 }} - {{ pagination.lastItem + 1 }} of
-            {{ pagination.totalItems }} users
-        </clr-dg-pagination>
-    </clr-dg-footer>
-</clr-datagrid>
+            <clr-dg-footer>
+                <clr-dg-pagination #pagination [clrDgPageSize]="5" [clrDgTotalItems]="friendsPage.totalElements">
+                    <clr-dg-page-size [clrPageSizeOptions]="[5, 10, 15]">Users per page</clr-dg-page-size>
+                    {{ pagination.firstItem + 1 }} - {{ pagination.lastItem + 1 }} of
+                    {{ pagination.totalItems }} users
+                </clr-dg-pagination>
+            </clr-dg-footer>
+        </clr-datagrid>
+    </div>
+    <div class="modal-footer">
+        <button [disabled]="friendsLoading" type="button" class="btn btn-outline" (click)="cancelAddNewParticipants()">Cancel
+        </button>
+        <button [disabled]="friendsLoading" type="button" class="btn btn-primary"
+                (click)="addNewParticipantsSave()">Save
+        </button>
+    </div>
+</clr-modal>

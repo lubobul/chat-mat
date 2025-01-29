@@ -3,9 +3,12 @@ package com.chat_mat_rest_service.services;
 import com.chat_mat_rest_service.custom.exceptions.ResourceNotFoundException;
 import com.chat_mat_rest_service.dtos.mappers.ChatMessageMapper;
 import com.chat_mat_rest_service.dtos.mappers.UserMapper;
+import com.chat_mat_rest_service.dtos.requests.ParticipantsUpdateRequest;
 import com.chat_mat_rest_service.dtos.responses.ChatDto;
 import com.chat_mat_rest_service.dtos.mappers.ChatMapper;
 import com.chat_mat_rest_service.dtos.requests.CreateChatRequest;
+import com.chat_mat_rest_service.dtos.responses.ChatUserType;
+import com.chat_mat_rest_service.dtos.responses.UserChatRightsDto;
 import com.chat_mat_rest_service.dtos.responses.UserDto;
 import com.chat_mat_rest_service.entities.*;
 import com.chat_mat_rest_service.repositories.*;
@@ -68,7 +71,7 @@ public class ChatService {
 
         // Fetch paginated participants
         Pageable participantsPageable = PageRequest.of(participantsPage, participantsSize);
-        Page<User> participants = chatParticipantRepository.findParticipantsByChatId(chat.getId(), participantsPageable);
+        Page<User> participants = chatParticipantRepository.findParticipantUsersByChatId(chat.getId(), participantsPageable);
 
         // Fetch paginated messages
         Pageable messagesPageable = PageRequest.of(messagesPage, messagesSize);
@@ -200,16 +203,13 @@ public class ChatService {
     public Page<UserDto> getChatParticipants(Long chatId, String filter, Pageable pageable) {
         Long currentUserId = getAuthenticatedUserId();
 
-        // Fetch the basic chat details
-        chatRepository.findByIdAndOwnerIdOrParticipantId(chatId, currentUserId)
+        // Ensure user has access to chat participants
+        Chat chat = chatRepository.findByIdAndOwnerIdOrParticipantId(chatId, currentUserId)
                 .orElseThrow(() -> new ResourceNotFoundException("You are not allowed to view participants of this chat."));
 
         String username = null;
-
         if (filter != null) {
-            // Split filter into individual conditions
-            String[] conditions = filter.split(",");
-            for (String condition : conditions) {
+            for (String condition : filter.split(",")) {
                 if (condition.startsWith("username==")) {
                     username = condition.substring("username==".length());
                 }
@@ -217,7 +217,7 @@ public class ChatService {
         }
 
         // Fetch paginated participants with optional filtering
-        Page<User> participants;
+        Page<ChatParticipant> participants;
         if (username != null && !username.isEmpty()) {
             participants = chatParticipantRepository.findParticipantsByChatIdAndUsernameContainingIgnoreCase(chatId, username, pageable);
         } else {
@@ -227,10 +227,22 @@ public class ChatService {
         // Get friend list for the current user
         List<Long> friendIds = friendRepository.findFriendIdsByUserId(currentUserId);
 
-        // Map participants to DTOs with isFriendOfYours flag
+        // Map participants to DTOs with isFriendOfYours and chatUserType
         return participants.map(participant -> {
-            UserDto userDto = userMapper.toDto(participant);
-            userDto.setIsFriendOfYours(friendIds.contains(participant.getId()));
+            User user = participant.getUser();
+            UserDto userDto = userMapper.toDto(user);
+
+            userDto.setIsFriendOfYours(friendIds.contains(user.getId()));
+
+            // Determine chatUserType
+            if (chat.getOwner().getId().equals(user.getId())) {
+                userDto.setChatUserType(ChatUserType.OWNER);
+            } else if (participant.getIsAdmin()) {
+                userDto.setChatUserType(ChatUserType.ADMIN);
+            } else {
+                userDto.setChatUserType(ChatUserType.PARTICIPANT);
+            }
+
             return userDto;
         });
     }
@@ -238,7 +250,7 @@ public class ChatService {
     public Page<UserDto> getFriendsNotInChat(Long chatId, String filter, Pageable pageable) {
         Long currentUserId = getAuthenticatedUserId();
 
-        // Ensure user is admin of the chat
+        // Ensure user is owner of the chat
         boolean isAuthorized = chatRepository.existsByIdAndOwnerId(chatId, currentUserId);
         if (!isAuthorized) {
             throw new ResourceNotFoundException("You are not allowed to view this chat.");
@@ -265,6 +277,70 @@ public class ChatService {
 
         // Map to DTO
         return friends.map(userMapper::toDto);
+    }
+
+
+    //TODO chat owner and admin can do this
+    public ChatDto updateChatParticipants(Long chatId, ParticipantsUpdateRequest request) {
+        Long currentUserId = getAuthenticatedUserId();
+
+        // Ensure the user is authorized (must be chat owner or participant)
+        Chat chat = chatRepository.findByIdAndOwnerIdOrParticipantId(chatId, currentUserId)
+                .orElseThrow(() -> new ResourceNotFoundException("Chat not found or access denied"));
+
+        // Fetch users to be added
+        List<User> usersToAdd = request.getAddedParticipants() != null
+                ? userRepository.findAllById(request.getAddedParticipants())
+                : Collections.emptyList();
+
+        // Fetch users to be removed
+        List<User> usersToRemove = request.getRemovedParticipants() != null
+                ? userRepository.findAllById(request.getRemovedParticipants())
+                : Collections.emptyList();
+
+        // Remove participants
+        usersToRemove.forEach(user -> {
+            chatParticipantRepository.deleteByChatIdAndUserId(chat.getId(), user.getId());
+        });
+
+        // Add new participants
+        usersToAdd.forEach(user -> {
+            if (!chat.getParticipants().contains(user)) {
+                ChatParticipant chatParticipant = new ChatParticipant();
+                chatParticipant.setId(new ChatParticipantId(chat.getId(), user.getId()));
+                chatParticipant.setChat(chat);
+                chatParticipant.setUser(user);
+                chatParticipant.setIsAdmin(false); // Default to non-admin
+                chatParticipantRepository.save(chatParticipant);
+            }
+        });
+
+        return chatMapper.toDto(chat);
+    }
+
+    public UserChatRightsDto getUserChatRights(Long chatId, Long userId) {
+        Long currentUserId = getAuthenticatedUserId(); // Ensure caller has access
+
+        // Check if the chat exists and the current user has access
+        chatRepository.findByIdAndOwnerIdOrParticipantId(chatId, currentUserId)
+                .orElseThrow(() -> new ResourceNotFoundException("You are not allowed to view this chat."));
+
+        // Fetch user details
+        User user = userRepository.findById(userId)
+                .orElseThrow(() -> new ResourceNotFoundException("User not found"));
+
+        // Determine Chat Role
+        ChatUserType chatUserType;
+        if (chatRepository.existsByIdAndOwnerId(chatId, userId)) {
+            chatUserType = ChatUserType.OWNER;
+        } else if (chatParticipantRepository.isUserAdminInChat(chatId, userId)) {
+            chatUserType = ChatUserType.ADMIN;
+        } else {
+            chatUserType = ChatUserType.PARTICIPANT;
+        }
+
+        // Map to DTO
+        return new UserChatRightsDto(userMapper.toDto(user), chatId, chatUserType);
     }
 
 

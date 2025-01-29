@@ -5,7 +5,7 @@ import {ChatResponse} from '../../common/rest/types/responses/chat-response';
 import {resolveErrorMessage} from '../../common/utils/util-functions';
 import {ChatService} from '../../services/chat.service';
 import {AuthService} from '../../services/auth.service';
-import {UserResponse} from '../../common/rest/types/responses/userResponse';
+import {ChatUserType, UserChatRightsResponse, UserResponse} from '../../common/rest/types/responses/user-response';
 import {ChatTitlePipe} from '../chat-title.pipe';
 import {CHAT_ROUTE_PATHS} from '../../app.routes';
 import {ClrAlertModule} from '@clr/angular';
@@ -23,13 +23,15 @@ import {ClrAlertModule} from '@clr/angular';
     standalone: true,
     styleUrl: './chat-home.component.scss'
 })
-export class ChatHomeComponent implements OnInit{
+export class ChatHomeComponent implements OnInit {
 
     loading = false;
     errorMessage = "";
     alertClosed = true;
     chat: ChatResponse;
-    currentUser: UserResponse;
+    currentUser: UserChatRightsResponse;
+    currentUserId: number;
+    currentChatId: number;
 
     constructor(
         private activatedRoute: ActivatedRoute,
@@ -37,7 +39,7 @@ export class ChatHomeComponent implements OnInit{
         private chatService: ChatService,
         private authService: AuthService,
     ) {
-        this.currentUser = authService.getUserIdentity();
+        this.currentUserId = authService.getUserIdentity().id;
     }
 
     ngOnInit(): void {
@@ -50,15 +52,21 @@ export class ChatHomeComponent implements OnInit{
             map((routeParameters) => {
                 return routeParameters[CHAT_ROUTE_PATHS.CHAT_ID];
             })
-        ).pipe(mergeMap((chatId) => {
-            return this.loadCorrespondence(chatId, false);
-        })).subscribe({
+        ).pipe(
+            mergeMap((chatId) => {
+                this.currentChatId = chatId;
+                return this.chatService.getParticipantRights(chatId, this.currentUserId);
+            }),
+            mergeMap((currentUserWithRights: UserChatRightsResponse) => {
+                this.currentUser = currentUserWithRights;
+                return this.loadCorrespondence(this.currentChatId);
+            })).subscribe({
             next: () => {
             }
         });
     }
 
-    private loadCorrespondence(chatId: number, fromPolling: boolean): Observable<ChatResponse> {
+    private loadCorrespondence(chatId: number): Observable<ChatResponse> {
         return this.chatService.getChat(chatId).pipe(
             tap((chat: ChatResponse) => {
                 this.chat = chat;
@@ -74,4 +82,5 @@ export class ChatHomeComponent implements OnInit{
     }
 
     protected readonly CHAT_ROUTE_PATHS = CHAT_ROUTE_PATHS;
+    protected readonly ChatUserType = ChatUserType;
 }

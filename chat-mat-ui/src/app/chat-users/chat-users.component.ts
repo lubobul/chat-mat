@@ -1,7 +1,7 @@
 import {Component, OnInit} from '@angular/core';
 import {UsersService} from '../services/users.service';
 import {PaginatedResponse} from '../common/rest/types/responses/paginated-response';
-import {UserResponse} from '../common/rest/types/responses/userResponse';
+import {UserResponse} from '../common/rest/types/responses/user-response';
 import {ClarityModule, ClrDatagridStateInterface} from '@clr/angular';
 import {DatePipe} from '@angular/common';
 import {debounceTime, mergeMap, Subject} from 'rxjs';

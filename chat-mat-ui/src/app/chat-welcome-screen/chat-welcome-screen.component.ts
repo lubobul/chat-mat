@@ -1,5 +1,5 @@
 import { Component } from '@angular/core';
-import {UserResponse} from '../common/rest/types/responses/userResponse';
+import {UserResponse} from '../common/rest/types/responses/user-response';
 import {AuthService} from '../services/auth.service';
 
 @Component({

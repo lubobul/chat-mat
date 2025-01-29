@@ -7,3 +7,9 @@ export interface CreateChatRequest {
 export interface ChatMessageRequest{
     messageContent: string;
 }
+
+export interface ParticipantsUpdateRequest {
+    addedParticipants: number[];
+    removedParticipants: number[];
+}
+

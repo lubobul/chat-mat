@@ -1,9 +1,11 @@
 package com.chat_mat_rest_service.controllers;
 
+import com.chat_mat_rest_service.dtos.requests.ParticipantsUpdateRequest;
 import com.chat_mat_rest_service.dtos.requests.SendMessageRequest;
 import com.chat_mat_rest_service.dtos.responses.ChatDto;
 import com.chat_mat_rest_service.dtos.requests.CreateChatRequest;
 import com.chat_mat_rest_service.dtos.responses.ChatMessageDto;
+import com.chat_mat_rest_service.dtos.responses.UserChatRightsDto;
 import com.chat_mat_rest_service.dtos.responses.UserDto;
 import com.chat_mat_rest_service.services.ChatMessageService;
 import com.chat_mat_rest_service.services.ChatService;
@@ -76,6 +78,16 @@ public class ChatController {
         return ResponseEntity.ok(participants);
     }
 
+    @PatchMapping("/{chatId}/participants")
+    public ResponseEntity<ChatDto> updateChatParticipants(
+            @PathVariable Long chatId,
+            @RequestBody ParticipantsUpdateRequest participantsUpdateRequest
+    ) {
+        ChatDto updatedChat = chatService.updateChatParticipants(chatId, participantsUpdateRequest);
+        return ResponseEntity.ok(updatedChat);
+    }
+
+
     @GetMapping("/{chatId}/friendsNotInChat")
     public ResponseEntity<Page<UserDto>> getFriendsNotInChat(
             @PathVariable Long chatId,
@@ -85,6 +97,15 @@ public class ChatController {
     ) {
         Page<UserDto> friendsNotInChat = chatService.getFriendsNotInChat(chatId, usernameFilter, pageable);
         return ResponseEntity.ok(friendsNotInChat);
+    }
+
+    @GetMapping("/{chatId}/participants/{userId}")
+    public ResponseEntity<UserChatRightsDto> getUserChatRights(
+            @PathVariable Long chatId,
+            @PathVariable Long userId
+    ) {
+        UserChatRightsDto userChatRights = chatService.getUserChatRights(chatId, userId);
+        return ResponseEntity.ok(userChatRights);
     }
 
 }

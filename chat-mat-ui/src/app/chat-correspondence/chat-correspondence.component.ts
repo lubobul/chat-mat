@@ -17,7 +17,7 @@ import {CHAT_ROUTE_PATHS} from '../app.routes';
 import {resolveErrorMessage} from '../common/utils/util-functions';
 import {ChatService} from '../services/chat.service';
 import {ChatResponse} from '../common/rest/types/responses/chat-response';
-import {UserResponse} from '../common/rest/types/responses/userResponse';
+import {UserResponse} from '../common/rest/types/responses/user-response';
 import {AuthService} from '../services/auth.service';
 import {ChatMessageViewModel} from '../common/view-models/chat-message-view-models';
 import {ChatMessageRequest} from '../common/rest/types/requests/chat-request';
@@ -31,7 +31,7 @@ import {ChannelSettingsComponent} from './channel-settings/channel-settings.comp
 
 @Component({
     selector: 'chat-correspondence',
-    imports: [FormsModule, CdsIconModule, DatePipe, EmojiParserPipe, ClrAlertModule, ChannelParticipantsComponent, ChannelSettingsComponent],
+    imports: [FormsModule, CdsIconModule, DatePipe, EmojiParserPipe, ClrAlertModule],
     templateUrl: './chat-correspondence.component.html',
     standalone: true,
     styleUrl: './chat-correspondence.component.scss',

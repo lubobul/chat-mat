@@ -3,7 +3,7 @@ import { HttpClient } from '@angular/common/http';
 import { Observable } from 'rxjs';
 import { RegisterRequest, LoginRequest, JwtResponse, RestMessageResponse } from '../types/auth-types';
 import {PaginatedResponse} from '../types/responses/paginated-response';
-import {UserResponse} from '../types/responses/userResponse';
+import {UserResponse} from '../types/responses/user-response';
 import {QueryParams, QueryRequest} from '../types/requests/query-request';
 import {buildQueryParams} from '../../utils/util-functions';
 

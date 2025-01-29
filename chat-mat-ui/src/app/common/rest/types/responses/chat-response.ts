@@ -1,4 +1,4 @@
-import {UserResponse} from './userResponse';
+import {UserResponse} from './user-response';
 import {PaginatedResponse} from './paginated-response';
 
 export interface ChatResponse {

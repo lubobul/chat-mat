@@ -1,12 +1,16 @@
 import {Injectable} from '@angular/core';
 import {catchError, Observable, tap, throwError} from 'rxjs';
-import {ChatMessageRequest, CreateChatRequest} from '../common/rest/types/requests/chat-request';
+import {
+    ChatMessageRequest,
+    CreateChatRequest,
+    ParticipantsUpdateRequest
+} from '../common/rest/types/requests/chat-request';
 import {ChatResponse} from '../common/rest/types/responses/chat-response';
 import {ChatApiService} from '../common/rest/api-services/chat-api.service';
 import {QueryParams, QueryRequest} from '../common/rest/types/requests/query-request';
 import {PaginatedResponse} from '../common/rest/types/responses/paginated-response';
 import {buildQueryParams, resolveErrorMessage} from '../common/utils/util-functions';
-import {UserResponse} from '../common/rest/types/responses/userResponse';
+import {UserChatRightsResponse, UserResponse} from '../common/rest/types/responses/user-response';
 import {ChatMessageViewModel} from '../common/view-models/chat-message-view-models';
 
 @Injectable({
@@ -50,6 +54,14 @@ export class ChatService {
     getFriendsNotPartOfChat(chatId: number, queryRequest: QueryRequest): Observable<PaginatedResponse<UserResponse>> {
         const params = buildQueryParams(queryRequest) as any;
         return this.chatApiService.getFriendsNotPartOfChat(chatId, params);
+    }
+
+    updateParticipants(chatId: number, payload: ParticipantsUpdateRequest): Observable<ChatResponse> {
+        return this.chatApiService.updateParticipants(chatId, payload);
+    }
+
+    getParticipantRights(chatId: number, userId: number): Observable<UserChatRightsResponse> {
+        return this.chatApiService.getParticipantRights(chatId, userId);
     }
 
 }

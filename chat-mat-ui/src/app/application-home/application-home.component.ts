@@ -6,7 +6,7 @@ import {
 } from '@clr/angular';
 import {FormControl, ReactiveFormsModule} from '@angular/forms';
 import {CdsIconModule} from '@cds/angular';
-import {UserResponse} from '../common/rest/types/responses/userResponse';
+import {UserResponse} from '../common/rest/types/responses/user-response';
 import {
     BehaviorSubject,
     debounceTime, delayWhen,
@@ -77,6 +77,9 @@ export class ApplicationHomeComponent implements OnInit, OnDestroy {
 
     ngOnInit(): void {
         this.currentUser = this.authService.getUserIdentity();
+
+
+
         this.refresh().subscribe(() => {
             this.startDetailsPolling(5000);
         });

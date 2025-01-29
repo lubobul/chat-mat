@@ -1,4 +1,4 @@
-import {UserResponse} from './responses/userResponse';
+import {UserResponse} from './responses/user-response';
 
 export interface RegisterRequest {
     username: string;

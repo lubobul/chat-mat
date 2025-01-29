@@ -4,12 +4,11 @@ import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 
-import java.sql.Timestamp;
-
 @Data
 @NoArgsConstructor
 @AllArgsConstructor
-public class UserExtendedDto extends UserDto{
-    private boolean isFriendOfYours;
-    private boolean isChannelOwner;
+public class UserChatRightsDto {
+    private UserDto user;
+    private Long chatId;
+    private ChatUserType chatUserType;
 }

@@ -13,7 +13,7 @@ import {Router} from '@angular/router';
 import {FormValidators} from '../common/utils/form-validators';
 import {UsersApiService} from '../common/rest/api-services/users-api.service';
 import {resolveErrorMessage} from '../common/utils/util-functions';
-import {UserResponse} from '../common/rest/types/responses/userResponse';
+import {UserResponse} from '../common/rest/types/responses/user-response';
 import {UpdateProfileRequest} from '../common/rest/types/auth-types';
 import {CHAT_ROUTE_PATHS} from '../app.routes';
 

@@ -9,7 +9,7 @@ import {
 import {DatePipe} from '@angular/common';
 import {debounceTime, mergeMap, Subject, Subscription} from 'rxjs';
 import {PaginatedResponse} from '../common/rest/types/responses/paginated-response';
-import {UserResponse} from '../common/rest/types/responses/userResponse';
+import {UserResponse} from '../common/rest/types/responses/user-response';
 import {QueryRequest, QueryRequestSortType} from '../common/rest/types/requests/query-request';
 import {UsersService} from '../services/users.service';
 import {FriendsService} from '../services/friends.service';

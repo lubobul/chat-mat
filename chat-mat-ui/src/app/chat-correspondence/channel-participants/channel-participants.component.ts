@@ -3,19 +3,19 @@ import {
     ClrAlertModule,
     ClrDatagridModule,
     ClrDatagridStateInterface,
-    ClrInputModule,
-    ClrSidePanelModule
+    ClrInputModule, ClrModalModule,
+    ClrSidePanelModule, ClrSpinnerModule
 } from '@clr/angular';
 import {DatePipe} from '@angular/common';
 import {catchError, debounceTime, map, mergeMap, Observable, Subject, tap, throwError} from 'rxjs';
 import {PaginatedResponse} from '../../common/rest/types/responses/paginated-response';
-import {UserResponse} from '../../common/rest/types/responses/userResponse';
+import {ChatUserType, UserChatRightsResponse, UserResponse} from '../../common/rest/types/responses/user-response';
 import {QueryRequest, QueryRequestSortType} from '../../common/rest/types/requests/query-request';
 import {FriendsService} from '../../services/friends.service';
 import {buildRestGridFilter, resolveErrorMessage} from '../../common/utils/util-functions';
 import {FormBuilder, FormGroup, FormsModule, ReactiveFormsModule, Validators} from '@angular/forms';
 import {ChatService} from '../../services/chat.service';
-import {CreateChatRequest} from '../../common/rest/types/requests/chat-request';
+import {CreateChatRequest, ParticipantsUpdateRequest} from '../../common/rest/types/requests/chat-request';
 import {ChatResponse} from '../../common/rest/types/responses/chat-response';
 import {ActivatedRoute, Params, Router} from '@angular/router';
 import {AuthService} from '../../services/auth.service';
@@ -30,13 +30,15 @@ import {CHAT_ROUTE_PATHS} from '../../app.routes';
         ClrInputModule,
         FormsModule,
         ReactiveFormsModule,
-        DatePipe
+        DatePipe,
+        ClrModalModule,
+        ClrSpinnerModule,
     ],
     templateUrl: './channel-participants.component.html',
     standalone: true,
     styleUrl: './channel-participants.component.scss'
 })
-export class ChannelParticipantsComponent implements OnInit{
+export class ChannelParticipantsComponent implements OnInit {
     private onParticipantsGridRefresh = new Subject<ClrDatagridStateInterface>();
     private onFriendsGridRefresh = new Subject<ClrDatagridStateInterface>();
 
@@ -68,10 +70,11 @@ export class ChannelParticipantsComponent implements OnInit{
         page: 1,
         pageSize: 5,
     };
-
     currentChat: ChatResponse;
-
-    currentUser: UserResponse;
+    currentUser: UserChatRightsResponse;
+    currentUserId: number;
+    openAddParticipantsModal = false;
+    private currentChatId: number;
 
     constructor(
         private friendsService: FriendsService,
@@ -80,7 +83,7 @@ export class ChannelParticipantsComponent implements OnInit{
         private chatService: ChatService,
         private authService: AuthService,
     ) {
-        this.currentUser = authService.getUserIdentity();
+        this.currentUserId = authService.getUserIdentity().id;
     }
 
     public trackByFnc = function (item: UserResponse): number | undefined {
@@ -97,15 +100,22 @@ export class ChannelParticipantsComponent implements OnInit{
             map((routeParameters) => {
                 return routeParameters[CHAT_ROUTE_PATHS.CHAT_ID];
             })
-        ).pipe(mergeMap((chatId) => {
-            return this.loadCorrespondence(chatId, false);
-        })).subscribe({
+        ).pipe(
+            mergeMap((chatId) => {
+                this.currentChatId = chatId;
+                return this.chatService.getParticipantRights(chatId, this.currentUserId);
+            }),
+            mergeMap((currentUserWithRights: UserChatRightsResponse) => {
+
+                this.currentUser = currentUserWithRights;
+                return this.loadChat(this.currentChatId);
+            })).subscribe({
             next: () => {
             }
         });
     }
 
-    private loadCorrespondence(chatId: number, fromPolling: boolean): Observable<ChatResponse> {
+    private loadChat(chatId: number): Observable<ChatResponse> {
         return this.chatService.getChat(chatId).pipe(
             tap((chat: ChatResponse) => {
                 this.currentChat = chat;
@@ -119,7 +129,7 @@ export class ChannelParticipantsComponent implements OnInit{
         )
     }
 
-    private initGrids(): void{
+    private initGrids(): void {
         this.subscribeToParticipantsGrid();
         this.refreshByParticipantsGrid({
             page: {
@@ -129,15 +139,9 @@ export class ChannelParticipantsComponent implements OnInit{
         });
 
         this.subscribeToFriendsGrid();
-        this.refreshByFriendsGrid({
-            page: {
-                size: 5,
-                current: 1,
-            }
-        });
     }
 
-    public subscribeToParticipantsGrid(): void{
+    public subscribeToParticipantsGrid(): void {
         this.onParticipantsGridRefresh.pipe(
             debounceTime(500),
             mergeMap((state) => {
@@ -152,7 +156,7 @@ export class ChannelParticipantsComponent implements OnInit{
                     filter: buildRestGridFilter(state.filters)
                 }
                 return this.chatService.getParticipants(this.currentChat.id, this.participantsRestQuery);
-            })).subscribe( {
+            })).subscribe({
             next: (response) => {
                 this.participantsPage = response;
                 this.participantsLoading = false;
@@ -164,7 +168,7 @@ export class ChannelParticipantsComponent implements OnInit{
         });
     }
 
-    public subscribeToFriendsGrid(): void{
+    public subscribeToFriendsGrid(): void {
         this.onFriendsGridRefresh.pipe(
             debounceTime(500),
             mergeMap((state) => {
@@ -179,7 +183,7 @@ export class ChannelParticipantsComponent implements OnInit{
                     filter: buildRestGridFilter(state.filters)
                 }
                 return this.chatService.getFriendsNotPartOfChat(this.currentChat.id, this.friendsRestQuery);
-            })).subscribe( {
+            })).subscribe({
             next: (response) => {
                 this.friendsPage = response;
                 this.friendsLoading = false;
@@ -199,7 +203,7 @@ export class ChannelParticipantsComponent implements OnInit{
         this.onFriendsGridRefresh.next(state);
     }
 
-    public addFriend(user: UserResponse): void{
+    public addFriend(user: UserResponse): void {
         this.participantsLoading = true;
         this.friendsService.addFriend(user).subscribe({
             next: () => {
@@ -212,7 +216,7 @@ export class ChannelParticipantsComponent implements OnInit{
         });
     }
 
-    public unfriend(user: UserResponse): void{
+    public unfriend(user: UserResponse): void {
         this.participantsLoading = true;
         this.friendsService.removeFriend(user).subscribe({
             next: () => {
@@ -225,7 +229,7 @@ export class ChannelParticipantsComponent implements OnInit{
         });
     }
 
-    private refresh(): void{
+    private refresh(): void {
         this.chatService.getParticipants(this.currentChat.id, this.participantsRestQuery).subscribe(
             {
                 next: (response) => {
@@ -239,4 +243,76 @@ export class ChannelParticipantsComponent implements OnInit{
             }
         )
     }
+
+    public openAddNewParticipantsModal(): void {
+        this.refreshByFriendsGrid({
+            page: {
+                size: 5,
+                current: 1,
+            }
+        });
+
+        this.openAddParticipantsModal = true;
+        this.selectedFriends = [];
+    }
+
+    public cancelAddNewParticipants(): void {
+        this.openAddParticipantsModal = false;
+    }
+
+    public addNewParticipantsSave(): void {
+        this.friendsLoading = true;
+        this.chatService.updateParticipants(this.currentChat.id, {
+            removedParticipants: [],
+            addedParticipants: this.selectedFriends.map((friend) => friend.id),
+        } as ParticipantsUpdateRequest).subscribe(
+            {
+                next: (response) => {
+                    this.friendsLoading = false;
+                    this.openAddParticipantsModal = false;
+                    this.refreshByParticipantsGrid({
+                        page: {
+                            size: 5,
+                            current: 1,
+                        }
+                    });
+                },
+                error: (error) => {
+                    this.errorMessage = resolveErrorMessage(error);
+                    this.alertClosed = false;
+                    this.friendsLoading = false;
+                    this.openAddParticipantsModal = false;
+                }
+            }
+        )
+    }
+
+    public removeChatParticipant(chatParticipant: UserResponse): void {
+        this.friendsLoading = true;
+        this.chatService.updateParticipants(this.currentChat.id, {
+            removedParticipants: [chatParticipant.id],
+            addedParticipants: []
+        } as ParticipantsUpdateRequest).subscribe(
+            {
+                next: (response) => {
+                    this.friendsLoading = false;
+                    this.openAddParticipantsModal = false;
+                    this.refreshByParticipantsGrid({
+                        page: {
+                            size: 5,
+                            current: 1,
+                        }
+                    });
+                },
+                error: (error) => {
+                    this.errorMessage = resolveErrorMessage(error);
+                    this.alertClosed = false;
+                    this.friendsLoading = false;
+                    this.openAddParticipantsModal = false;
+                }
+            }
+        )
+    }
+
+    protected readonly ChatUserType = ChatUserType;
 }

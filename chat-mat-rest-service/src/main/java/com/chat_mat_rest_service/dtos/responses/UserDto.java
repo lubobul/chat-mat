@@ -19,5 +19,5 @@ public class UserDto {
     @JsonInclude(JsonInclude.Include.NON_NULL)
     private Boolean isFriendOfYours; // Will be absent if null
     @JsonInclude(JsonInclude.Include.NON_NULL)
-    private Boolean isChannelOwner; // Will be absent if null
+    private ChatUserType chatUserType;
 }
