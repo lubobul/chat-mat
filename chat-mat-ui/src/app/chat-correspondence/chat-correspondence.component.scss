@@ -2,6 +2,9 @@
 
     .subnav{
         .nav-chat-links{
+            .channel-nav-item{
+                cursor: pointer;
+            }
             flex: 0;
             padding-right: 1.2rem;
         }
@@ -24,7 +27,7 @@
         display: flex;
         margin-bottom: 5rem;
         margin-top: auto;
-        height: 6rem;
+        height: auto;
         align-items: center;
         justify-content: center;
 

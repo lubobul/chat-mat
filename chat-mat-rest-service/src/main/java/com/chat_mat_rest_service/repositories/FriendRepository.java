@@ -25,7 +25,7 @@ public interface FriendRepository extends JpaRepository<Friend, FriendId> {
     FROM Friend f
     WHERE f.user.id = :userId
       AND f.friend.deleted = false
-      AND (:username IS NULL OR f.friend.username LIKE %:username%)
+      AND (:username IS NULL OR LOWER(f.friend.username) LIKE LOWER(CONCAT('%', :username, '%')))
 """)
     Page<Friend> findNonDeletedFriendsByUserId(
             @Param("userId") Long userId,

@@ -1,4 +1,4 @@
-import {Component, OnInit, ViewChild} from '@angular/core';
+import {Component, OnDestroy, OnInit, ViewChild} from '@angular/core';
 import {ActivatedRoute, Router, RouterLink, RouterLinkActive, RouterOutlet} from '@angular/router';
 import {
     ClarityModule,
@@ -7,7 +7,17 @@ import {
 import {FormControl, ReactiveFormsModule} from '@angular/forms';
 import {CdsIconModule} from '@cds/angular';
 import {UserResponse} from '../common/rest/types/responses/userResponse';
-import {debounceTime, distinctUntilChanged, filter, forkJoin, map, Observable, switchMap, tap} from 'rxjs';
+import {
+    BehaviorSubject,
+    debounceTime, delayWhen,
+    distinctUntilChanged,
+    filter,
+    forkJoin,
+    map, mergeMap,
+    Observable, retry, Subscription,
+    switchMap,
+    tap, timer
+} from 'rxjs';
 import {resolveErrorMessage} from '../common/utils/util-functions';
 import {FriendsService} from '../services/friends.service';
 import {CHAT_ROUTE_PATHS} from '../app.routes';
@@ -37,7 +47,7 @@ import {NewChatComponent} from '../new-chat/new-chat.component';
     standalone: true,
     styleUrl: './chat-home.component.scss'
 })
-export class ChatHomeComponent implements OnInit {
+export class ChatHomeComponent implements OnInit, OnDestroy {
     friendSearchControl = new FormControl('');
     chatSearchControl = new FormControl('');
     channelSearchControl = new FormControl('');
@@ -53,21 +63,31 @@ export class ChatHomeComponent implements OnInit {
     friendActionLoading = false;
     currentUser: UserResponse = {} as UserResponse;
 
+    chatSearch = "";
+    channelSearch = "";
+    friendsSearch = "";
+
     constructor(
         private friendsService: FriendsService,
         private chatService: ChatService,
         private authService: AuthService,
         private router: Router,
-        private activatedRoute: ActivatedRoute,
     ) {
     }
 
     ngOnInit(): void {
         this.currentUser = this.authService.getUserIdentity();
-        this.refresh().subscribe();
+        this.refresh().subscribe(() => {
+            this.startDetailsPolling(5000);
+        });
+
         this.subscribeToFriendsSearch();
         this.subscribeToDirectChatsSearch();
         this.subscribeToChannelsSearch();
+    }
+
+    ngOnDestroy(): void {
+        this.stopDetailsPolling();
     }
 
     public subscribeToFriendsSearch(): void {
@@ -76,21 +96,23 @@ export class ChatHomeComponent implements OnInit {
                 filter((query): query is string => query !== null),
                 debounceTime(500),
                 distinctUntilChanged(),
-                switchMap((query: string) => this.friendsService.getFriends({
-                    page: 1,
-                    pageSize: 32,
-                    filter: query.trim() ? `username==${query.trim()}` : undefined
-                }))
-            )
-            .subscribe({
-                next: (response) => {
-                    this.friends = response.content; // Update the filtered users
-                },
-                error: (error) => {
-                    this.errorMessage = resolveErrorMessage(error);
-                    this.alertClosed = false;
-                }
-            });
+                switchMap((query: string) => {
+                    this.friendsSearch = query;
+                    return this.friendsService.getFriends({
+                        page: 1,
+                        pageSize: 32,
+                        filter: this.friendsSearch .trim() ? `username==${this.friendsSearch .trim()}` : undefined
+                    })
+                })
+            ).subscribe({
+            next: (response) => {
+                this.friends = response.content; // Update the filtered users
+            },
+            error: (error) => {
+                this.errorMessage = resolveErrorMessage(error);
+                this.alertClosed = false;
+            }
+        });
     }
 
     public subscribeToDirectChatsSearch(): void {
@@ -99,12 +121,14 @@ export class ChatHomeComponent implements OnInit {
                 filter((query): query is string => query !== null),
                 debounceTime(500),
                 distinctUntilChanged(),
-                switchMap((query: string) => this.chatService.getDirectChats({
-                    page: 1,
-                    pageSize: 32,
-                    filter: query.trim() ? `title==${query.trim()}` : undefined
+                switchMap((query: string) => {
+                    this.chatSearch = query;
+                    return this.chatService.getDirectChats({
+                        page: 1,
+                        pageSize: 32,
+                        filter: this.chatSearch .trim() ? `title==${this.chatSearch .trim()}` : undefined
+                    })
                 }))
-            )
             .subscribe({
                 next: (response) => {
                     this.directChats = response.content; // Update the filtered users
@@ -122,12 +146,14 @@ export class ChatHomeComponent implements OnInit {
                 filter((query): query is string => query !== null),
                 debounceTime(500),
                 distinctUntilChanged(),
-                switchMap((query: string) => this.chatService.getChannelChats({
-                    page: 1,
-                    pageSize: 32,
-                    filter: query.trim() ? `title==${query.trim()}` : undefined
+                switchMap((query: string) => {
+                    this.channelSearch = query;
+                    return this.chatService.getChannelChats({
+                        page: 1,
+                        pageSize: 32,
+                        filter: this.channelSearch.trim() ? `title==${this.channelSearch.trim()}` : undefined
+                    })
                 }))
-            )
             .subscribe({
                 next: (response) => {
                     this.channels = response.content; // Update the filtered users
@@ -190,14 +216,17 @@ export class ChatHomeComponent implements OnInit {
             this.friendsService.getFriends({
                 page: 1,
                 pageSize: 32,
+                filter: this.friendsSearch .trim() ? `username==${this.friendsSearch .trim()}` : undefined
             }),
             this.chatService.getDirectChats({
                 page: 1,
                 pageSize: 32,
+                filter: this.chatSearch.trim() ? `title==${this.chatSearch.trim()}` : undefined
             }),
             this.chatService.getChannelChats({
                 page: 1,
                 pageSize: 32,
+                filter: this.channelSearch.trim() ? `title==${this.channelSearch.trim()}` : undefined
             })
         ]).pipe(
             map((data) => {
@@ -211,6 +240,34 @@ export class ChatHomeComponent implements OnInit {
         );
     }
 
+    private pollingSbj: BehaviorSubject<number>;
+    private pollingSubscription: Subscription;
+
+    private startDetailsPolling(interval: number): void {
+        this.stopDetailsPolling();
+        this.pollingSbj = new BehaviorSubject<number>(interval);
+
+        this.pollingSubscription = this.pollingSbj.pipe(
+            delayWhen((interval) => timer(interval)),
+            mergeMap(() => {
+                return this.refresh();
+            }),
+            tap(() => {
+                this.pollingSbj.next(interval);
+            }),
+            retry(),
+        ).subscribe();
+    }
+
+    private stopDetailsPolling(): void {
+        if (this.pollingSbj) {
+            this.pollingSbj.complete();
+        }
+
+        if (this.pollingSubscription) {
+            this.pollingSubscription.unsubscribe();
+        }
+    }
 
     public openNewChatSideBar(): void {
         this.newChatComponent.open();
