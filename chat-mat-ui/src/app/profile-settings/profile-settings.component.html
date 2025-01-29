@@ -1,5 +1,11 @@
 <h3>Profile settings</h3>
 <div class="card-block">
+    <clr-toggle-container>
+        <clr-toggle-wrapper>
+            <input type="checkbox" clrToggle value="option1" name="options" [(ngModel)]="darkMode" (change)="toggleDarkMode($event)" />
+            <label>Dark mode</label>
+        </clr-toggle-wrapper>
+    </clr-toggle-container>
 <form [formGroup]="updateProfileForm">
     @if (errorMessage) {
         <clr-alert class="danger-alert" [clrAlertType]="'danger'" [clrAlertSizeSmall]="true"

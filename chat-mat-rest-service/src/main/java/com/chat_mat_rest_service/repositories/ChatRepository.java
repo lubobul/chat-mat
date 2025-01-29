@@ -13,6 +13,15 @@ import java.util.List;
 import java.util.Optional;
 
 public interface ChatRepository extends JpaRepository<Chat, Long> {
+    @Query("""
+    SELECT COUNT(cp) > 0
+    FROM ChatParticipant cp
+    WHERE cp.chat.id = :chatId
+    AND cp.user.id = :currentUserId
+    AND (cp.isAdmin = true OR cp.chat.owner.id = :currentUserId)
+""")
+    boolean existsByIdAndOwnerIdOrAdminId(@Param("chatId") Long chatId, @Param("currentUserId") Long currentUserId);
+
     boolean existsByIdAndOwnerId(Number chatId, Number currentUserId);
     @Query("""
     SELECT c

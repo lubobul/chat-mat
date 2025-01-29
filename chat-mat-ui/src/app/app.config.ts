@@ -1,4 +1,8 @@
-import {ApplicationConfig, EnvironmentProviders, importProvidersFrom, provideZoneChangeDetection} from '@angular/core';
+import {
+    importProvidersFrom,
+    provideZoneChangeDetection,
+    Renderer2
+} from '@angular/core';
 import {provideRouter} from '@angular/router';
 
 import {routes} from './app.routes';
@@ -39,5 +43,6 @@ export const appConfig: { providers: any[] } = {
             ),
             {provide: JWT_OPTIONS, useValue: JWT_OPTIONS},
             JwtHelperService,
+            Renderer2,
         ],
 };

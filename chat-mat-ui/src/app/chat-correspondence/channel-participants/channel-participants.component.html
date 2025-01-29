@@ -17,21 +17,34 @@
 
     @for (user of participantsPage.content; track user.id) {
         <clr-dg-row>
-            <clr-dg-action-overflow>
-                @if (user.isFriendOfYours) {
-                    <button class="action-item" (click)="unfriend(user)">Unfriend</button>
-                } @else {
-                    @if(currentUser?.user.id != user.id){
-                        <button class="action-item" (click)="addFriend(user)">Add Friend</button>
+<!--            Do not show any actions for current user-->
+            @if (user.id !== currentUser.user.id) {
+                <clr-dg-action-overflow>
+                    @if (user.isFriendOfYours) {
+                        <button class="action-item" (click)="unfriend(user)">Unfriend</button>
+                    } @else {
+                        @if (currentUser?.user.id != user.id) {
+                            <button class="action-item" (click)="addFriend(user)">Add Friend</button>
+                        }
                     }
-                }
 
-                @if(currentUser.chatUserType === ChatUserType.ADMIN || currentUser.chatUserType === ChatUserType.OWNER){
-                    <button class="action-item" (click)="removeChatParticipant(user)">Remove participant</button>
-                }
+                    @if ((currentUser.chatUserType === ChatUserType.ADMIN ||
+                        currentUser.chatUserType === ChatUserType.OWNER) &&
+                        user.chatUserType !== ChatUserType.OWNER
+                        ) {
+                        <button class="action-item" (click)="removeChatParticipant(user)">Remove participant</button>
+                    }
 
+                    @if (currentUser.chatUserType === ChatUserType.OWNER && user.chatUserType !== ChatUserType.ADMIN) {
+                        <button class="action-item" (click)="giveAdminRights(user)">Make Admin</button>
+                    }
 
-            </clr-dg-action-overflow>
+                    @if (currentUser.chatUserType === ChatUserType.OWNER && user.chatUserType === ChatUserType.ADMIN) {
+                        <button class="action-item" (click)="revokeAdminRights(user)">Revoke Admin Rights</button>
+                    }
+
+                </clr-dg-action-overflow>
+            }
             <clr-dg-cell>{{ user.username }}</clr-dg-cell>
             <clr-dg-cell>{{ user.chatUserType }}</clr-dg-cell>
             <clr-dg-cell>{{ user.email }}</clr-dg-cell>
@@ -48,7 +61,7 @@
         </clr-dg-pagination>
     </clr-dg-footer>
 </clr-datagrid>
-@if(currentUser?.chatUserType === ChatUserType.ADMIN || currentUser?.chatUserType === ChatUserType.OWNER){
+@if (currentUser?.chatUserType === ChatUserType.ADMIN || currentUser?.chatUserType === ChatUserType.OWNER) {
     <button type="button" class="btn btn-primary add-participants-button"
             (click)="openAddNewParticipantsModal()">Add Participants
     </button>
@@ -86,7 +99,8 @@
         </clr-datagrid>
     </div>
     <div class="modal-footer">
-        <button [disabled]="friendsLoading" type="button" class="btn btn-outline" (click)="cancelAddNewParticipants()">Cancel
+        <button [disabled]="friendsLoading" type="button" class="btn btn-outline" (click)="cancelAddNewParticipants()">
+            Cancel
         </button>
         <button [disabled]="friendsLoading" type="button" class="btn btn-primary"
                 (click)="addNewParticipantsSave()">Save

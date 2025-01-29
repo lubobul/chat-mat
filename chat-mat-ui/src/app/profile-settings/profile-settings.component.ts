@@ -1,5 +1,12 @@
 import {Component, OnInit} from '@angular/core';
-import {ClrAlertModule, ClrCommonFormsModule, ClrInputModule, ClrModalModule, ClrPasswordModule} from '@clr/angular';
+import {
+    ClarityModule,
+    ClrAlertModule,
+    ClrCommonFormsModule,
+    ClrInputModule,
+    ClrModalModule,
+    ClrPasswordModule
+} from '@clr/angular';
 import {
     AbstractControlOptions,
     FormBuilder,
@@ -16,6 +23,7 @@ import {resolveErrorMessage} from '../common/utils/util-functions';
 import {UserResponse} from '../common/rest/types/responses/user-response';
 import {UpdateProfileRequest} from '../common/rest/types/auth-types';
 import {CHAT_ROUTE_PATHS} from '../app.routes';
+import {ThemeService} from '../common/services/theme.service';
 
 @Component({
     selector: 'app-profile-settings',
@@ -26,7 +34,8 @@ import {CHAT_ROUTE_PATHS} from '../app.routes';
         ClrPasswordModule,
         FormsModule,
         ReactiveFormsModule,
-        ClrModalModule
+        ClrModalModule,
+        ClarityModule
     ],
     templateUrl: './profile-settings.component.html',
     standalone: true,
@@ -38,13 +47,14 @@ export class ProfileSettingsComponent implements OnInit{
     alertClosed = true;
     user: UserResponse = {} as any;
     showConfirm = false;
-
+    darkMode: boolean;
     constructor(
         private fb: FormBuilder,
         private authService: AuthService,
-        private router: Router
+        private router: Router,
+        private themeService: ThemeService
     ) {
-
+        this.darkMode = this.themeService.getCurrentTheme() === 'dark';
     }
 
     ngOnInit(): void {
@@ -106,5 +116,9 @@ export class ProfileSettingsComponent implements OnInit{
                 this.alertClosed = false;
             },
         })
+    }
+
+    toggleDarkMode(event: any): void{
+        this.themeService.setTheme(event.currentTarget.checked);
     }
 }

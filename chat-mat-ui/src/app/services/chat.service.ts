@@ -1,6 +1,7 @@
 import {Injectable} from '@angular/core';
 import {catchError, Observable, tap, throwError} from 'rxjs';
 import {
+    AdminRightsRequest,
     ChatMessageRequest,
     CreateChatRequest,
     ParticipantsUpdateRequest
@@ -62,6 +63,10 @@ export class ChatService {
 
     getParticipantRights(chatId: number, userId: number): Observable<UserChatRightsResponse> {
         return this.chatApiService.getParticipantRights(chatId, userId);
+    }
+
+    updateAdminRights(chatId: number, userId: number, payload: AdminRightsRequest): Observable<void> {
+        return this.chatApiService.updateAdminRights(chatId, userId, payload);
     }
 
 }

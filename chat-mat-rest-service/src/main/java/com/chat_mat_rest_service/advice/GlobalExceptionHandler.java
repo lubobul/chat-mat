@@ -1,6 +1,7 @@
 package com.chat_mat_rest_service.advice;
 
 import com.chat_mat_rest_service.custom.exceptions.ResourceNotFoundException;
+import com.chat_mat_rest_service.custom.exceptions.UnauthorizedException;
 import com.chat_mat_rest_service.dtos.rest.RestErrorResponse;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -18,5 +19,10 @@ public class GlobalExceptionHandler {
     @ExceptionHandler(ResourceNotFoundException.class)
     public ResponseEntity<RestErrorResponse> handleResourceNotFoundException(ResourceNotFoundException ex) {
         return ResponseEntity.status(HttpStatus.NOT_FOUND).body(new RestErrorResponse(ex.getMessage()));
+    }
+
+    @ExceptionHandler(UnauthorizedException.class)
+    public ResponseEntity<RestErrorResponse> handleUnauthorizedException(UnauthorizedException ex) {
+        return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body(new RestErrorResponse(ex.getMessage()));
     }
 }

@@ -1,5 +1,6 @@
 package com.chat_mat_rest_service.controllers;
 
+import com.chat_mat_rest_service.dtos.requests.AdminRightsRequest;
 import com.chat_mat_rest_service.dtos.requests.ParticipantsUpdateRequest;
 import com.chat_mat_rest_service.dtos.requests.SendMessageRequest;
 import com.chat_mat_rest_service.dtos.responses.ChatDto;
@@ -106,6 +107,17 @@ public class ChatController {
     ) {
         UserChatRightsDto userChatRights = chatService.getUserChatRights(chatId, userId);
         return ResponseEntity.ok(userChatRights);
+    }
+
+    @PutMapping("/{chatId}/participants/{userId}/admin")
+    public ResponseEntity<Void> updateAdminStatus(
+            @PathVariable Long chatId,
+            @PathVariable Long userId,
+            @RequestBody AdminRightsRequest requestBody
+    ) {
+
+        chatService.updateAdminStatus(chatId, userId, requestBody);
+        return ResponseEntity.noContent().build();
     }
 
 }

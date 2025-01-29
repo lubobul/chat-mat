@@ -13,3 +13,7 @@ export interface ParticipantsUpdateRequest {
     removedParticipants: number[];
 }
 
+export interface AdminRightsRequest{
+    isAdmin: boolean;
+}
+

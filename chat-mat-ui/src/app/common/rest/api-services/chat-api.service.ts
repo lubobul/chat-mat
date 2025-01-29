@@ -1,7 +1,12 @@
 import {Injectable} from '@angular/core';
 import {HttpClient} from '@angular/common/http';
 import {Observable} from 'rxjs';
-import {ChatMessageRequest, CreateChatRequest, ParticipantsUpdateRequest} from '../types/requests/chat-request';
+import {
+    AdminRightsRequest,
+    ChatMessageRequest,
+    CreateChatRequest,
+    ParticipantsUpdateRequest
+} from '../types/requests/chat-request';
 import {ChatMessageResponse, ChatResponse} from '../types/responses/chat-response';
 import {QueryParams, QueryRequest} from '../types/requests/query-request';
 import {PaginatedResponse} from '../types/responses/paginated-response';
@@ -43,6 +48,10 @@ export class ChatApiService {
 
     updateParticipants(chatId: number, payload: ParticipantsUpdateRequest): Observable<ChatResponse> {
         return this.http.patch<ChatResponse>(`${this.apiUrl}/${chatId}/participants`, payload);
+    }
+
+    updateAdminRights(chatId: number, userId: number, payload: AdminRightsRequest): Observable<void> {
+        return this.http.put<void>(`${this.apiUrl}/${chatId}/participants/${userId}/admin`, payload);
     }
 
     getParticipantRights(chatId: number ,userId: number): Observable<UserChatRightsResponse> {

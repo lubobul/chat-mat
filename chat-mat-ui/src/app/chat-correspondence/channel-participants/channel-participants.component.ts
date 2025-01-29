@@ -241,7 +241,7 @@ export class ChannelParticipantsComponent implements OnInit {
                     this.alertClosed = false;
                 }
             }
-        )
+        );
     }
 
     public openAddNewParticipantsModal(): void {
@@ -312,6 +312,50 @@ export class ChannelParticipantsComponent implements OnInit {
                 }
             }
         )
+    }
+
+    public giveAdminRights(user: UserResponse): void{
+        this.chatService.updateAdminRights(this.currentChat.id, user.id, {
+            isAdmin: true
+        }).subscribe(
+            {
+                next: (response) => {
+                    this.participantsLoading = false;
+                    this.refreshByParticipantsGrid({
+                        page: {
+                            size: 5,
+                            current: 1,
+                        }
+                    });
+                },
+                error: (error) => {
+                    this.errorMessage = resolveErrorMessage(error);
+                    this.alertClosed = false;
+                }
+            }
+        );
+    }
+
+    public revokeAdminRights(user: UserResponse): void{
+        this.chatService.updateAdminRights(this.currentChat.id, user.id, {
+            isAdmin: false
+        }).subscribe(
+            {
+                next: (response) => {
+                    this.participantsLoading = false;
+                    this.refreshByParticipantsGrid({
+                        page: {
+                            size: 5,
+                            current: 1,
+                        }
+                    });
+                },
+                error: (error) => {
+                    this.errorMessage = resolveErrorMessage(error);
+                    this.alertClosed = false;
+                }
+            }
+        );
     }
 
     protected readonly ChatUserType = ChatUserType;

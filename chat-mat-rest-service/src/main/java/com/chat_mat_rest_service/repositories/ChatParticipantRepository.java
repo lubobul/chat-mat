@@ -48,5 +48,15 @@ public interface ChatParticipantRepository extends JpaRepository<ChatParticipant
 """)
     Boolean isUserAdminInChat(@Param("chatId") Long chatId, @Param("userId") Long userId);
 
+    @Modifying
+    @Query("""
+    UPDATE ChatParticipant p 
+    SET p.isAdmin = :isAdmin 
+    WHERE p.chat.id = :chatId AND p.user.id = :userId
+""")
+    @Transactional
+    void updateAdminStatus(@Param("chatId") Long chatId, @Param("userId") Long userId, @Param("isAdmin") boolean isAdmin);
+
+    boolean existsByChatIdAndUserId(Long chatId, Long userId);
 
 }

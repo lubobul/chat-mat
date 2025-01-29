@@ -1,8 +1,10 @@
 package com.chat_mat_rest_service.services;
 
 import com.chat_mat_rest_service.custom.exceptions.ResourceNotFoundException;
+import com.chat_mat_rest_service.custom.exceptions.UnauthorizedException;
 import com.chat_mat_rest_service.dtos.mappers.ChatMessageMapper;
 import com.chat_mat_rest_service.dtos.mappers.UserMapper;
+import com.chat_mat_rest_service.dtos.requests.AdminRightsRequest;
 import com.chat_mat_rest_service.dtos.requests.ParticipantsUpdateRequest;
 import com.chat_mat_rest_service.dtos.responses.ChatDto;
 import com.chat_mat_rest_service.dtos.mappers.ChatMapper;
@@ -251,7 +253,7 @@ public class ChatService {
         Long currentUserId = getAuthenticatedUserId();
 
         // Ensure user is owner of the chat
-        boolean isAuthorized = chatRepository.existsByIdAndOwnerId(chatId, currentUserId);
+        boolean isAuthorized = chatRepository.existsByIdAndOwnerIdOrAdminId(chatId, currentUserId);
         if (!isAuthorized) {
             throw new ResourceNotFoundException("You are not allowed to view this chat.");
         }
@@ -343,5 +345,22 @@ public class ChatService {
         return new UserChatRightsDto(userMapper.toDto(user), chatId, chatUserType);
     }
 
+    public void updateAdminStatus(Long chatId, Long userId, AdminRightsRequest requestBody) {
+        Long currentUserId = getAuthenticatedUserId(); // Get requester ID
 
+        // Ensure the requester is the chat owner
+        boolean isOwner = chatRepository.existsByIdAndOwnerId(chatId, currentUserId);
+        if(!isOwner){
+            throw new UnauthorizedException("Only the chat owner can modify admin roles");
+        }
+
+        // Ensure the target user is a participant
+        boolean isParticipant = chatParticipantRepository.existsByChatIdAndUserId(chatId, userId);
+        if (!isParticipant) {
+            throw new ResourceNotFoundException("User is not a participant in this chat");
+        }
+
+        // Update the admin status
+        chatParticipantRepository.updateAdminStatus(chatId, userId, requestBody.isAdmin());
+    }
 }
