@@ -25,7 +25,7 @@
                         }
                     }
 
-                    <div class="chat-message-text">
+                    <div class="chat-message-meta">
                         <div class="chat-message-info">
 
                             @if (!chatMessage.isMine) {
@@ -33,12 +33,15 @@
                             }
                             <p class="chat-message-time">{{ chatMessage.createdAt | date : "dd.MM, hh:mm" }}</p>
                         </div>
-
-                        <div
-                            class="chat-message-content"
-                            [class]="chatMessage.isMine ? 'my-message' : 'their-message'"
-                        >
-                            <p [innerHTML]="chatMessage.messageContent | emojiParse"></p>
+                        <div class="chat-message-text-container">
+                            @if (chatMessage.isMine) {
+                                <cds-icon shape="trash" (click)="deleteMessage(chatMessage)" class="delete-icon"></cds-icon>
+                            }
+                            <div
+                                class="chat-message-text-content"
+                                [class]="chatMessage.isMine ? 'my-message' : 'their-message'">
+                                <p [innerHTML]="chatMessage.messageContent | emojiParse"></p>
+                            </div>
                         </div>
                     </div>
                 </div>

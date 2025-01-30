@@ -16,7 +16,7 @@ import {
 import {CHAT_ROUTE_PATHS} from '../app.routes';
 import {resolveErrorMessage} from '../common/utils/util-functions';
 import {ChatService} from '../services/chat.service';
-import {ChatResponse} from '../common/rest/types/responses/chat-response';
+import {ChatMessageResponse, ChatResponse} from '../common/rest/types/responses/chat-response';
 import {UserResponse} from '../common/rest/types/responses/user-response';
 import {AuthService} from '../services/auth.service';
 import {ChatMessageViewModel} from '../common/view-models/chat-message-view-models';
@@ -132,6 +132,7 @@ export class ChatCorrespondenceComponent implements OnInit, AfterViewChecked, On
                     return {
                         ...message,
                         isMine: message.senderId === this.currentUser.id,
+                        senderAvatar: this.chat.messageSendersAvatars[message.senderId],
                     } as ChatMessageViewModel
                 });
                 this.loading = false;
@@ -179,6 +180,9 @@ export class ChatCorrespondenceComponent implements OnInit, AfterViewChecked, On
             this.scrollContainer.nativeElement.scrollTop = this.scrollContainer.nativeElement.scrollHeight;
             this.scrollToBottomFlag = false;
         });
+    }
+
+    deleteMessage(chatMessage: ChatMessageResponse): void{
 
     }
 }

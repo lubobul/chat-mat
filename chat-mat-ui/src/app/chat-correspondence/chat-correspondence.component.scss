@@ -82,6 +82,7 @@
         margin-top: 0.2rem;
         margin-bottom: 0.2rem;
         max-width: 90%;
+
         .avatar-display {
             padding: 0.2rem; /* Add padding */
             width: 1.7rem; /* Set a fixed width */
@@ -90,7 +91,8 @@
             object-fit: cover;
             margin-top: 1rem
         }
-        .chat-message-text {
+
+        .chat-message-meta {
             display: flex;
             flex-flow: column;
 
@@ -104,21 +106,43 @@
                 }
 
                 .chat-message-time {
-                    margin: 0.1rem 0 0 0;
+                    margin: 0.1rem 0 0 1rem;
                     font-size: 0.5rem;
                 }
             }
+            .chat-message-text-container{
+                display: flex;
+                flex-flow: row;
+                align-items: center;
 
-            .chat-message-content {
-                p {
-                    color: black;
-                    padding: 0.1rem;
-                    margin: 0.1rem;
+                .delete-icon {
+                    cursor: pointer;
+                    display: block;
+                    opacity: 0; /* Initially hidden */
+                    transform: translateX(10px); /* Move left */
+                    transition: transform 0.3s ease-out, opacity 0.3s ease-out; /* Smooth transition */
                 }
 
-                padding: 0.2rem;
-                border-radius: 0.6rem;
+                &:hover .delete-icon {
+                    display: block;
+                    opacity: 1; /* Fully visible */
+                    transform: translateX(-5px); /* Move to normal position */
+                    color: var(--clr-color-danger-800);
+                }
+
+                .chat-message-text-content {
+
+                    p {
+                        color: black;
+                        padding: 0.1rem;
+                        margin: 0.1rem;
+                    }
+
+                    padding: 0.2rem;
+                    border-radius: 0.6rem;
+                }
             }
+
 
             .my-message {
                 background-color: var(--clr-color-action-100);

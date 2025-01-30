@@ -22,9 +22,7 @@ import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 
-import java.util.ArrayList;
-import java.util.Collections;
-import java.util.List;
+import java.util.*;
 
 import static com.chat_mat_rest_service.common.SecurityContextHelper.getAuthenticatedUserId;
 
@@ -92,11 +90,25 @@ public class ChatService {
                 messages.getTotalElements()
         );
 
+        Map<Long, String> messageSendersAvatars = new HashMap<>();
+
+        reversedMessagesPage.stream().forEach((message) -> {
+            String avatar = message.getSender().getAvatar();
+            if(avatar != null && !avatar.isEmpty()){
+                messageSendersAvatars.put(message.getSender().getId(), message.getSender().getAvatar());
+            }
+        });
+
         // Map to DTO
         ChatDto chatDto = chatMapper.toDto(chat);
+        chatDto.setMessageSendersAvatars(messageSendersAvatars);
         chatDto.setOwner(userMapper.toDto(chat.getOwner()));
         chatDto.setParticipantsPage(participants.map(userMapper::toDto));
         chatDto.setMessagesPage(reversedMessagesPage.map(chatMessageMapper::toDto));
+
+        chatDto.getParticipantsPage().forEach((participant) ->{
+            participant.setAvatar(null);
+        });
 
         return chatDto;
     }
@@ -395,7 +407,7 @@ public class ChatService {
     public ChatDto updateChat(Long chatId, UpdateChatRequest updateRequest) {
         Long currentUserId = getAuthenticatedUserId(); // Get requester ID
 
-        // потребител с роля ГОСТ на канал НЕ може да променя името на канал
+        //потребител с роля ГОСТ на канал НЕ може да променя името на канал
         // Check if the user is either an owner or admin of the chat
         boolean hasEditRights = chatRepository.existsByIdAndOwnerIdOrAdminId(chatId, currentUserId);
         if (!hasEditRights) {

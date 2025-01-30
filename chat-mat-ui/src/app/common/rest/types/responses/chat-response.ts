@@ -9,6 +9,7 @@ export interface ChatResponse {
     owner: UserResponse;
     participantsPage: PaginatedResponse<UserResponse>;
     messagesPage: PaginatedResponse<ChatMessageResponse>;
+    messageSendersAvatars: Record<number, string>;
 }
 
 export interface ChatMessageResponse{

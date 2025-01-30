@@ -14,6 +14,7 @@ public class UserDto {
     private Long id;
     private String username;
     private String email;
+    @JsonInclude(JsonInclude.Include.NON_NULL)
     private String avatar; // Base64 encoded image
     private Timestamp createdAt;
     @JsonInclude(JsonInclude.Include.NON_NULL)
