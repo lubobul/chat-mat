@@ -1,12 +1,6 @@
 <h3>Profile settings</h3>
+
 <div class="card-block">
-    <clr-toggle-container>
-        <clr-toggle-wrapper>
-            <input type="checkbox" clrToggle value="option1" name="options" [(ngModel)]="darkMode" (change)="toggleDarkMode($event)" />
-            <label>Dark mode</label>
-        </clr-toggle-wrapper>
-    </clr-toggle-container>
-<form [formGroup]="updateProfileForm">
     @if (errorMessage) {
         <clr-alert class="danger-alert" [clrAlertType]="'danger'" [clrAlertSizeSmall]="true"
                    [(clrAlertClosed)]="alertClosed">
@@ -15,6 +9,19 @@
             </clr-alert-item>
         </clr-alert>
     }
+    <clr-toggle-container>
+        <clr-toggle-wrapper>
+            <input type="checkbox" clrToggle value="option1" name="options" [(ngModel)]="darkMode" (change)="toggleDarkMode($event)" />
+            <label>Dark mode</label>
+        </clr-toggle-wrapper>
+    </clr-toggle-container>
+
+    <div class="clr-row select-avatar-container">
+        <button (click)="selectAvatar()" class="btn btn-primary-outline">Select Avatar</button>
+        <img class="avatar-display" src="{{avatar64}}">
+    </div>
+
+<form [formGroup]="updateProfileForm">
     <clr-input-container>
         <label>Username</label>
         <input clrInput type="name" formControlName="username" placeholder="Enter your username"/>

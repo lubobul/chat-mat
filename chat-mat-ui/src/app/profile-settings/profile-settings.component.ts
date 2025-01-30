@@ -48,6 +48,7 @@ export class ProfileSettingsComponent implements OnInit{
     user: UserResponse = {} as any;
     showConfirm = false;
     darkMode: boolean;
+    avatar64?: string | ArrayBuffer | null;
     constructor(
         private fb: FormBuilder,
         private authService: AuthService,
@@ -64,6 +65,7 @@ export class ProfileSettingsComponent implements OnInit{
 
     //TODO Could potentially be checking if user exists while typing username
     private buildForm(user: UserResponse): void{
+        this.avatar64 = user.avatar;
         this.updateProfileForm = this.fb.group({
             username: [user.username, [Validators.required, Validators.minLength(3)]],
             email: [user.email, [Validators.required, Validators.email]],
@@ -76,7 +78,7 @@ export class ProfileSettingsComponent implements OnInit{
         this.authService.updateProfile(
             {
                 username: this.updateProfileForm.get("username")?.value,
-                avatar: "",
+                avatar: this.avatar64,
             } as UpdateProfileRequest
         ).subscribe({
             next: (user: UserResponse) => {
@@ -120,5 +122,31 @@ export class ProfileSettingsComponent implements OnInit{
 
     toggleDarkMode(event: any): void{
         this.themeService.setTheme(event.currentTarget.checked);
+    }
+
+    public selectAvatar(): void {
+        const input = document.createElement("input");
+        input.type = "file";
+        input.accept = ".png,.jpeg,.jpg";
+        input.onchange = (event: any) => {
+            const file = event.target.files[0];
+
+            this.toBase64(file).then((avatar64) => {
+                this.avatar64 = avatar64;
+            }).catch((err) => {
+                console.error(err);
+            });
+        };
+        input.click();
+    }
+
+    private toBase64(file: any): Promise<string | ArrayBuffer | null> {
+        return new Promise((resolve, reject) => {
+                const reader = new FileReader();
+                reader.readAsDataURL(file);
+                reader.onload = () => resolve(reader.result);
+                reader.onerror = reject;
+            }
+        );
     }
 }
