@@ -77,4 +77,8 @@ export class ChatService {
         return this.chatApiService.deleteChat(chatId);
     }
 
+    leaveChat(chatId: number): Observable<void> {
+        return this.chatApiService.leaveChat(chatId);
+    }
+
 }

@@ -21,6 +21,7 @@ public class FriendsController {
         this.friendService = friendService;
     }
 
+    //Потребителя може да види във всеки един момент всички канали в които членува, както и всички приятели, които е добавил
     @GetMapping
     public ResponseEntity<Page<UserDto>> getFriends(
             @RequestParam(value = "filter", required = false) String filter,
@@ -30,6 +31,7 @@ public class FriendsController {
         return ResponseEntity.ok(friends);
     }
 
+    //Потребител може да добави друг потребител
     @PostMapping("/{friendId}")
     public ResponseEntity<RestMessageResponse> addFriend(@PathVariable Long friendId) {
         friendService.addFriend(friendId);

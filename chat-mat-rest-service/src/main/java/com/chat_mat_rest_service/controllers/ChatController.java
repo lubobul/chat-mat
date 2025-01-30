@@ -27,6 +27,8 @@ public class ChatController {
         this.chatMessageService = chatMessageService;
     }
 
+    // Потребител може да създаде канал
+    //Потребител може да изпрати съобщение на свои ПРИЯТЕЛ
     @PostMapping
     public ResponseEntity<ChatDto> getOrCreateChat(
             @RequestBody CreateChatRequest request
@@ -35,6 +37,7 @@ public class ChatController {
         return ResponseEntity.ok(chatResponse);
     }
 
+    //Потребителя може да види във всеки един момент всички канали в които членува, както и всички приятели, които е добавил
     @GetMapping
     public ResponseEntity<Page<ChatDto>> getAllChats(
             @RequestParam(value = "filter", required = false) String filter,
@@ -45,6 +48,8 @@ public class ChatController {
         return ResponseEntity.ok(chats);
     }
 
+    //Потребител може да чете кореспонденцията, със свой приятел
+    //Потребител може да чете кореспонденцията, в произволен канал, в който членува
     @GetMapping("/{id}")
     public ResponseEntity<ChatDto> getChatById(
             @PathVariable Long id,
@@ -57,6 +62,8 @@ public class ChatController {
         return ResponseEntity.ok(chat);
     }
 
+    //Потребител може да изпрати съобщение на свои ПРИЯТЕЛ
+    //Потребител може да пише в произволен канал, в който членува
     @PostMapping("/{chatId}/sendMessage")
     public ResponseEntity<ChatMessageDto> sendMessage(
             @PathVariable Long chatId,
@@ -76,6 +83,8 @@ public class ChatController {
         return ResponseEntity.ok(participants);
     }
 
+    // Потребител може да премахне ГОСТ потребител от СОБСТВЕНИЯ си канал
+    // потребител с роля АДМИН на канал може да добавя нови потребители
     @PatchMapping("/{chatId}/participants")
     public ResponseEntity<ChatDto> updateChatParticipants(
             @PathVariable Long chatId,
@@ -106,6 +115,7 @@ public class ChatController {
         return ResponseEntity.ok(userChatRights);
     }
 
+    // потребител с роля СОБСТВЕНИК на канал може да дава роля АДМИН на друг потребител
     @PutMapping("/{chatId}/participants/{userId}/admin")
     public ResponseEntity<Void> updateAdminStatus(
             @PathVariable Long chatId,
@@ -117,6 +127,7 @@ public class ChatController {
         return ResponseEntity.noContent().build();
     }
 
+    // потребител с роля ГОСТ на канал НЕ може да променя името на канал
     @PutMapping("/{chatId}")
     public ResponseEntity<ChatDto> updateChat(
             @PathVariable Long chatId,
@@ -126,12 +137,20 @@ public class ChatController {
         return ResponseEntity.ok(updatedChat);
     }
 
+    //потребител може да изтрие СОБСТВЕНИЯ си канал
+    //потребител с роля ГОСТ на канал НЕ може да изтрива канал
     @DeleteMapping("/{chatId}")
     public ResponseEntity<ChatDto> deleteChat(
             @PathVariable Long chatId
     ) {
         ChatDto updatedChat = chatService.softDeleteChat(chatId);
         return ResponseEntity.ok(updatedChat);
+    }
+
+    @PutMapping("/{chatId}/leave")
+    public ResponseEntity<Void> leaveChat(@PathVariable Long chatId) {
+        chatService.leaveChat(chatId);
+        return ResponseEntity.noContent().build();
     }
 
 }

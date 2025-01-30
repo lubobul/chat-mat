@@ -76,11 +76,14 @@ export class ChannelParticipantsComponent implements OnInit {
     openAddParticipantsModal = false;
     private currentChatId: number;
 
+    leaveChatModalOpen = false;
+
     constructor(
         private friendsService: FriendsService,
         private activatedRoute: ActivatedRoute,
         private chatService: ChatService,
         private authService: AuthService,
+        private router: Router,
     ) {
         this.currentUserId = authService.getUserIdentity().id;
     }
@@ -284,6 +287,21 @@ export class ChannelParticipantsComponent implements OnInit {
                 }
             }
         )
+    }
+
+    public leaveChat(): void{
+        this.chatService.leaveChat(this.currentChatId).subscribe(
+            {
+                next: (response) => {
+                    this.leaveChatModalOpen = false;
+                    this.router.navigate([CHAT_ROUTE_PATHS.HOME]); // Navigate to the home page after login
+                },
+                error: (error) => {
+                    this.errorMessage = resolveErrorMessage(error);
+                    this.alertClosed = false;
+                    this.leaveChatModalOpen = false;
+                }
+            });
     }
 
     public removeChatParticipant(chatParticipant: UserResponse): void {

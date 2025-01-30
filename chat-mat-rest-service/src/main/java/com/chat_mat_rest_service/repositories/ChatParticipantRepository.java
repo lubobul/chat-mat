@@ -10,6 +10,8 @@ import org.springframework.data.jpa.repository.Modifying;
 import org.springframework.data.jpa.repository.Query;
 import org.springframework.data.repository.query.Param;
 
+import java.util.Optional;
+
 public interface ChatParticipantRepository extends JpaRepository<ChatParticipant, ChatParticipantId> {
     @Query("""
     SELECT p 
@@ -58,5 +60,7 @@ public interface ChatParticipantRepository extends JpaRepository<ChatParticipant
     void updateAdminStatus(@Param("chatId") Long chatId, @Param("userId") Long userId, @Param("isAdmin") boolean isAdmin);
 
     boolean existsByChatIdAndUserId(Long chatId, Long userId);
+
+    Optional<ChatParticipant> findByChatIdAndUserId(Number chatId, Number currentUserId);
 
 }

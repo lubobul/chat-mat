@@ -67,7 +67,7 @@ public class FriendService {
         User user = userRepository.findById(userId)
                 .orElseThrow(() -> new ResourceNotFoundException("User not found"));
         User friend = userRepository.findById(friendId)
-                .orElseThrow(() -> new ResourceNotFoundException("Friend not found"));
+                .orElseThrow(() -> new ResourceNotFoundException("User not found"));
 
         if (user.getFriends().contains(friend)) {
             throw new IllegalArgumentException("This user is already your friend");

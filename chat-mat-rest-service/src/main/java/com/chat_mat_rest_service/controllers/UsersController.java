@@ -18,6 +18,8 @@ public class UsersController {
     ) {
         this.userService = userService;
     }
+
+    //Потребител може да търси сред всички регистрирани в системата потребители
     @GetMapping
     public ResponseEntity<Page<UserDto>> getUsers(
             @RequestParam(value = "filter", required = false) String filter,

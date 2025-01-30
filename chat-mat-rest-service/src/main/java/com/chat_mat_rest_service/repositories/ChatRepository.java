@@ -81,6 +81,16 @@ public interface ChatRepository extends JpaRepository<Chat, Long> {
     Optional<Chat> findByIdAndOwnerIdOrParticipantId(@Param("chatId") Long chatId, @Param("userId") Long userId);
 
     @Query("""
+    SELECT c
+    FROM Chat c
+    JOIN ChatParticipant cp ON cp.chat.id = c.id
+    WHERE c.id = :chatId
+    AND cp.user.id = :currentUserId
+    AND (cp.isAdmin = true OR c.owner.id = :currentUserId)
+""")
+    Optional<Chat> findByIdAndOwnerIdOrAdminId(@Param("chatId") Long chatId, @Param("currentUserId") Long currentUserId);
+
+    @Query("""
         SELECT c.id
         FROM Chat c
         JOIN c.participants p

@@ -65,4 +65,8 @@ export class ChatApiService {
     deleteChat(chatId: number): Observable<void> {
         return this.http.delete<void>(`${this.apiUrl}/${chatId}`);
     }
+
+    leaveChat(chatId: number): Observable<void> {
+        return this.http.put<void>(`${this.apiUrl}/${chatId}/leave`, null);
+    }
 }

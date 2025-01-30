@@ -6,6 +6,11 @@
         </clr-alert-item>
     </clr-alert>
 }
+
+@if (currentUser?.chatUserType === ChatUserType.ADMIN || currentUser?.chatUserType === ChatUserType.PARTICIPANT) {
+    <button class="btn btn-warning leave-chat-btn" (click)="leaveChatModalOpen = true">Leave chat</button>
+}
+
 <h5>Current participants</h5>
 <clr-datagrid (clrDgRefresh)="refreshByParticipantsGrid($event)" [clrDgLoading]="participantsLoading">
     <clr-dg-column [clrDgField]="'username'">Username</clr-dg-column>
@@ -17,7 +22,7 @@
 
     @for (user of participantsPage.content; track user.id) {
         <clr-dg-row>
-<!--            Do not show any actions for current user-->
+            <!-- Do not show any second party actions for current user-->
             @if (user.id !== currentUser.user.id) {
                 <clr-dg-action-overflow>
                     @if (user.isFriendOfYours) {
@@ -30,8 +35,7 @@
 
                     @if ((currentUser.chatUserType === ChatUserType.ADMIN ||
                         currentUser.chatUserType === ChatUserType.OWNER) &&
-                        user.chatUserType !== ChatUserType.OWNER
-                        ) {
+                    user.chatUserType !== ChatUserType.OWNER) {
                         <button class="action-item" (click)="removeChatParticipant(user)">Remove participant</button>
                     }
 
@@ -43,6 +47,10 @@
                         <button class="action-item" (click)="revokeAdminRights(user)">Revoke Admin Rights</button>
                     }
 
+                </clr-dg-action-overflow>
+            } @else if (user.chatUserType === ChatUserType.ADMIN || user.chatUserType === ChatUserType.PARTICIPANT) {
+                <clr-dg-action-overflow>
+                    <button class="action-item" (click)="leaveChatModalOpen = true">Leave chat</button>
                 </clr-dg-action-overflow>
             }
             <clr-dg-cell>{{ user.username }}</clr-dg-cell>
@@ -107,3 +115,17 @@
         </button>
     </div>
 </clr-modal>
+
+<clr-modal [(clrModalOpen)]="leaveChatModalOpen">
+    <h3 class="modal-title">Leaving chanel "{{this.currentChat?.title}}"</h3>
+    <div class="modal-body">
+        <p>Are you sure you want to leave this channel?.</p>
+    </div>
+    <div class="modal-footer">
+        <button type="button" class="btn btn-outline" (click)="leaveChatModalOpen = false">Cancel</button>
+        <button type="button" class="btn btn-outline-danger" (click)="leaveChat()">
+            Leave
+        </button>
+    </div>
+</clr-modal>
+

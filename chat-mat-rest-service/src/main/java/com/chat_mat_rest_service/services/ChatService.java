@@ -101,6 +101,7 @@ public class ChatService {
         return chatDto;
     }
 
+    //Make sure chat can be created for only friends belonging to current user
     public ChatDto getOrCreateChat(CreateChatRequest request) {
         Long currentUserId = getAuthenticatedUserId(); // Use your existing method to extract userId from JWT
 
@@ -108,14 +109,28 @@ public class ChatService {
         User owner = userRepository.findById(currentUserId)
                 .orElseThrow(() -> new ResourceNotFoundException("User not found"));
 
+        // Fetch the current user's friend IDs
+        List<Long> friendIds = friendRepository.findFriendIdsByUserId(currentUserId);
+
         // Validate participants
         if (request.getParticipantIds() == null || request.getParticipantIds().isEmpty()) {
             throw new IllegalArgumentException("Participants list cannot be empty");
         }
 
-        Long firstParticipantId = request.getParticipantIds().getFirst();
+        // Ensure that all participants are from the current user's friend list
+        List<Long> invalidParticipants = new ArrayList<>();
+        for (Long participantId : request.getParticipantIds()) {
+            if (!friendIds.contains(participantId)) {
+                invalidParticipants.add(participantId);
+            }
+        }
+
+        if (!invalidParticipants.isEmpty()) {
+            throw new IllegalArgumentException("The following participants are not in your friend list: " + invalidParticipants);
+        }
 
         // Check for existing non-channel chat with the participant
+        Long firstParticipantId = request.getParticipantIds().getFirst();
         if (!request.isChannel()) {
             List<Chat> existingChats = chatRepository.findNonChannelChatsByParticipantsOrOwner(currentUserId, firstParticipantId);
             if (!existingChats.isEmpty()) {
@@ -123,13 +138,13 @@ public class ChatService {
             }
         }
 
-        // Fetch participants
+        // Fetch participants from the database
         List<User> participants = userRepository.findAllById(request.getParticipantIds());
         if (participants.isEmpty()) {
             throw new ResourceNotFoundException("Participants not found");
         }
 
-        //Add Owner to the participants list
+        // Add the owner to the participants list
         participants.add(owner);
 
         // Create and save the new chat
@@ -282,24 +297,34 @@ public class ChatService {
         return friends.map(userMapper::toDto);
     }
 
-
+    //For now only verifications are:
+    //To update chat participants current user must be: OWNER | ADMIN
+    //The removedParticipants list cannot contain: OWNER
+    //Currently the ADMIN can remove another ADMIN
     @Transactional
     public ChatDto updateChatParticipants(Long chatId, ParticipantsUpdateRequest request) {
         Long currentUserId = getAuthenticatedUserId();
 
-        // Ensure the user is authorized (must be chat owner or participant)
-        Chat chat = chatRepository.findByIdAndOwnerIdOrParticipantId(chatId, currentUserId)
-                .orElseThrow(() -> new ResourceNotFoundException("Chat not found or access denied"));
+        // Ensure the user is authorized (must be chat owner or admin)
+        Chat chat = chatRepository.findByIdAndOwnerIdOrAdminId(chatId, currentUserId)
+                .orElseThrow(() -> new UnauthorizedException("Access denied"));
+
+        // Fetch the chat owner
+        Long chatOwnerId = chat.getOwner().getId();
 
         // Fetch users to be added
         List<User> usersToAdd = request.getAddedParticipants() != null
                 ? userRepository.findAllById(request.getAddedParticipants())
                 : Collections.emptyList();
 
-        // Fetch users to be removed
+        // Fetch users to be removed and ensure the chat owner is not removed
         List<User> usersToRemove = request.getRemovedParticipants() != null
                 ? userRepository.findAllById(request.getRemovedParticipants())
                 : Collections.emptyList();
+
+        // Perhaps we can throw UnauthorizedException here.
+        // Remove the chat owner from the removal list if present
+        usersToRemove.removeIf(user -> user.getId().equals(chatOwnerId));
 
         // Remove participants
         usersToRemove.forEach(user -> {
@@ -320,6 +345,7 @@ public class ChatService {
 
         return chatMapper.toDto(chat);
     }
+
 
     public UserChatRightsDto getUserChatRights(Long chatId, Long userId) {
         Long currentUserId = getAuthenticatedUserId(); // Ensure caller has access
@@ -369,6 +395,7 @@ public class ChatService {
     public ChatDto updateChat(Long chatId, UpdateChatRequest updateRequest) {
         Long currentUserId = getAuthenticatedUserId(); // Get requester ID
 
+        // потребител с роля ГОСТ на канал НЕ може да променя името на канал
         // Check if the user is either an owner or admin of the chat
         boolean hasEditRights = chatRepository.existsByIdAndOwnerIdOrAdminId(chatId, currentUserId);
         if (!hasEditRights) {
@@ -391,6 +418,7 @@ public class ChatService {
         Long currentUserId = getAuthenticatedUserId();  // Get the current user ID
 
         // Check if the user is either the owner or an admin of the chat
+        //потребител с роля ГОСТ на канал НЕ може да изтрива канал
         boolean hasDeleteRights = chatRepository.existsByIdAndOwnerId(chatId, currentUserId);
         if (!hasDeleteRights) {
             throw new UnauthorizedException("You don't have the rights to delete this chat.");
@@ -408,5 +436,17 @@ public class ChatService {
 
         // Return the updated chat as a DTO
         return chatMapper.toDto(chat);
+    }
+
+    @Transactional
+    public void leaveChat(Long chatId) {
+        Long currentUserId = getAuthenticatedUserId(); // Fetch the current user's ID
+
+        // Ensure the user is part of the chat
+        ChatParticipant chatParticipant = chatParticipantRepository.findByChatIdAndUserId(chatId, currentUserId)
+                .orElseThrow(() -> new ResourceNotFoundException("User is not a participant in this chat"));
+
+        // Remove the user from the chat participants
+        chatParticipantRepository.delete(chatParticipant);
     }
 }
