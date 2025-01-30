@@ -20,6 +20,8 @@
                     @if(!chatMessage.isMine){
                         @if(!!chatMessage.senderAvatar){
                             <img class="avatar-display" src="{{chatMessage.senderAvatar}}">
+                        }@else{
+                            <cds-icon class="avatar-display" shape="user"></cds-icon>
                         }
                     }
 

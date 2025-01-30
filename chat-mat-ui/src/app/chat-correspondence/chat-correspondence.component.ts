@@ -25,8 +25,6 @@ import {CdsIconModule} from '@cds/angular';
 import {DatePipe} from '@angular/common';
 import {EmojiParserPipe} from '../common/pipes/emoji-parser.pipe';
 import {ClrAlertModule, ClrIconModule, ClrSpinnerModule} from '@clr/angular';
-import {ChannelParticipantsComponent} from './channel-participants/channel-participants.component';
-import {ChannelSettingsComponent} from './channel-settings/channel-settings.component';
 
 
 @Component({
