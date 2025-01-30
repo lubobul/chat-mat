@@ -1,0 +1,30 @@
+:host{
+    display: flex;
+    flex-flow: column;
+    margin: 0 0.6rem 0 0.6rem;
+}
+
+.chat-info-container{
+    display: flex;
+    flex-flow: column;
+    .created-at-container{
+        display: flex;
+        flex-flow: row;
+        margin-top: 1.2rem;
+        align-items: center;
+
+        .created-at-time{
+            margin-left: 0.6rem;
+        }
+    }
+
+    .chat-settings-actions{
+        display: flex;
+        flex-flow: row;
+        margin-top: 1.2rem;
+        .delete-channel-btn{
+            margin-left: auto;
+        }
+    }
+}
+

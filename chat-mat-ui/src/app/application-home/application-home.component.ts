@@ -67,6 +67,10 @@ export class ApplicationHomeComponent implements OnInit, OnDestroy {
     channelSearch = "";
     friendsSearch = "";
 
+    loadingFriends = false;
+    loadingChats = false;
+    loadingChannels = false;
+
     constructor(
         private friendsService: FriendsService,
         private chatService: ChatService,
@@ -82,7 +86,7 @@ export class ApplicationHomeComponent implements OnInit, OnDestroy {
             this.currentUser = user;
         })
 
-        this.refresh().subscribe(() => {
+        this.refresh(true).subscribe(() => {
             this.startDetailsPolling(5000);
         });
 
@@ -98,6 +102,9 @@ export class ApplicationHomeComponent implements OnInit, OnDestroy {
     public subscribeToFriendsSearch(): void {
         this.friendSearchControl.valueChanges
             .pipe(
+                tap(() => {
+                   this.loadingFriends = true;
+                }),
                 filter((query): query is string => query !== null),
                 debounceTime(500),
                 distinctUntilChanged(),
@@ -112,10 +119,12 @@ export class ApplicationHomeComponent implements OnInit, OnDestroy {
             ).subscribe({
             next: (response) => {
                 this.friends = response.content; // Update the filtered users
+                this.loadingFriends = false;
             },
             error: (error) => {
                 this.errorMessage = resolveErrorMessage(error);
                 this.alertClosed = false;
+                this.loadingFriends = false;
             }
         });
     }
@@ -123,6 +132,9 @@ export class ApplicationHomeComponent implements OnInit, OnDestroy {
     public subscribeToDirectChatsSearch(): void {
         this.chatSearchControl.valueChanges
             .pipe(
+                tap(() => {
+                    this.loadingChats = true;
+                }),
                 filter((query): query is string => query !== null),
                 debounceTime(500),
                 distinctUntilChanged(),
@@ -137,10 +149,13 @@ export class ApplicationHomeComponent implements OnInit, OnDestroy {
             .subscribe({
                 next: (response) => {
                     this.directChats = response.content; // Update the filtered users
+                    this.loadingChats = false;
                 },
                 error: (error) => {
                     this.errorMessage = resolveErrorMessage(error);
                     this.alertClosed = false;
+                    this.loadingChats = false;
+
                 }
             });
     }
@@ -148,6 +163,9 @@ export class ApplicationHomeComponent implements OnInit, OnDestroy {
     public subscribeToChannelsSearch(): void {
         this.channelSearchControl.valueChanges
             .pipe(
+                tap(() => {
+                    this.loadingChannels = true;
+                }),
                 filter((query): query is string => query !== null),
                 debounceTime(500),
                 distinctUntilChanged(),
@@ -162,10 +180,14 @@ export class ApplicationHomeComponent implements OnInit, OnDestroy {
             .subscribe({
                 next: (response) => {
                     this.channels = response.content; // Update the filtered users
+                    this.loadingChannels = false;
+
                 },
                 error: (error) => {
                     this.errorMessage = resolveErrorMessage(error);
                     this.alertClosed = false;
+                    this.loadingChannels = false;
+
                 }
             });
     }
@@ -215,8 +237,12 @@ export class ApplicationHomeComponent implements OnInit, OnDestroy {
         });
     }
 
-    public refresh(): Observable<void> {
-
+    public refresh(loadingIndicator?: boolean): Observable<void> {
+        if(loadingIndicator){
+            this.loadingFriends = true;
+            this.loadingChats = true;
+            this.loadingChannels = true;
+        }
         return forkJoin([
             this.friendsService.getFriends({
                 page: 1,
@@ -235,6 +261,9 @@ export class ApplicationHomeComponent implements OnInit, OnDestroy {
             })
         ]).pipe(
             map((data) => {
+                this.loadingFriends = false;
+                this.loadingChats = false;
+                this.loadingChannels = false;
                 const [friends, directChats, channels] = data;
                 this.friends = friends.content;
                 this.directChats = directChats.content;

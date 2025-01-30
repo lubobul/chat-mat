@@ -17,3 +17,7 @@ export interface AdminRightsRequest{
     isAdmin: boolean;
 }
 
+export interface UpdateChatRequest{
+    chatTitle: string;
+}
+

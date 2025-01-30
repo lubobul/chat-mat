@@ -1,10 +1,7 @@
 package com.chat_mat_rest_service.controllers;
 
-import com.chat_mat_rest_service.dtos.requests.AdminRightsRequest;
-import com.chat_mat_rest_service.dtos.requests.ParticipantsUpdateRequest;
-import com.chat_mat_rest_service.dtos.requests.SendMessageRequest;
+import com.chat_mat_rest_service.dtos.requests.*;
 import com.chat_mat_rest_service.dtos.responses.ChatDto;
-import com.chat_mat_rest_service.dtos.requests.CreateChatRequest;
 import com.chat_mat_rest_service.dtos.responses.ChatMessageDto;
 import com.chat_mat_rest_service.dtos.responses.UserChatRightsDto;
 import com.chat_mat_rest_service.dtos.responses.UserDto;
@@ -118,6 +115,23 @@ public class ChatController {
 
         chatService.updateAdminStatus(chatId, userId, requestBody);
         return ResponseEntity.noContent().build();
+    }
+
+    @PutMapping("/{chatId}")
+    public ResponseEntity<ChatDto> updateChat(
+            @PathVariable Long chatId,
+            @RequestBody UpdateChatRequest updateChatRequest
+    ) {
+        ChatDto updatedChat = chatService.updateChat(chatId, updateChatRequest);
+        return ResponseEntity.ok(updatedChat);
+    }
+
+    @DeleteMapping("/{chatId}")
+    public ResponseEntity<ChatDto> deleteChat(
+            @PathVariable Long chatId
+    ) {
+        ChatDto updatedChat = chatService.softDeleteChat(chatId);
+        return ResponseEntity.ok(updatedChat);
     }
 
 }

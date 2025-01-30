@@ -1,65 +1,52 @@
-<clr-side-panel [(clrSidePanelOpen)]="opened" [clrSidePanelStaticBackdrop]="true" [clrSidePanelSize]="'lg'">
-    <h3 class="side-panel-title">Edit channel</h3>
-    <div class="side-panel-body">
-        @if (errorMessage) {
-            <clr-alert class="danger-alert" [clrAlertType]="'danger'" [(clrAlertClosed)]="alertClosed">
-                <clr-alert-item>
-                    <span class="alert-text">{{ errorMessage }}</span>
-                </clr-alert-item>
-            </clr-alert>
+<h3>Chat settings</h3>
+@if (errorMessage) {
+    <clr-alert class="danger-alert" [clrAlertType]="'danger'" [(clrAlertClosed)]="alertClosed">
+        <clr-alert-item>
+            <span class="alert-text">{{ errorMessage }}</span>
+        </clr-alert-item>
+    </clr-alert>
+}
+
+<div class="chat-info-container">
+    <form [formGroup]="channelForm">
+        <clr-input-container>
+            <input clrInput type="text" formControlName="channelName" placeholder="Enter channel title"/>
+            <clr-control-error *clrIfError="'required'">
+                Channel title is required.
+            </clr-control-error>
+            <clr-control-error *clrIfError="'minlength'">
+                Channel title name must be at least 6 characters long.
+            </clr-control-error>
+
+            <clr-control-helper>
+                This channel name will be seen by all participants.
+            </clr-control-helper>
+        </clr-input-container>
+
+    </form>
+
+    <div class="created-at-container">
+        <label class="clr-control-label">Created at: </label> <span class="created-at-time">{{this.currentChat?.createdAt | date: "dd.MM.yy, HH:MM"}}</span>
+    </div>
+
+    <div class="chat-settings-actions">
+        <button (click)="updateChannel()" class="btn btn-primary">Save</button>
+        @if(this.currentUser?.chatUserType === ChatUserType.OWNER){
+            <button (click)="openConfirmChannelDelete = true" class="btn btn-danger-outline delete-channel-btn">Delete Channel</button>
         }
-        <h5>Channel name</h5>
-
-        <form [formGroup]="channelForm">
-            <clr-input-container>
-                <input clrInput type="text" formControlName="channelName" placeholder="Enter channel name"/>
-                <clr-control-error *clrIfError="'required'">
-                    Channel name is required.
-                </clr-control-error>
-                <clr-control-error *clrIfError="'minlength'">
-                    Channel name must be at least 6 characters long.
-                </clr-control-error>
-            </clr-input-container>
-
-            <h5>Select channel participants from your friend list</h5>
-            <clr-datagrid
-                (clrDgRefresh)="refreshByGrid($event)"
-                [clrDgLoading]="loading"
-                [(clrDgSelected)]="selectedFriends"
-                [clrDgPreserveSelection]="true"
-                [clrDgItemsTrackBy]="trackByFnc"
-                (clrDgSelectedChange)="setSelectedFriendsToForm()"
-            >
-                <clr-dg-column [clrDgField]="'username'">Username</clr-dg-column>
-                <clr-dg-column [clrDgField]="'email'">Email</clr-dg-column>
-                <clr-dg-column>Active Since</clr-dg-column>
-                <clr-dg-placeholder>No friends found.</clr-dg-placeholder>
-                @for (user of usersPage.content; track user.id) {
-                    <clr-dg-row [clrDgItem]="user">
-                        <clr-dg-cell>{{ user.username }}</clr-dg-cell>
-                        <clr-dg-cell>{{ user.email }}</clr-dg-cell>
-                        <clr-dg-cell>{{ user.createdAt | date }}</clr-dg-cell>
-                    </clr-dg-row>
-                }
-
-                <clr-dg-footer>
-                    <clr-dg-pagination #pagination [clrDgPageSize]="5" [clrDgTotalItems]="usersPage.totalElements">
-                        <clr-dg-page-size [clrPageSizeOptions]="[5, 10, 15]">Users per page</clr-dg-page-size>
-                        {{ pagination.firstItem + 1 }} - {{ pagination.lastItem + 1 }} of
-                        {{ pagination.totalItems }} users
-                    </clr-dg-pagination>
-                </clr-dg-footer>
-            </clr-datagrid>
-            @if(this.channelForm?.controls?.selectedUsers?.errors){
-                <clr-control-error>
-                    Please select at least one participant.
-                </clr-control-error>
-            }
-
-        </form>
     </div>
-    <div class="side-panel-footer">
-        <button type="button" class="btn btn-outline" (click)="close()">Cancel</button>
-        <button [disabled]="channelForm?.invalid" type="button" class="btn btn-primary" (click)="createChatChannel()">Create Channel</button>
+</div>
+
+<clr-modal [(clrModalOpen)]="openConfirmChannelDelete">
+    <h3 class="modal-title">Deleting channel "{{this.currentChat?.title}}"</h3>
+    <div class="modal-body">
+        <p>Deleting a channel cannot be reverted, the channel history will be lost.</p>
+        <p>Are you sure you want to delete your channel?.</p>
     </div>
-</clr-side-panel>
+    <div class="modal-footer">
+        <button type="button" class="btn btn-outline" (click)="openConfirmChannelDelete = false">Cancel</button>
+        <button type="button" class="btn btn-outline-danger" (click)="deleteChannel()">
+            Delete
+        </button>
+    </div>
+</clr-modal>

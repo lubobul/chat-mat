@@ -79,7 +79,6 @@ export class ChannelParticipantsComponent implements OnInit {
     constructor(
         private friendsService: FriendsService,
         private activatedRoute: ActivatedRoute,
-        private router: Router,
         private chatService: ChatService,
         private authService: AuthService,
     ) {

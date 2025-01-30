@@ -3,7 +3,7 @@ import {
     provideZoneChangeDetection,
     Renderer2
 } from '@angular/core';
-import {provideRouter} from '@angular/router';
+import {provideRouter, RouterModule} from '@angular/router';
 
 import {routes} from './app.routes';
 import {provideHttpClient, withInterceptors, withInterceptorsFromDi} from '@angular/common/http';

@@ -8,6 +8,10 @@
     overflow: hidden; /* Prevent scrolling issues */
 
     .subnav {
+        .loading-container{
+            display: flex;
+            margin-left: 1.2rem;
+        }
         flex-shrink: 0; /* Prevent it from shrinking */
         flex-grow: 0; /* Allow it to take only the required space */
         .nav-chat-links {

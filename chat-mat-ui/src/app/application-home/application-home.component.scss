@@ -60,10 +60,19 @@ label{
 }
 
 .avatar-display{
-    max-height: 3rem;           /* Limit the maximum height */
     padding: 0.2rem;            /* Add padding */
-    width: 3rem;                /* Set a fixed width */
-    height: 3rem;               /* Set a fixed height */
+    width: 2rem;                /* Set a fixed width */
+    height: 2rem;               /* Set a fixed height */
     border-radius: 50%;         /* Make it circular */
     object-fit: cover;
+}
+
+.view-user-avatar-container{
+    margin-bottom: 1rem;
+}
+
+.loading-container{
+    display: flex;
+    margin-left: 1.2rem;
+    align-items: center;
 }

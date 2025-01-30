@@ -11,7 +11,15 @@
     min-width: 36rem;
     height: 100%;
     margin: 0 0.6rem 0 0.6rem;
-
+    .loading-container{
+        padding-top: 2rem;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        h6{
+            margin: 0;
+        }
+    }
     .input-container {
         display: flex;
         margin-bottom: 5rem;
@@ -75,10 +83,9 @@
         margin-bottom: 0.2rem;
         max-width: 90%;
         .avatar-display {
-            max-height: 3rem; /* Limit the maximum height */
             padding: 0.2rem; /* Add padding */
-            width: 2rem; /* Set a fixed width */
-            height: 2rem; /* Set a fixed height */
+            width: 1.7rem; /* Set a fixed width */
+            height: 1.7rem; /* Set a fixed height */
             border-radius: 50%; /* Make it circular */
             object-fit: cover;
             margin-top: 1rem

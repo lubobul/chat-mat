@@ -8,23 +8,31 @@
     }
 
     <nav class="subnav">
-        @if (chat?.isChannel) {
-            <a [routerLinkActive]="['active']" [routerLink]="CHAT_ROUTE_PATHS.CHAT_CORRESPONDENCE" class="chat-title">{{ chat?.title }}</a>
-        } @else if (!!chat?.participantsPage?.content?.length) {
-            <a [routerLinkActive]="['active']" [routerLink]="CHAT_ROUTE_PATHS.CHAT_CORRESPONDENCE" class="chat-title">Direct chat with {{ chat | chatTitle: currentUser?.user }}</a>
-        }
+        @if(loading){
+            <div class="loading-container">
+                <clr-spinner clrInline>Loading...</clr-spinner>
+                <span class="chat-title">Loading...</span>
+            </div>
 
-        @if (chat?.isChannel) {
-            <ul class="nav nav-chat-links">
-                <li class="nav-item">
-                    <a [routerLinkActive]="['active']" [routerLink]="CHAT_ROUTE_PATHS.CHAT_PARTICIPANTS" class="nav-link channel-nav-item">Participants</a>
-                </li>
-                @if(currentUser?.chatUserType === ChatUserType.OWNER || currentUser?.chatUserType === ChatUserType.ADMIN){
-                    <li class="nav-item channel-nav-item">
-                        <a [routerLinkActive]="['active']" [routerLink]="CHAT_ROUTE_PATHS.CHAT_SETTINGS" class="nav-link">Channel setting</a>
+        }@else{
+            @if (chat?.isChannel) {
+                <a [routerLinkActive]="['active']" [routerLink]="CHAT_ROUTE_PATHS.CHAT_CORRESPONDENCE" class="chat-title">{{ chat?.title }}</a>
+            } @else if (!!chat?.participantsPage?.content?.length) {
+                <a [routerLinkActive]="['active']" [routerLink]="CHAT_ROUTE_PATHS.CHAT_CORRESPONDENCE" class="chat-title">Direct chat with {{ chat | chatTitle: currentUser?.user }}</a>
+            }
+
+            @if (chat?.isChannel) {
+                <ul class="nav nav-chat-links">
+                    <li class="nav-item">
+                        <a [routerLinkActive]="['active']" [routerLink]="CHAT_ROUTE_PATHS.CHAT_PARTICIPANTS" class="nav-link channel-nav-item">Participants</a>
                     </li>
-                }
-            </ul>
+                    @if(currentUser?.chatUserType === ChatUserType.OWNER || currentUser?.chatUserType === ChatUserType.ADMIN){
+                        <li class="nav-item channel-nav-item">
+                            <a [routerLinkActive]="['active']" [routerLink]="CHAT_ROUTE_PATHS.CHAT_SETTINGS" class="nav-link">Channel setting</a>
+                        </li>
+                    }
+                </ul>
+            }
         }
     </nav>
     <router-outlet></router-outlet>

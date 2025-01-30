@@ -12,12 +12,12 @@
 
         <form [formGroup]="channelForm">
             <clr-input-container>
-                <input clrInput type="text" formControlName="channelName" placeholder="Enter channel name"/>
+                <input clrInput type="text" formControlName="channelName" placeholder="Enter channel title"/>
                 <clr-control-error *clrIfError="'required'">
-                    Channel name is required.
+                    Channel title is required.
                 </clr-control-error>
                 <clr-control-error *clrIfError="'minlength'">
-                    Channel name must be at least 6 characters long.
+                    Channel title name must be at least 6 characters long.
                 </clr-control-error>
             </clr-input-container>
 

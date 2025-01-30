@@ -24,14 +24,14 @@ import {ChatMessageRequest} from '../common/rest/types/requests/chat-request';
 import {CdsIconModule} from '@cds/angular';
 import {DatePipe} from '@angular/common';
 import {EmojiParserPipe} from '../common/pipes/emoji-parser.pipe';
-import {ClrAlertModule, ClrIconModule} from '@clr/angular';
+import {ClrAlertModule, ClrIconModule, ClrSpinnerModule} from '@clr/angular';
 import {ChannelParticipantsComponent} from './channel-participants/channel-participants.component';
 import {ChannelSettingsComponent} from './channel-settings/channel-settings.component';
 
 
 @Component({
     selector: 'chat-correspondence',
-    imports: [FormsModule, CdsIconModule, DatePipe, EmojiParserPipe, ClrAlertModule, ClrIconModule],
+    imports: [FormsModule, CdsIconModule, DatePipe, EmojiParserPipe, ClrAlertModule, ClrIconModule, ClrSpinnerModule],
     templateUrl: './chat-correspondence.component.html',
     standalone: true,
     styleUrl: './chat-correspondence.component.scss',
@@ -121,7 +121,14 @@ export class ChatCorrespondenceComponent implements OnInit, AfterViewChecked, On
     private loadCorrespondence(chatId: number, fromPolling: boolean): Observable<ChatResponse> {
         return this.chatService.getChat(chatId).pipe(
             tap((chat: ChatResponse) => {
-                this.scrollToBottomFlag = !fromPolling;
+                if(!this.loadedChatMessages?.length){
+                    this.scrollToBottomFlag = true;
+                }
+                if(chat.messagesPage?.content?.length &&
+                    this.loadedChatMessages?.length &&
+                    chat.messagesPage.content[chat.messagesPage.content.length - 1]?.id !== this.loadedChatMessages[this.loadedChatMessages.length - 1]?.id){
+                    this.scrollToBottomFlag = true;
+                }
                 this.chat = chat;
                 this.loadedChatMessages = chat.messagesPage.content.map((message) => {
                     return {

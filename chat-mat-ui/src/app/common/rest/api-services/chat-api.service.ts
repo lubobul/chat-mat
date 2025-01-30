@@ -5,7 +5,7 @@ import {
     AdminRightsRequest,
     ChatMessageRequest,
     CreateChatRequest,
-    ParticipantsUpdateRequest
+    ParticipantsUpdateRequest, UpdateChatRequest
 } from '../types/requests/chat-request';
 import {ChatMessageResponse, ChatResponse} from '../types/responses/chat-response';
 import {QueryParams, QueryRequest} from '../types/requests/query-request';
@@ -56,5 +56,13 @@ export class ChatApiService {
 
     getParticipantRights(chatId: number ,userId: number): Observable<UserChatRightsResponse> {
         return this.http.get<UserChatRightsResponse>(`${this.apiUrl}/${chatId}/participants/${userId}`);
+    }
+
+    updateChat(chatId: number, payload: UpdateChatRequest): Observable<void> {
+        return this.http.put<void>(`${this.apiUrl}/${chatId}`, payload);
+    }
+
+    deleteChat(chatId: number): Observable<void> {
+        return this.http.delete<void>(`${this.apiUrl}/${chatId}`);
     }
 }

@@ -3,6 +3,7 @@ import { inject } from '@angular/core';
 import {AuthService} from '../../services/auth.service';
 import {Router} from '@angular/router';
 import {catchError, throwError} from 'rxjs';
+import {CHAT_ROUTE_PATHS} from '../../app.routes';
 
 export const authInterceptor: HttpInterceptorFn = (req, next) => {
     const modifiedReq = req.clone({
@@ -19,10 +20,13 @@ export const loginRedirectInterceptor: HttpInterceptorFn = (req, next) => {
         catchError((error: HttpErrorResponse) => {
             if (error.status === 401) {
                 // Clear JWT and redirect to login on authentication failure
-                router.navigate(['/login']);
+                router.navigate([`/${CHAT_ROUTE_PATHS.LOGIN}`]);
             } else if (error.status === 403) {
                 // Optional: Show a forbidden message or handle gracefully
                 console.error('Access denied. You do not have permission to perform this action.');
+            } else if (error.status === 404) {
+                // Optional: Show a forbidden message or handle gracefully
+                router.navigate([`/${CHAT_ROUTE_PATHS.HOME}`]);
             }
             return throwError(() => error);
         })

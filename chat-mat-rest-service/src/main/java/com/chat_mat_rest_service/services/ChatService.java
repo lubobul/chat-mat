@@ -6,6 +6,7 @@ import com.chat_mat_rest_service.dtos.mappers.ChatMessageMapper;
 import com.chat_mat_rest_service.dtos.mappers.UserMapper;
 import com.chat_mat_rest_service.dtos.requests.AdminRightsRequest;
 import com.chat_mat_rest_service.dtos.requests.ParticipantsUpdateRequest;
+import com.chat_mat_rest_service.dtos.requests.UpdateChatRequest;
 import com.chat_mat_rest_service.dtos.responses.ChatDto;
 import com.chat_mat_rest_service.dtos.mappers.ChatMapper;
 import com.chat_mat_rest_service.dtos.requests.CreateChatRequest;
@@ -14,6 +15,7 @@ import com.chat_mat_rest_service.dtos.responses.UserChatRightsDto;
 import com.chat_mat_rest_service.dtos.responses.UserDto;
 import com.chat_mat_rest_service.entities.*;
 import com.chat_mat_rest_service.repositories.*;
+import jakarta.transaction.Transactional;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageImpl;
 import org.springframework.data.domain.PageRequest;
@@ -201,7 +203,6 @@ public class ChatService {
         });
     }
 
-    //TODO if owner -> map isOwner
     public Page<UserDto> getChatParticipants(Long chatId, String filter, Pageable pageable) {
         Long currentUserId = getAuthenticatedUserId();
 
@@ -282,7 +283,7 @@ public class ChatService {
     }
 
 
-    //TODO chat owner and admin can do this
+    @Transactional
     public ChatDto updateChatParticipants(Long chatId, ParticipantsUpdateRequest request) {
         Long currentUserId = getAuthenticatedUserId();
 
@@ -362,5 +363,50 @@ public class ChatService {
 
         // Update the admin status
         chatParticipantRepository.updateAdminStatus(chatId, userId, requestBody.isAdmin());
+    }
+
+    @Transactional
+    public ChatDto updateChat(Long chatId, UpdateChatRequest updateRequest) {
+        Long currentUserId = getAuthenticatedUserId(); // Get requester ID
+
+        // Check if the user is either an owner or admin of the chat
+        boolean hasEditRights = chatRepository.existsByIdAndOwnerIdOrAdminId(chatId, currentUserId);
+        if (!hasEditRights) {
+            throw new UnauthorizedException("You don't have the rights to edit this chat.");
+        }
+
+        // Retrieve the chat entity
+        Chat chat = chatRepository.findById(chatId)
+                .orElseThrow(() -> new ResourceNotFoundException("Chat not found"));
+
+        // Update the chat title
+        chat.setTitle(updateRequest.getChatTitle());
+
+        // Save the updated chat
+        return chatMapper.toDto(chatRepository.save(chat));
+    }
+
+    @Transactional
+    public ChatDto softDeleteChat(Long chatId) {
+        Long currentUserId = getAuthenticatedUserId();  // Get the current user ID
+
+        // Check if the user is either the owner or an admin of the chat
+        boolean hasDeleteRights = chatRepository.existsByIdAndOwnerId(chatId, currentUserId);
+        if (!hasDeleteRights) {
+            throw new UnauthorizedException("You don't have the rights to delete this chat.");
+        }
+
+        // Retrieve the chat entity
+        Chat chat = chatRepository.findById(chatId)
+                .orElseThrow(() -> new ResourceNotFoundException("Chat not found"));
+
+        // Soft delete the chat by setting the 'deleted' flag to true
+        chat.setDeleted(true);
+
+        // Save the updated chat
+        chat = chatRepository.save(chat);
+
+        // Return the updated chat as a DTO
+        return chatMapper.toDto(chat);
     }
 }

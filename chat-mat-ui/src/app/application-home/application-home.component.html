@@ -9,9 +9,9 @@
         <div class="settings">
             <a [routerLink]="CHAT_ROUTE_PATHS.PROFILE_SETTINGS" [routerLinkActive]="['active']"
                class="nav-link nav-icon">
-                @if(!!currentUser.avatar){
+                @if (!!currentUser.avatar) {
                     <img class="avatar-display" src="{{currentUser.avatar}}">
-                }@else{
+                } @else {
                     <cds-icon shape="user"></cds-icon>
                 }
                 <span>{{ currentUser.username }}</span>
@@ -51,15 +51,23 @@
                                 </form>
                             </clr-vertical-nav-group-children>
                             <clr-vertical-nav-group-children>
-                                @if (!!directChats?.length) {
-                                    @for (chat of directChats; track chat.id) {
-                                        <a [routerLinkActive]="['active']"
-                                           [routerLink]="'/' +CHAT_ROUTE_PATHS.HOME+ '/' + CHAT_ROUTE_PATHS.CHAT + '/' + chat.id"
-                                           class="user-nav-button"
-                                           clrVerticalNavLink>{{ chat | chatTitle: currentUser }}</a>
-                                    }
+                                @if (loadingChats) {
+                                    <div class="loading-container">
+                                        <clr-spinner clrInline>Loading...</clr-spinner>
+                                        <span class="chat-title">Loading...</span>
+                                    </div>
+
                                 } @else {
-                                    <span clrVerticalNavLink>No direct chats</span>
+                                    @if (!!directChats?.length) {
+                                        @for (chat of directChats; track chat.id) {
+                                            <a [routerLinkActive]="['active']"
+                                               [routerLink]="'/' +CHAT_ROUTE_PATHS.HOME+ '/' + CHAT_ROUTE_PATHS.CHAT + '/' + chat.id"
+                                               class="user-nav-button"
+                                               clrVerticalNavLink>{{ chat | chatTitle: currentUser }}</a>
+                                        }
+                                    } @else {
+                                        <span clrVerticalNavLink>No direct chats</span>
+                                    }
                                 }
                             </clr-vertical-nav-group-children>
                         </clr-vertical-nav-group>
@@ -77,15 +85,23 @@
                                 </form>
                             </clr-vertical-nav-group-children>
                             <clr-vertical-nav-group-children>
-                                @if (!!channels?.length) {
-                                    @for (channel of channels; track channel.id) {
-                                        <a [routerLinkActive]="['active']"
-                                           [routerLink]="'/' +CHAT_ROUTE_PATHS.HOME+ '/' + CHAT_ROUTE_PATHS.CHAT + '/' + channel.id"
-                                           class="user-nav-button"
-                                           clrVerticalNavLink>{{ channel.title }}</a>
-                                    }
+                                @if (loadingChannels) {
+                                    <div class="loading-container">
+                                        <clr-spinner clrInline>Loading...</clr-spinner>
+                                        <span class="chat-title">Loading...</span>
+                                    </div>
+
                                 } @else {
-                                    <span clrVerticalNavLink>No channels</span>
+                                    @if (!!channels?.length) {
+                                        @for (channel of channels; track channel.id) {
+                                            <a [routerLinkActive]="['active']"
+                                               [routerLink]="'/' +CHAT_ROUTE_PATHS.HOME+ '/' + CHAT_ROUTE_PATHS.CHAT + '/' + channel.id"
+                                               class="user-nav-button"
+                                               clrVerticalNavLink>{{ channel.title }}</a>
+                                        }
+                                    } @else {
+                                        <span clrVerticalNavLink>No channels</span>
+                                    }
                                 }
                             </clr-vertical-nav-group-children>
                         </clr-vertical-nav-group>
@@ -119,15 +135,24 @@
                                 </form>
                             </clr-vertical-nav-group-children>
                             <clr-vertical-nav-group-children>
-                                @if (!!friends?.length) {
-                                    @for (user of friends; track user.id) {
-                                        <span (click)="viewUser(user)" class="user-nav-button"
-                                              clrVerticalNavLink>{{ user.username }}</span>
+                                @if (loadingFriends) {
+                                    <div class="loading-container">
+                                        <clr-spinner clrInline>Loading...</clr-spinner>
+                                        <span class="chat-title">Loading...</span>
+                                    </div>
 
-                                    }
                                 } @else {
-                                    <span clrVerticalNavLink>No friends</span>
+                                    @if (!!friends?.length) {
+                                        @for (user of friends; track user.id) {
+                                            <span (click)="viewUser(user)" class="user-nav-button"
+                                                  clrVerticalNavLink>{{ user.username }}</span>
+
+                                        }
+                                    } @else {
+                                        <span clrVerticalNavLink>No friends</span>
+                                    }
                                 }
+
 
                             </clr-vertical-nav-group-children>
                         </clr-vertical-nav-group>
@@ -142,6 +167,14 @@
     <h3 class="modal-title">User Info</h3>
     <div class="modal-body">
                         <span class="clr-row">
+                            <label class="clr-col-3">Avatar:</label>
+                            <div class="clr-col-9 view-user-avatar-container">
+                                @if (!!selectedFriend.avatar) {
+                                    <img class="avatar-display" src="{{selectedFriend.avatar}}">
+                                } @else {
+                                    <cds-icon shape="user"></cds-icon>
+                                }
+                            </div>
                             <label class="clr-col-3">Username:</label>
                             <p class="clr-col-9 no-margin">{{ selectedFriend.username }}</p>
                             <br><br>

@@ -125,8 +125,6 @@ export class NewChatComponent implements OnInit{
 
     public setSelectedFriendsToForm(): void{
         this.channelForm.get("selectedUsers")?.setValue(this.selectedFriends);
-
-        console.log(this.channelForm);
     }
 
     public createChatChannel(): void{

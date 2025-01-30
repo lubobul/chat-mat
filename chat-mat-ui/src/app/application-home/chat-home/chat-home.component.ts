@@ -8,7 +8,7 @@ import {AuthService} from '../../services/auth.service';
 import {ChatUserType, UserChatRightsResponse, UserResponse} from '../../common/rest/types/responses/user-response';
 import {ChatTitlePipe} from '../chat-title.pipe';
 import {CHAT_ROUTE_PATHS} from '../../app.routes';
-import {ClrAlertModule} from '@clr/angular';
+import {ClrAlertModule, ClrSpinnerModule} from '@clr/angular';
 
 @Component({
     selector: 'app-chat-home',
@@ -17,7 +17,8 @@ import {ClrAlertModule} from '@clr/angular';
         ChatTitlePipe,
         ClrAlertModule,
         RouterLinkActive,
-        RouterLink
+        RouterLink,
+        ClrSpinnerModule
     ],
     templateUrl: './chat-home.component.html',
     standalone: true,

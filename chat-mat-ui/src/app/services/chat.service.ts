@@ -4,7 +4,7 @@ import {
     AdminRightsRequest,
     ChatMessageRequest,
     CreateChatRequest,
-    ParticipantsUpdateRequest
+    ParticipantsUpdateRequest, UpdateChatRequest
 } from '../common/rest/types/requests/chat-request';
 import {ChatResponse} from '../common/rest/types/responses/chat-response';
 import {ChatApiService} from '../common/rest/api-services/chat-api.service';
@@ -67,6 +67,14 @@ export class ChatService {
 
     updateAdminRights(chatId: number, userId: number, payload: AdminRightsRequest): Observable<void> {
         return this.chatApiService.updateAdminRights(chatId, userId, payload);
+    }
+
+    updateChat(chatId: number, payload: UpdateChatRequest): Observable<void> {
+        return this.chatApiService.updateChat(chatId, payload);
+    }
+
+    deleteChat(chatId: number): Observable<void> {
+        return this.chatApiService.deleteChat(chatId);
     }
 
 }

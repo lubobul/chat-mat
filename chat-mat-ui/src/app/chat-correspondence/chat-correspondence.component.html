@@ -6,37 +6,45 @@
             </clr-alert-item>
         </clr-alert>
     }
-    <div #scrollContainer class="main-chat-history">
-        @for (chatMessage of loadedChatMessages; track chatMessage.id) {
-            <div class="chat-message-container" [class]="chatMessage.isMine ? 'author-message-margin' : ''">
-                @if(!chatMessage.isMine){
-                    @if(!!chatMessage.senderAvatar){
-                        <img class="avatar-display" src="{{chatMessage.senderAvatar}}">
-                    }
-                }
 
-                <div class="chat-message-text">
-                    <div class="chat-message-info">
+    @if(loading){
+        <div class="loading-container">
+            <clr-spinner clrInline></clr-spinner>
+            <h6>Loading...</h6>
+        </div>
 
-                        @if (!chatMessage.isMine) {
-                            <p class="chat-message-username">{{ chatMessage.senderUsername }}</p>
+    }@else{
+        <div #scrollContainer class="main-chat-history">
+            @for (chatMessage of loadedChatMessages; track chatMessage.id) {
+                <div class="chat-message-container" [class]="chatMessage.isMine ? 'author-message-margin' : ''">
+                    @if(!chatMessage.isMine){
+                        @if(!!chatMessage.senderAvatar){
+                            <img class="avatar-display" src="{{chatMessage.senderAvatar}}">
                         }
-                        <p class="chat-message-time">{{ chatMessage.createdAt | date : "dd.MM, hh:mm" }}</p>
-                    </div>
+                    }
 
-                    <div
-                        class="chat-message-content"
-                        [class]="chatMessage.isMine ? 'my-message' : 'their-message'"
-                    >
-                        <p [innerHTML]="chatMessage.messageContent | emojiParse"></p>
+                    <div class="chat-message-text">
+                        <div class="chat-message-info">
+
+                            @if (!chatMessage.isMine) {
+                                <p class="chat-message-username">{{ chatMessage.senderUsername }}</p>
+                            }
+                            <p class="chat-message-time">{{ chatMessage.createdAt | date : "dd.MM, hh:mm" }}</p>
+                        </div>
+
+                        <div
+                            class="chat-message-content"
+                            [class]="chatMessage.isMine ? 'my-message' : 'their-message'"
+                        >
+                            <p [innerHTML]="chatMessage.messageContent | emojiParse"></p>
+                        </div>
                     </div>
                 </div>
-            </div>
 
 
-        }
-    </div>
-    <div class="input-container">
+            }
+        </div>
+        <div class="input-container">
             <textarea
                 [disabled]="loading"
                 class="chat-user-input"
@@ -45,6 +53,7 @@
                 (keydown)="onKeydown($event)"
                 placeholder="Write your message..."
             ></textarea>
-        <cds-icon class="send-button-icon" (click)="sendMessage()" [size]="'lg'" shape="circle-arrow"></cds-icon>
-    </div>
+            <cds-icon class="send-button-icon" (click)="sendMessage()" [size]="'lg'" shape="circle-arrow"></cds-icon>
+        </div>
+    }
 </div>
