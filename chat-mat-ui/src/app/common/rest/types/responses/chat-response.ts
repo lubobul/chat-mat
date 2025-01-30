@@ -19,4 +19,5 @@ export interface ChatMessageResponse{
     senderId: number;
     senderAvatar: string;
     createdAt: string;
+    deleted: boolean;
 }

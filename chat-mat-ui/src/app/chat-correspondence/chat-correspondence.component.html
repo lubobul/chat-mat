@@ -34,13 +34,19 @@
                             <p class="chat-message-time">{{ chatMessage.createdAt | date : "dd.MM, hh:mm" }}</p>
                         </div>
                         <div class="chat-message-text-container">
-                            @if (chatMessage.isMine) {
+                            @if (chatMessage.isMine && !chatMessage.deleted && !chatMessage.loading) {
                                 <cds-icon shape="trash" (click)="deleteMessage(chatMessage)" class="delete-icon"></cds-icon>
                             }
                             <div
                                 class="chat-message-text-content"
                                 [class]="chatMessage.isMine ? 'my-message' : 'their-message'">
-                                <p [innerHTML]="chatMessage.messageContent | emojiParse"></p>
+                                @if(!chatMessage.deleted){
+                                    <p [innerHTML]="chatMessage.messageContent | emojiParse"></p>
+                                }@else if(chatMessage.loading){
+                                    <clr-spinner clrInline></clr-spinner>
+                                }@else{
+                                    <p class="deleted-message">Chat message deleted by the author...</p>
+                                }
                             </div>
                         </div>
                     </div>

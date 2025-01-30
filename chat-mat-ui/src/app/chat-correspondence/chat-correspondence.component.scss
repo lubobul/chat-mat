@@ -1,4 +1,4 @@
-:host{
+:host {
     flex-grow: 1; /* Allow it to take all the remaining space */
     overflow: hidden; /* Prevent unnecessary scrolling */
     display: flex;
@@ -11,15 +11,18 @@
     min-width: 36rem;
     height: 100%;
     margin: 0 0.6rem 0 0.6rem;
-    .loading-container{
+
+    .loading-container {
         padding-top: 2rem;
         display: flex;
         align-items: center;
         justify-content: center;
-        h6{
+
+        h6 {
             margin: 0;
         }
     }
+
     .input-container {
         display: flex;
         margin-bottom: 5.2rem;
@@ -38,7 +41,8 @@
             outline: none;
             margin-right: 1rem;
             height: 3rem;
-            &:focus{
+
+            &:focus {
                 border-color: var(--clr-color-action-600);
             }
         }
@@ -48,9 +52,10 @@
             margin-right: 0.6rem;
             transform: rotate(90deg);
             color: var(--clr-color-action-600);
-            &:hover{
+
+            &:hover {
                 cursor: pointer;
-                color: var(--clr-color-action-800);
+                color: var(--clr-color-action-400);
             }
         }
 
@@ -74,7 +79,8 @@
     &::-webkit-scrollbar-track {
         background: var(--clr-color-action-100); /* Color of the scrollbar track */
     }
-    .chat-message-container{
+
+    .chat-message-container {
         display: flex;
         flex-flow: row;
         align-items: center;
@@ -110,7 +116,8 @@
                     font-size: 0.5rem;
                 }
             }
-            .chat-message-text-container{
+
+            .chat-message-text-container {
                 display: flex;
                 flex-flow: row;
                 align-items: center;
@@ -131,6 +138,9 @@
                 }
 
                 .chat-message-text-content {
+                    .deleted-message {
+                        font-style: italic;
+                    }
 
                     p {
                         color: black;
@@ -158,6 +168,6 @@
     }
 }
 
-.author-message-margin{
+.author-message-margin {
     margin-left: auto;
 }

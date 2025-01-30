@@ -182,7 +182,18 @@ export class ChatCorrespondenceComponent implements OnInit, AfterViewChecked, On
         });
     }
 
-    deleteMessage(chatMessage: ChatMessageResponse): void{
+    deleteMessage(chatMessage: ChatMessageViewModel): void{
+        chatMessage.loading = true;
+        this.chatService.deleteChatMessage(chatMessage.id).subscribe({
+            next: () => {
+                chatMessage.loading = false;
+                chatMessage.deleted = true;
 
+            }, error: (error) => {
+                chatMessage.loading = false;
+                this.errorMessage = resolveErrorMessage(error);
+                this.alertClosed = false;
+            }
+        });
     }
 }

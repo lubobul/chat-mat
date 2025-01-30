@@ -1,6 +1,7 @@
 package com.chat_mat_rest_service.services;
 
 import com.chat_mat_rest_service.custom.exceptions.ResourceNotFoundException;
+import com.chat_mat_rest_service.custom.exceptions.UnauthorizedException;
 import com.chat_mat_rest_service.dtos.mappers.ChatMessageMapper;
 import com.chat_mat_rest_service.dtos.requests.SendMessageRequest;
 import com.chat_mat_rest_service.dtos.responses.ChatMessageDto;
@@ -10,6 +11,8 @@ import com.chat_mat_rest_service.entities.User;
 import com.chat_mat_rest_service.repositories.ChatMessageRepository;
 import com.chat_mat_rest_service.repositories.ChatRepository;
 import com.chat_mat_rest_service.repositories.UserRepository;
+import jakarta.transaction.Transactional;
+import org.springframework.security.authorization.AuthorizationDeniedException;
 import org.springframework.stereotype.Service;
 
 import static com.chat_mat_rest_service.common.SecurityContextHelper.getAuthenticatedUserId;
@@ -49,5 +52,23 @@ public class ChatMessageService {
         chatMessageRepository.save(message);
 
         return chatMessageMapper.toDto(message);
+    }
+
+    @Transactional
+    public void softDeleteMessage(Long messageId) {
+        Long userId = getAuthenticatedUserId();
+
+        // Find the message
+        ChatMessage message = chatMessageRepository.findById(messageId)
+                .orElseThrow(() -> new ResourceNotFoundException("Message not found."));
+
+        // Verify if the current user is the sender
+        if (!message.getSender().getId().equals(userId)) {
+            throw new UnauthorizedException("You can only delete your own messages.");
+        }
+
+        // Perform soft delete
+        message.setDeleted(true);
+        chatMessageRepository.save(message);
     }
 }

@@ -13,7 +13,8 @@ public interface ChatMessageMapper extends GenericMapper<ChatMessage, ChatMessag
                 chatMessage.getMessage(),
                 chatMessage.getSender().getId(),
                 chatMessage.getSender().getUsername(),
-                chatMessage.getCreatedAt()
+                chatMessage.getCreatedAt(),
+                chatMessage.getDeleted()
         );
     }
 }

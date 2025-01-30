@@ -13,6 +13,7 @@ import {PaginatedResponse} from '../common/rest/types/responses/paginated-respon
 import {buildQueryParams, resolveErrorMessage} from '../common/utils/util-functions';
 import {UserChatRightsResponse, UserResponse} from '../common/rest/types/responses/user-response';
 import {ChatMessageViewModel} from '../common/view-models/chat-message-view-models';
+import {ChatMessageApiService} from '../common/rest/api-services/chat-message-api.service';
 
 @Injectable({
     providedIn: 'root',
@@ -21,6 +22,7 @@ export class ChatService {
 
     constructor(
         private chatApiService: ChatApiService,
+        private chatMessageApiService: ChatMessageApiService,
     ) {
     }
 
@@ -81,4 +83,7 @@ export class ChatService {
         return this.chatApiService.leaveChat(chatId);
     }
 
+    deleteChatMessage(chatMessageId: number): Observable<void> {
+        return this.chatMessageApiService.deleteChatMessage(chatMessageId);
+    }
 }

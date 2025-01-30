@@ -7,12 +7,9 @@ import com.chat_mat_rest_service.dtos.mappers.UserMapper;
 import com.chat_mat_rest_service.dtos.requests.AdminRightsRequest;
 import com.chat_mat_rest_service.dtos.requests.ParticipantsUpdateRequest;
 import com.chat_mat_rest_service.dtos.requests.UpdateChatRequest;
-import com.chat_mat_rest_service.dtos.responses.ChatDto;
+import com.chat_mat_rest_service.dtos.responses.*;
 import com.chat_mat_rest_service.dtos.mappers.ChatMapper;
 import com.chat_mat_rest_service.dtos.requests.CreateChatRequest;
-import com.chat_mat_rest_service.dtos.responses.ChatUserType;
-import com.chat_mat_rest_service.dtos.responses.UserChatRightsDto;
-import com.chat_mat_rest_service.dtos.responses.UserDto;
 import com.chat_mat_rest_service.entities.*;
 import com.chat_mat_rest_service.repositories.*;
 import jakarta.transaction.Transactional;
@@ -104,7 +101,13 @@ public class ChatService {
         chatDto.setMessageSendersAvatars(messageSendersAvatars);
         chatDto.setOwner(userMapper.toDto(chat.getOwner()));
         chatDto.setParticipantsPage(participants.map(userMapper::toDto));
-        chatDto.setMessagesPage(reversedMessagesPage.map(chatMessageMapper::toDto));
+        chatDto.setMessagesPage(reversedMessagesPage.map((chatMessage) -> {
+            ChatMessageDto chatMessageDto = chatMessageMapper.toDto(chatMessage);
+            if(chatMessageDto.isDeleted()){
+                chatMessageDto.setMessageContent(null);
+            }
+            return chatMessageDto;
+        }));
 
         chatDto.getParticipantsPage().forEach((participant) ->{
             participant.setAvatar(null);
@@ -439,6 +442,10 @@ public class ChatService {
         // Retrieve the chat entity
         Chat chat = chatRepository.findById(chatId)
                 .orElseThrow(() -> new ResourceNotFoundException("Chat not found"));
+
+        if(chat.getDeleted()){
+            throw new IllegalArgumentException("This chat no longer exist.");
+        }
 
         // Soft delete the chat by setting the 'deleted' flag to true
         chat.setDeleted(true);

@@ -10,7 +10,7 @@
 <div class="chat-info-container">
     <form [formGroup]="channelForm">
         <clr-input-container>
-            <input clrInput type="text" formControlName="channelName" placeholder="Enter channel title"/>
+            <input class="channel-title-input" clrInput type="text" formControlName="channelName" placeholder="Enter channel title"/>
             <clr-control-error *clrIfError="'required'">
                 Channel title is required.
             </clr-control-error>
