@@ -24,6 +24,7 @@ import {UserResponse} from '../common/rest/types/responses/user-response';
 import {UpdateProfileRequest} from '../common/rest/types/auth-types';
 import {CHAT_ROUTE_PATHS} from '../app.routes';
 import {ThemeService} from '../common/services/theme.service';
+import {CdsModule} from '@cds/angular';
 
 @Component({
     selector: 'app-profile-settings',
@@ -35,7 +36,8 @@ import {ThemeService} from '../common/services/theme.service';
         FormsModule,
         ReactiveFormsModule,
         ClrModalModule,
-        ClarityModule
+        ClarityModule,
+        CdsModule
     ],
     templateUrl: './profile-settings.component.html',
     standalone: true,

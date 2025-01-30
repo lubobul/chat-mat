@@ -9,7 +9,11 @@
         <div class="settings">
             <a [routerLink]="CHAT_ROUTE_PATHS.PROFILE_SETTINGS" [routerLinkActive]="['active']"
                class="nav-link nav-icon">
-                <cds-icon shape="user"></cds-icon>
+                @if(!!currentUser.avatar){
+                    <img class="avatar-display" src="{{currentUser.avatar}}">
+                }@else{
+                    <cds-icon shape="user"></cds-icon>
+                }
                 <span>{{ currentUser.username }}</span>
             </a>
         </div>

@@ -7,7 +7,7 @@ import {
     RestMessageResponse,
     UpdateProfileRequest
 } from '../common/rest/types/auth-types';
-import {Observable, tap} from 'rxjs';
+import {Observable, Subject, tap} from 'rxjs';
 import {UserResponse} from '../common/rest/types/responses/user-response';
 import {ProfileApiService} from '../common/rest/api-services/profile-api.service';
 
@@ -16,6 +16,8 @@ import {ProfileApiService} from '../common/rest/api-services/profile-api.service
 })
 export class AuthService {
     private readonly USER_IDENTITY_KEY = 'USER_IDENTITY';
+
+    userProfileUpdate: Subject<UserResponse> = new Subject();
 
     constructor(
         private authApiService: AuthApiService,
@@ -61,6 +63,7 @@ export class AuthService {
 
     private storeUserIdentity(userIdentity: UserResponse): void{
         localStorage.setItem(this.USER_IDENTITY_KEY, JSON.stringify(userIdentity));
+        this.userProfileUpdate.next(userIdentity);
     }
 
     private clearUserIdentity(): void{

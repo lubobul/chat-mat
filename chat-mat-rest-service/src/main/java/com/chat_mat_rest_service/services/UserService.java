@@ -14,6 +14,7 @@ import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
+import java.util.Objects;
 import java.util.Set;
 import java.util.stream.Collectors;
 
@@ -43,14 +44,15 @@ public class UserService {
     public UserDto updateProfile(UpdateUserRequest updatedUserDetails) {
         Long currentUserId = getAuthenticatedUserId();
 
-        // Check if the username already exists (for updates)
-        if (userRepository.existsByUsername(updatedUserDetails.getUsername())) {
-            throw new IllegalArgumentException("The username you entered already taken.");
-        }
-
         // Fetch the existing user
         User user = userRepository.findById(currentUserId)
                 .orElseThrow(() -> new ResourceNotFoundException("User not found"));
+
+        // Check if the username already exists (for updates)
+        if (!Objects.equals(user.getUsername(), updatedUserDetails.getUsername()) && userRepository.existsByUsername(updatedUserDetails.getUsername())) {
+            throw new IllegalArgumentException("The username you entered already taken.");
+        }
+
 
         // Update fields
         user.setUsername(updatedUserDetails.getUsername());

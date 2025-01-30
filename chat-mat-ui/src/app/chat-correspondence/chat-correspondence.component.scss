@@ -66,48 +66,63 @@
     &::-webkit-scrollbar-track {
         background: var(--clr-color-action-100); /* Color of the scrollbar track */
     }
-
     .chat-message-container{
         display: flex;
-        flex-flow: column;
+        flex-flow: row;
+        align-items: center;
         width: fit-content;
         margin-top: 0.2rem;
         margin-bottom: 0.2rem;
         max-width: 90%;
-        .chat-message-info{
+        .avatar-display {
+            max-height: 3rem; /* Limit the maximum height */
+            padding: 0.2rem; /* Add padding */
+            width: 2rem; /* Set a fixed width */
+            height: 2rem; /* Set a fixed height */
+            border-radius: 50%; /* Make it circular */
+            object-fit: cover;
+            margin-top: 1rem
+        }
+        .chat-message-text {
             display: flex;
-            align-items: center;
-            .chat-message-username{
-                margin:0 0.4rem 0 0;
-                font-weight: bold;
+            flex-flow: column;
+
+            .chat-message-info {
+                display: flex;
+                align-items: center;
+
+                .chat-message-username {
+                    margin: 0 0.4rem 0 0;
+                    font-weight: bold;
+                }
+
+                .chat-message-time {
+                    margin: 0.1rem 0 0 0;
+                    font-size: 0.5rem;
+                }
             }
 
-            .chat-message-time{
-                margin: 0.1rem 0 0 0;
-                font-size: 0.5rem;
-            }
-        }
-        .chat-message-content {
+            .chat-message-content {
+                p {
+                    color: black;
+                    padding: 0.1rem;
+                    margin: 0.1rem;
+                }
 
-            p{
-                color: black;
-                padding: 0.1rem;
-                margin: 0.1rem;
+                padding: 0.2rem;
+                border-radius: 0.6rem;
             }
 
-            padding: 0.2rem;
-            border-radius: 0.6rem;
-        }
+            .my-message {
+                background-color: var(--clr-color-action-100);
+                max-width: fit-content;
+                display: flex;
+            }
 
-        .my-message {
-            background-color: var(--clr-color-action-100);
-            max-width: fit-content;
-            display: flex;
-        }
-
-        .their-message {
-            background-color: var(--clr-color-neutral-400);
-            max-width: fit-content;
+            .their-message {
+                background-color: var(--clr-color-neutral-400);
+                max-width: fit-content;
+            }
         }
     }
 }

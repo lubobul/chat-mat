@@ -24,14 +24,14 @@ import {ChatMessageRequest} from '../common/rest/types/requests/chat-request';
 import {CdsIconModule} from '@cds/angular';
 import {DatePipe} from '@angular/common';
 import {EmojiParserPipe} from '../common/pipes/emoji-parser.pipe';
-import {ClrAlertModule} from '@clr/angular';
+import {ClrAlertModule, ClrIconModule} from '@clr/angular';
 import {ChannelParticipantsComponent} from './channel-participants/channel-participants.component';
 import {ChannelSettingsComponent} from './channel-settings/channel-settings.component';
 
 
 @Component({
     selector: 'chat-correspondence',
-    imports: [FormsModule, CdsIconModule, DatePipe, EmojiParserPipe, ClrAlertModule],
+    imports: [FormsModule, CdsIconModule, DatePipe, EmojiParserPipe, ClrAlertModule, ClrIconModule],
     templateUrl: './chat-correspondence.component.html',
     standalone: true,
     styleUrl: './chat-correspondence.component.scss',

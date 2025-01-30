@@ -16,10 +16,21 @@
         </clr-toggle-wrapper>
     </clr-toggle-container>
 
-    <div class="clr-row select-avatar-container">
-        <button (click)="selectAvatar()" class="btn btn-primary-outline">Select Avatar</button>
-        <img class="avatar-display" src="{{avatar64}}">
+    <div class="avatar-selection">
+        <label class="clr-control-label">Avatar</label>
+        <div class="clr-row select-avatar-container">
+            <button (click)="selectAvatar()" class="btn btn-primary-outline button-select-avatar">
+                <cds-icon size="'md'"  shape="pencil"></cds-icon>
+            </button>
+            @if(!!avatar64){
+                <img class="avatar-display" src="{{avatar64}}">
+            }@else{
+                <cds-icon size="'xl'"  shape="user"></cds-icon>
+            }
+
+        </div>
     </div>
+
 
 <form [formGroup]="updateProfileForm">
     <clr-input-container>

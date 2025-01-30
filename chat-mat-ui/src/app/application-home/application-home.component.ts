@@ -78,7 +78,9 @@ export class ApplicationHomeComponent implements OnInit, OnDestroy {
     ngOnInit(): void {
         this.currentUser = this.authService.getUserIdentity();
 
-
+        this.authService.userProfileUpdate.subscribe((user) =>{
+            this.currentUser = user;
+        })
 
         this.refresh().subscribe(() => {
             this.startDetailsPolling(5000);

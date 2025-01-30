@@ -3,12 +3,23 @@
     display: flex;
     flex-flow: column;
 }
-.select-avatar-container{
+.avatar-selection{
     margin-top: 1.2rem;
-    .avatar-display{
-        max-height: 5rem;
-        margin-left: 1.2rem;
+    .select-avatar-container{
+        .button-select-avatar{
+            border: none;
+        }
+        margin-top: 0.2rem;
+        .avatar-display{
+            max-height: 3rem;           /* Limit the maximum height */
+            padding: 0.2rem;            /* Add padding */
+            width: 3rem;                /* Set a fixed width */
+            height: 3rem;               /* Set a fixed height */
+            border-radius: 50%;         /* Make it circular */
+            object-fit: cover;
+        }
     }
+
 }
 
 
