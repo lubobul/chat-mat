@@ -1,10 +1,14 @@
 package com.chat_mat_rest_service.controllers;
+
 import com.chat_mat_rest_service.common.HttpConstants;
 import com.chat_mat_rest_service.dtos.auth.JwtResponse;
 import com.chat_mat_rest_service.dtos.auth.LoginRequest;
 import com.chat_mat_rest_service.dtos.auth.RegisterRequest;
 import com.chat_mat_rest_service.dtos.rest.RestMessageResponse;
 import com.chat_mat_rest_service.services.UserAuthService;
+import io.swagger.v3.oas.annotations.Operation;
+import io.swagger.v3.oas.annotations.responses.ApiResponse;
+import io.swagger.v3.oas.annotations.responses.ApiResponses;
 import jakarta.servlet.http.HttpServletResponse;
 import org.springframework.http.ResponseCookie;
 import org.springframework.http.ResponseEntity;
@@ -21,12 +25,28 @@ public class AuthController {
         this.userAuthService = userAuthService;
     }
 
+    // Потребител може да се регистрира в системата
+    @Operation(
+            summary = "Register a new user",
+            description = "Register a new user in the system by providing user details"
+    )
+    @ApiResponses(value = {
+            @ApiResponse(responseCode = "200", description = "User registered successfully")
+    })
     @PostMapping("/register")
     public ResponseEntity<RestMessageResponse> register(@RequestBody RegisterRequest request) {
         userAuthService.register(request);
         return ResponseEntity.ok(new RestMessageResponse("User registered successfully"));
     }
 
+    // Потребител може да се логне в системата и да получи JWT токен
+    @Operation(
+            summary = "Login and receive JWT token",
+            description = "Log in the user and issue a JWT token for authentication"
+    )
+    @ApiResponses(value = {
+            @ApiResponse(responseCode = "200", description = "User logged in successfully, JWT token returned")
+    })
     @PostMapping("/login")
     public ResponseEntity<JwtResponse> login(@RequestBody LoginRequest request, HttpServletResponse response) {
         JwtResponse jwtToken = userAuthService.login(request); // Obtain the JWT token
@@ -44,6 +64,14 @@ public class AuthController {
         return ResponseEntity.ok(jwtToken);
     }
 
+    // Потребител може да излезе от системата
+    @Operation(
+            summary = "Logout user",
+            description = "Log out the user by clearing the JWT token"
+    )
+    @ApiResponses(value = {
+            @ApiResponse(responseCode = "200", description = "Logged out successfully")
+    })
     @PostMapping("/logout")
     public ResponseEntity<RestMessageResponse> logout(HttpServletResponse response) {
         // Clear the JWT cookie by setting maxAge to 0
@@ -59,4 +87,3 @@ public class AuthController {
         return ResponseEntity.ok(new RestMessageResponse("Logged out successfully"));
     }
 }
-

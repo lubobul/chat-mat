@@ -16,7 +16,7 @@ public interface ChatParticipantRepository extends JpaRepository<ChatParticipant
     @Query("""
     SELECT p 
     FROM ChatParticipant p 
-    WHERE p.chat.id = :chatId
+    WHERE p.chat.id = :chatId AND p.user.deleted = false
 """)
     Page<ChatParticipant> findParticipantsByChatId(@Param("chatId") Long chatId, Pageable pageable);
 
@@ -30,7 +30,7 @@ public interface ChatParticipantRepository extends JpaRepository<ChatParticipant
     @Query("""
     SELECT p 
     FROM ChatParticipant p 
-    WHERE p.chat.id = :chatId 
+    WHERE p.chat.id = :chatId AND p.user.deleted = false
     AND LOWER(p.user.username) LIKE LOWER(CONCAT('%', :username, '%'))
 """)
     Page<ChatParticipant> findParticipantsByChatIdAndUsernameContainingIgnoreCase(

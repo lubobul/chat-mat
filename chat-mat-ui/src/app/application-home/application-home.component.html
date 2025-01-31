@@ -9,12 +9,12 @@
         <div class="settings">
             <a [routerLink]="CHAT_ROUTE_PATHS.PROFILE_SETTINGS" [routerLinkActive]="['active']"
                class="nav-link nav-icon">
-                @if (!!currentUser.avatar) {
+                @if (!!currentUser?.avatar) {
                     <img class="avatar-display" src="{{currentUser.avatar}}">
                 } @else {
                     <cds-icon shape="user"></cds-icon>
                 }
-                <span>{{ currentUser.username }}</span>
+                <span>{{ currentUser?.username }}</span>
             </a>
         </div>
     </header>
